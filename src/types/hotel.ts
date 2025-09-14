@@ -8,6 +8,33 @@ interface FirestoreReference {
   _converter: Record<string, unknown>;
 }
 
+// types/hotel.ts - Enhanced types
+export interface City {
+  id: string;
+  city_id: number;
+  city_name: string;
+  state_id: number;
+  image_urls?: string[];
+  description?: string;
+}
+
+export interface SimilarHotel {
+  id: string;
+  name: string;
+  description: string;
+  category: string;
+  price: number;
+  imageUrls: string[];
+  userRating?: number;
+}
+
+export interface SelectedRoom {
+  price: number;
+  count: number;
+  taxRate?: number;
+  priceWithTax?: number;
+}
+
 interface Address {
   addressLine1: string;
   addressLine2?: string;

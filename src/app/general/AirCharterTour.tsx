@@ -1,11 +1,14 @@
-"use client";
-import React, { useState, useEffect } from "react";
-import Image from "next/image";
-import { ArrowCircleLeft, ArrowCircleRight } from "@phosphor-icons/react";
-import Bridge from "../../../public/assets/images/inspiration.png";
-import { getAirCharterTours, AirCharterTour as AirCharterTourType } from "@/services/airCharterService";
-import { CircularProgress } from "@mui/material";
-import { useRouter } from "next/navigation";
+'use client';
+import React, { useState, useEffect } from 'react';
+import Image from 'next/image';
+import { ArrowCircleLeft, ArrowCircleRight } from '@phosphor-icons/react';
+import Bridge from '../../../public/assets/images/inspiration.png';
+import {
+  getAirCharterTours,
+  AirCharterTour as AirCharterTourType,
+} from '@/services/airCharterService';
+import { CircularProgress } from '@mui/material';
+import { useRouter } from 'next/navigation';
 
 const AirCharter: React.FC = () => {
   const [tours, setTours] = useState<AirCharterTourType[]>([]);
@@ -20,12 +23,12 @@ const AirCharter: React.FC = () => {
     try {
       setIsLoading(true);
       const response = await getAirCharterTours();
-      
+
       if (response.success && response.data) {
         setTours(Array.isArray(response.data) ? response.data : []);
       }
     } catch (error) {
-      console.error("Error fetching air charter tours:", error);
+      console.error('Error fetching air charter tours:', error);
     } finally {
       setIsLoading(false);
     }
@@ -68,13 +71,16 @@ const AirCharter: React.FC = () => {
         ) : (
           <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
             {tours.map((card, index) => (
-              <div key={index} className="bg-white rounded-lg shadow-md overflow-hidden hover:shadow-lg transition-shadow duration-300">
+              <div
+                key={index}
+                className="bg-white rounded-lg shadow-md overflow-hidden hover:shadow-lg transition-shadow duration-300"
+              >
                 <div className="relative h-48 w-full">
-                  <Image 
-                    src={card.imageUrl ? card.imageUrl : Bridge} 
-                    alt={card.title} 
-                    fill 
-                    className="object-cover" 
+                  <Image
+                    src={card.imageUrl ? card.imageUrl : Bridge}
+                    alt={card.title}
+                    fill
+                    className="object-cover"
                   />
                   <div className="absolute top-2 left-2">
                     <span className="bg-[#FF8B02] text-white text-xs px-2 py-1 rounded-md">
@@ -99,10 +105,11 @@ const AirCharter: React.FC = () => {
                   )}
                   {card.fromLocation && card.toLocation && (
                     <p className="text-sm text-gray-700 mb-3">
-                      <span className="font-medium">Route:</span> {card.fromLocation} to {card.toLocation}
+                      <span className="font-medium">Route:</span> {card.fromLocation} to{' '}
+                      {card.toLocation}
                     </p>
                   )}
-                  <button 
+                  <button
                     className="bg-[#FF8B02] text-white px-4 py-2 rounded-md text-sm hover:bg-[#E67E00] transition-colors"
                     onClick={() => handleViewDetails(card.id)}
                   >

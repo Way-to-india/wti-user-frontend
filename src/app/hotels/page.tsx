@@ -23,7 +23,6 @@ const HotelsPage = () => {
     selectedPriceRange,
   } = useSelector((state: RootState) => state.hotels);
 
-  // Add separate loading states for different operations
   const [isSearching, setIsSearching] = useState(false);
   const [isFiltering, setIsFiltering] = useState(false);
 

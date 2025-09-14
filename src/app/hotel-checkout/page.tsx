@@ -1,6 +1,6 @@
 'use client';
 
-import NavBar from '../../components/navbar/NavBar/navbar/NavBar';
+import NavBar from '@/components/navbar/NavBar';
 import { Address } from './components/address';
 import { Overview } from './components/overview';
 import { Payments } from './components/payments';
@@ -10,7 +10,6 @@ export default function HotelCheckoutPage() {
   return (
     <section>
       <NavBar />
-      {/* Breadcrumb */}
       <div className="text-sm text-gray-500 lg:mb-16 mb-4 mt-2 lg:mx-[7%] mx-[4%]">
         <span>Home --&gt; Tours --&gt; Valley of Flowers --&gt; Booking --&gt;</span>{' '}
         <span className="text-carrot-orange font-semibold">Checkout</span>

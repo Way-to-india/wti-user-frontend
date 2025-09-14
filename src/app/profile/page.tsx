@@ -1,7 +1,6 @@
-// app/profile/page.tsx
 'use client';
 
-import { getUserProfileById } from '@/services/userService'; // adjust path
+import { getUserProfileById } from '@/services/userService'; 
 import { User } from '@/types/user';
 import { NextPage } from 'next';
 import { useRouter } from 'next/navigation';
@@ -63,7 +62,7 @@ const ProfilePage: NextPage = () => {
           <div className="text-center">
             <h2 className="text-xl font-semibold mb-2">You are not logged in</h2>
             <button
-              // onClick={() => router.push('/auth/login')}
+              onClick={() => router.push('/auth/login')}
               className="mt-4 px-4 py-2 bg-orange-500 text-white rounded hover:bg-orange-600 transition"
             >
               Go to Login

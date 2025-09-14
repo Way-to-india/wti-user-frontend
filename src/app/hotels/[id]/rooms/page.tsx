@@ -2,8 +2,8 @@
 
 import React, { useState, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
-import NavBar from '@/app/components/navbar/NavBar/navbar/NavBar';
-import { Grid, Box, Typography, CircularProgress } from '@mui/material';
+import NavBar from '@/components/navbar/NavBar';
+import { Box, Typography, CircularProgress, Grid } from '@mui/material';
 
 interface RoomPageProps {
   params: {
@@ -17,7 +17,6 @@ export default function RoomSelectionPage({ params }: RoomPageProps) {
   const [error, setError] = useState<string | null>(null);
   
   useEffect(() => {
-    // TODO: Fetch room data for the hotel
     setLoading(false);
   }, [params.id]);
 

@@ -1,7 +1,7 @@
 "use client";
 
 import React from "react";
-import NavBar from "@/app/components/navbar/NavBar/navbar/NavBar";
+import NavBar from '@/components/navbar/NavBar';
 import { Overview } from "./components/overview";
 import { Facts } from "./components/facts";
 import { PlacesToVisits } from "./components/places-to-visits";

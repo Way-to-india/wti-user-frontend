@@ -1,5 +1,5 @@
 'use client';
-import NavBar from '@/app/components/navbar/NavBar/navbar/NavBar';
+import NavBar from '@/components/navbar/NavBar';
 import placeholderImage from '@/assets/images/destination.png';
 import Footer from '@/components/Footer';
 import Box from '@mui/material/Box';

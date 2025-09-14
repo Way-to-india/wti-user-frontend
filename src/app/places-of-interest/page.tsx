@@ -1,6 +1,6 @@
 'use client';
 
-import NavBar from '../../components/navbar/NavBar/navbar/NavBar';
+import NavBar from '@/components/navbar/NavBar';
 import { Overview } from './components/overview';
 import { TopDestinations } from './components/top-destinations';
 

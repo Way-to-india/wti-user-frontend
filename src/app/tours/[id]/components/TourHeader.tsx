@@ -1,0 +1,36 @@
+import React from 'react';
+import { FiShare2 } from 'react-icons/fi';
+import { Rating } from '@/components/common/Rating';
+import { useTheme } from '@/context/ThemeContext';
+
+interface TourHeaderProps {
+  tourDetails: any;
+}
+
+const TourHeader: React.FC<TourHeaderProps> = ({ tourDetails }) => {
+  const theme = useTheme();
+
+  return (
+    <>
+      <div className="flex justify-between items-start mb-3">
+        <h1 className="text-3xl font-bold" style={{ color: theme.colors.heavyMetal }}>
+          {tourDetails?.title || 'Tour Title'}
+        </h1>
+        <button className="p-2 rounded-full bg-orange-500 text-white">
+          <FiShare2 className="w-4 h-4" />
+        </button>
+      </div>
+      <div className="flex items-center gap-3 mb-6">
+        <span className="px-4 py-1 bg-orange-50 text-orange-500 rounded-full text-sm border border-orange-200">
+          {tourDetails?.theme?.name || 'Tour Category'}
+        </span>
+        <div className="flex items-center gap-2">
+          <Rating value={tourDetails?.rating || 4.5} />
+          <span className="text-sm text-gray-500">{tourDetails?.rating || 4.5} Ratings</span>
+        </div>
+      </div>
+    </>
+  );
+};
+
+export default TourHeader;

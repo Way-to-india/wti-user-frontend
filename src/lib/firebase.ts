@@ -1,28 +1,35 @@
-import { initializeApp } from "firebase/app";
-import { getAuth } from "firebase/auth";
-import { GoogleAuthProvider, OAuthProvider, signInWithPopup, createUserWithEmailAndPassword,signInWithEmailAndPassword } from "firebase/auth";
+import { initializeApp } from 'firebase/app';
+import { getAuth } from 'firebase/auth';
+import {
+  GoogleAuthProvider,
+  OAuthProvider,
+  signInWithPopup,
+  createUserWithEmailAndPassword,
+  signInWithEmailAndPassword,
+} from 'firebase/auth';
 
-
-// Google Provider
 const googleProvider = new GoogleAuthProvider();
 googleProvider.setCustomParameters({
-  prompt: "select_account",
+  prompt: 'select_account',
 });
 
-
-// Apple Provider
 const appleProvider = new OAuthProvider('apple.com');
 
-// Now you can export these providers to use them in your sign-in buttons or components.
-export { googleProvider, appleProvider, signInWithPopup, createUserWithEmailAndPassword,signInWithEmailAndPassword};
+export {
+  googleProvider,
+  appleProvider,
+  signInWithPopup,
+  createUserWithEmailAndPassword,
+  signInWithEmailAndPassword,
+};
 const firebaseConfig = {
-  apiKey: "AIzaSyDjf_nUFhhAcj9TrzX6SK-65gUUIttno74",
-  authDomain: "way-to-india-3cd13.firebaseapp.com",
-  projectId: "way-to-india-3cd13",
-  storageBucket: "way-to-india-3cd13.appspot.com",
-  messagingSenderId: "914232026496",
-  appId: "1:914232026496:web:456d7677af7888206e4d65",
-  measurementId: "G-4JRZKECVEH"
+  apiKey: process.env.NEXT_PUBLIC_FIREBASE_API_KEY!,
+  authDomain: process.env.NEXT_PUBLIC_FIREBASE_AUTH_DOMAIN!,
+  projectId: process.env.NEXT_PUBLIC_FIREBASE_PROJECT_ID!,
+  storageBucket: process.env.NEXT_PUBLIC_FIREBASE_STORAGE_BUCKET!,
+  messagingSenderId: process.env.NEXT_PUBLIC_FIREBASE_MESSAGING_SENDER_ID!,
+  appId: process.env.NEXT_PUBLIC_FIREBASE_APP_ID!,
+  measurementId: process.env.NEXT_PUBLIC_FIREBASE_MEASUREMENT_ID!,
 };
 
 const firebaseApp = initializeApp(firebaseConfig);

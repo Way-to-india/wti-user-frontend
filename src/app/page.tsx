@@ -1,4 +1,3 @@
-// app/page.tsx
 'use client';
 import { Suspense } from 'react';
 import LandingSkeleton from '../components/landing/LandingSkeleton';
