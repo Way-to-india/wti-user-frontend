@@ -1,53 +1,71 @@
-// src/components/SearchSection.jsx
 'use client';
 import HotelTab from '@/components/SearchSection/HotelTab';
 import ToursTab from '@/components/SearchSection/ToursTab';
 import TransportationTab from '@/components/SearchSection/TransportationTab';
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
+import { useRouter } from 'next/navigation';
+import { useDispatch, useSelector } from 'react-redux';
+import { RootState, AppDispatch } from '@/app/redux/store';
+import { fetchThemes, fetchCities } from '@/app/redux/toursSlice';
 
 const SearchSection = () => {
   const [selectedTab, setSelectedTab] = useState('Buy Hotels');
+  const router = useRouter();
+  const dispatch = useDispatch<AppDispatch>();
 
-  // State for search inputs
-  const [location, setLocation] = useState('');
-  const [hotelType, setHotelType] = useState('');
-  const [checkInDate, setCheckInDate] = useState('');
-  const [checkOutDate, setCheckOutDate] = useState('');
-  const [rooms, setRooms] = useState(1);
-  const [adults, setAdults] = useState(2);
+  const { themes, cities } = useSelector((state: RootState) => state.tours);
 
-  const handleSearch = (e: React.FormEvent<HTMLFormElement>) => {
-    // Implement search logic based on selectedTab and inputs
-    e.preventDefault();
-    const searchParams = {
-      location,
-      hotelType,
-      checkInDate,
-      checkOutDate,
-      rooms,
-      adults,
-    };
-    console.log(searchParams);
-    // Add your search logic here (e.g., API call)
+  useEffect(() => {
+    dispatch(fetchThemes());
+    dispatch(fetchCities());
+  }, [dispatch]);
+
+  const themeOptions = themes.map(theme => ({
+    id: theme.id,
+    label: theme.label,
+  }));
+
+  const handleToursSearch = (
+    page: number,
+    themeId?: string | null,
+    cityId?: string | null,
+    duration?: number | null
+  ) => {
+    const query = new URLSearchParams();
+    if (themeId) query.set('themeId', themeId);
+    if (cityId) query.set('cityId', cityId);
+    if (duration) query.set('duration', duration.toString());
+
+    router.push(`/tours?${query.toString()}`);
   };
+
   return (
     <div className="relative w-full max-w-7xl mx-auto mt-8">
       <div className="absolute inset-0 bg-milk-white rounded-b-2xl rounded-r-2xl shadow-lg"></div>
-      {/* Content for Tours/Package */}
-      {selectedTab === 'Tours/Packages' && <ToursTab />}
-      {/* Content for Hotels */}
+
+      {selectedTab === 'Tours/Packages' && (
+        <ToursTab
+          onSearchResults={data => console.log('Results:', data)}
+          onSearchStart={() => console.log('Search started')}
+          onSearchError={err => console.error('Error:', err)}
+          onSearch={handleToursSearch}
+          selectedCity={null}
+          selectedTheme={null}
+          typesOptions={themeOptions} 
+          typeLabel="Tour Theme"
+        />
+      )}
+
       {selectedTab === 'Buy Hotels' && <HotelTab />}
-      {/* Content for Transportation Tab  */}
-      {selectedTab === 'Transportation' && <TransportationTab />} {/* Tab Bar */}
+      {selectedTab === 'Transportation' && <TransportationTab />}
+
       <div className="absolute top-0 left-0 transform -translate-y-full flex w-full rounded-t-lg overflow-hidden">
         {['Tours/Packages', 'Buy Hotels', 'Transportation'].map(tab => (
           <button
             key={tab}
             onClick={() => setSelectedTab(tab)}
-            className={`flex-1 px-2 sm:px-4 md:px-8 py-2 md:py-4 text-xs sm:text-sm md:text-base font-semibold whitespace-nowrap transition-colors ${
-              selectedTab === tab
-                ? 'bg-white text-gray-800'
-                : 'bg-heavy-metal bg-opacity-80 text-white hover:bg-opacity-90'
+            className={`flex-1 px-4 py-2 font-semibold ${
+              selectedTab === tab ? 'bg-white text-gray-800' : 'bg-heavy-metal text-white'
             }`}
           >
             {tab}

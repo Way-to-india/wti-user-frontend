@@ -4,14 +4,13 @@ import { Suspense, useEffect, useState } from 'react';
 import CircleLoader from '../../components/CircleLoader';
 import SignupForm from './SignUpForm';
 
-// Create a component to handle Auth logic
 const AuthLogic = () => {
-  const [step, setStep] = useState<'signup' | 'login'>('signup'); // Removed 'otp' from the state
+  const [step, setStep] = useState<'signup' | 'login'>('signup'); 
   const router = useRouter();
   const searchParams = useSearchParams();
 
   useEffect(() => {
-    const queryStep = searchParams.get('step');
+    const queryStep = searchParams?.get('step');
 
     if (queryStep === 'login') {
       setStep('login');

@@ -1,12 +1,12 @@
-"use client";
-import { useEffect, useRef, useState } from "react";
-import { useRouter } from "next/navigation";
-import Image from "next/image";
-import { CaretDown, User as UserIcon } from "@phosphor-icons/react";
-import { useAuth } from "@/context/AuthContext";
-import { useTheme } from "@/context/ThemeContext";
+'use client';
+import { useEffect, useRef, useState } from 'react';
+import { useRouter } from 'next/navigation';
+import Image from 'next/image';
+import { CaretDown, User as UserIcon } from '@phosphor-icons/react';
+import { useAuth } from '@/context/AuthContext';
+import { useTheme } from '@/context/ThemeContext';
 
-const UserDropdown = () => {
+const UserDropdown: React.FC = () => {
   const { user, logoutUser } = useAuth();
   const theme = useTheme();
   const router = useRouter();
@@ -14,143 +14,79 @@ const UserDropdown = () => {
   const dropdownRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
-    function handleClickOutside(event: MouseEvent) {
+    const handleClickOutside = (event: MouseEvent) => {
       if (dropdownRef.current && !dropdownRef.current.contains(event.target as Node)) {
         setDropdownOpen(false);
       }
-    }
+    };
 
     if (dropdownOpen) {
-      document.addEventListener("mousedown", handleClickOutside);
+      document.addEventListener('mousedown', handleClickOutside);
     }
 
     return () => {
-      document.removeEventListener("mousedown", handleClickOutside);
+      document.removeEventListener('mousedown', handleClickOutside);
     };
   }, [dropdownOpen]);
 
+  const menuItems = [
+    { label: 'Profile', action: () => router.push('/profile') },
+    { label: 'My Bookings', action: () => router.push('/my-bookings') },
+    { label: 'Logout', action: logoutUser, isDestructive: true },
+  ];
+
   return (
-    <div style={{ position: 'relative' }} ref={dropdownRef}>
-      <div
-        style={{
-          display: 'flex',
-          alignItems: 'center',
-          gap: '0.5rem',
-          cursor: 'pointer',
-          padding: '0.5rem 0.75rem',
-          borderRadius: '9999px',
-          transition: 'background-color 0.3s ease',
-          backgroundColor: dropdownOpen ? theme.colors.carrotOrange + '20' : 'transparent'
-        }}
+    <div className="relative hidden lg:block" ref={dropdownRef}>
+      <button
+        className={`flex items-center gap-2 px-3 py-2 rounded-full transition-all duration-200 hover:bg-orange-50 ${
+          dropdownOpen ? 'bg-orange-50' : ''
+        }`}
         onClick={() => setDropdownOpen(!dropdownOpen)}
       >
-        <div style={{
-          width: '2.5rem',
-          height: '2.5rem',
-          borderRadius: '9999px',
-          overflow: 'hidden',
-          border: `2px solid ${theme.colors.carrotOrange}`,
-          backgroundColor: theme.colors.carrotOrange + '20',
-          display: 'flex',
-          alignItems: 'center',
-          justifyContent: 'center'
-        }}>
+        <div className="w-8 h-8 sm:w-10 sm:h-10 rounded-full overflow-hidden border-2 border-orange-300 bg-orange-50 flex items-center justify-center flex-shrink-0">
           {user?.profileImagePath ? (
             <Image
               src={user.profileImagePath}
               alt="Profile"
               width={40}
               height={40}
-              style={{ objectFit: 'cover', width: '100%', height: '100%' }}
+              className="w-full h-full object-cover"
             />
           ) : (
-            <UserIcon size={24} weight="fill" style={{ color: theme.colors.carrotOrange }} />
+            <UserIcon size={20} weight="fill" className="text-orange-500" />
           )}
         </div>
-        <span style={{
-          fontWeight: theme.typography.fontWeight.regular,
-          fontFamily: theme.typography.fontFamily.regular,
-          color: theme.colors.heavyMetal,
-          fontSize: theme.typography.fontSize.body
-        }}>
-          {user?.name || "User"}
+        <span
+          className="hidden sm:block font-medium text-gray-700 max-w-24 truncate"
+          style={{ fontFamily: theme.typography.fontFamily.regular }}
+        >
+          {user?.name || 'User'}
         </span>
-        <CaretDown size={16} style={{
-          transition: 'transform 0.3s ease',
-          transform: dropdownOpen ? 'rotate(180deg)' : 'none'
-        }} />
-      </div>
+        <CaretDown
+          size={14}
+          className={`hidden sm:block transition-transform duration-200 text-gray-500 ${
+            dropdownOpen ? 'rotate-180' : ''
+          }`}
+        />
+      </button>
+
       {dropdownOpen && (
-        <div style={{
-          position: 'absolute',
-          top: '100%',
-          right: 0,
-          marginTop: '0.5rem',
-          backgroundColor: theme.colors.milkWhite,
-          borderRadius: '0.5rem',
-          boxShadow: '0 2px 8px rgba(0, 0, 0, 0.1)',
-          minWidth: '12rem',
-          zIndex: 50
-        }}>          <button
-            style={{
-              width: '100%',
-              padding: '0.75rem 1rem',
-              textAlign: 'left' as const,
-              border: 'none',
-              backgroundColor: 'transparent',
-              color: theme.colors.heavyMetal,
-              fontFamily: theme.typography.fontFamily.regular,
-              fontSize: theme.typography.fontSize.body,
-              cursor: 'pointer',
-              transition: 'background-color 0.3s ease'
-            }}
-            onClick={() => {
-              router.push("/profile");
-              setDropdownOpen(false);
-            }}
-          >
-            Profile
-          </button>
-          <button
-            style={{
-              width: '100%',
-              padding: '0.75rem 1rem',
-              textAlign: 'left' as const,
-              border: 'none',
-              backgroundColor: 'transparent',
-              color: theme.colors.heavyMetal,
-              fontFamily: theme.typography.fontFamily.regular,
-              fontSize: theme.typography.fontSize.body,
-              cursor: 'pointer',
-              transition: 'background-color 0.3s ease'
-            }}
-            onClick={() => {
-              router.push("/my-bookings");
-              setDropdownOpen(false);
-            }}
-          >
-            My Bookings
-          </button>
-          <button
-            style={{
-              width: '100%',
-              padding: '0.75rem 1rem',
-              textAlign: 'left' as const,
-              border: 'none',
-              backgroundColor: 'transparent',
-              color: theme.colors.heavyMetal,
-              fontFamily: theme.typography.fontFamily.regular,
-              fontSize: theme.typography.fontSize.body,
-              cursor: 'pointer',
-              transition: 'background-color 0.3s ease'
-            }}
-            onClick={() => {
-              logoutUser();
-              setDropdownOpen(false);
-            }}
-          >
-            Logout
-          </button>
+        <div className="absolute top-full right-0 mt-2 w-48 bg-white rounded-lg shadow-lg border border-gray-100 py-2 z-50">
+          {menuItems.map((item, index) => (
+            <button
+              key={index}
+              className={`w-full px-4 py-2 text-left text-sm hover:bg-gray-50 transition-colors ${
+                item.isDestructive ? 'text-red-600 hover:bg-red-50' : 'text-gray-700'
+              }`}
+              onClick={() => {
+                item.action();
+                setDropdownOpen(false);
+              }}
+              style={{ fontFamily: theme.typography.fontFamily.regular }}
+            >
+              {item.label}
+            </button>
+          ))}
         </div>
       )}
     </div>

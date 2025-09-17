@@ -1,4 +1,5 @@
-import {Button} from "@mui/material";
+import { Button } from '@mui/material';
+import { useRouter } from 'next/navigation';
 
 interface PriceSummaryCardProps {
   selectedRooms: {
@@ -19,6 +20,7 @@ const PriceSummaryCard: React.FC<PriceSummaryCardProps> = ({
   hotelId,
   theme,
 }) => {
+  const router = useRouter();
   return (
     <div className="w-full md:w-1/4 mt-8 md:mt-0">
       <div className="sticky top-8 border border-gray-200 rounded-lg overflow-hidden bg-white shadow-sm">
@@ -115,7 +117,7 @@ const PriceSummaryCard: React.FC<PriceSummaryCardProps> = ({
                           totalWithTax: calculateTotalWithTax(),
                         })
                       );
-                      window.location.href = '/hotels/booking';
+                      router.push('/hotels/booking');
                     }
                   }}
                 >
@@ -130,4 +132,4 @@ const PriceSummaryCard: React.FC<PriceSummaryCardProps> = ({
   );
 };
 
-export default PriceSummaryCard
+export default PriceSummaryCard;

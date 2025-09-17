@@ -2,6 +2,7 @@
 import { Grid } from '@mui/material';
 import React, { useEffect, useState } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
+import { useSearchParams } from 'next/navigation';
 import DynamicCard from '../../components/common/DynamicCard';
 import DynamicListingPage from '../../components/common/DynamicListingPage';
 import DynamicSearchTab, { LocationOption } from '../../components/common/DynamicSearchTab';
@@ -11,6 +12,8 @@ import { fetchCities, fetchThemes, fetchTours, setCurrentPage } from '../redux/t
 
 const ToursPage = () => {
   const dispatch = useDispatch<AppDispatch>();
+  const searchParams = useSearchParams();
+
   const {
     tours,
     loading,
@@ -25,15 +28,21 @@ const ToursPage = () => {
     selectedDuration,
   } = useSelector((state: RootState) => state.tours);
 
-  // Add separate loading states for different operations
   const [isSearching, setIsSearching] = useState(false);
   const [isFiltering, setIsFiltering] = useState(false);
 
   useEffect(() => {
     dispatch(fetchThemes());
     dispatch(fetchCities());
-    dispatch(fetchTours({ page: 1 }));
-  }, [dispatch]);
+
+    const themeId = searchParams?.get('themeId') || null;
+    const cityId = searchParams?.get('cityId') || null;
+    const duration = searchParams?.get('duration')
+      ? parseInt(searchParams.get('duration') as string)
+      : null;
+
+    dispatch(fetchTours({ page: 1, themeId, cityId, duration }));
+  }, [dispatch, searchParams]);
 
   const handlePageChange = (event: React.ChangeEvent<unknown>, page: number) => {
     dispatch(setCurrentPage(page));
@@ -58,23 +67,13 @@ const ToursPage = () => {
     const duration = filters.durations.length > 0 ? parseInt(filters.durations[0]) : null;
 
     setIsFiltering(true);
-
-    dispatch(
-      fetchTours({
-        page: 1,
-        themeId,
-        cityId,
-        duration,
-      })
-    ).finally(() => {
-      setIsFiltering(false);
-    });
+    dispatch(fetchTours({ page: 1, themeId, cityId, duration })).finally(() =>
+      setIsFiltering(false)
+    );
   };
 
-  // Function to handle search from DynamicSearchTab
   const handleSearch = (searchParams: any) => {
     setIsSearching(true);
-
     dispatch(
       fetchTours({
         page: 1,
@@ -82,16 +81,12 @@ const ToursPage = () => {
         cityId: searchParams.location?.id || null,
         duration: searchParams.durationDays,
       })
-    ).finally(() => {
-      setIsSearching(false);
-    });
+    ).finally(() => setIsSearching(false));
   };
 
-  // Function to handle location change in the search tab
   const handleLocationChange = (location: LocationOption | null) => {
     if (location) {
       setIsSearching(true);
-
       dispatch(
         fetchTours({
           page: 1,
@@ -99,52 +94,29 @@ const ToursPage = () => {
           cityId: location.id,
           duration: selectedDuration,
         })
-      ).finally(() => {
-        setIsSearching(false);
-      });
+      ).finally(() => setIsSearching(false));
     }
   };
 
-  // Convert theme and city data to the format expected by DynamicFilterSidebar
   const filterOptions = {
-    themes: themes.map(theme => ({
-      id: theme.id,
-      label: theme.label,
-    })),
-    destinations: cities.map(city => ({
-      id: city.id,
-      label: city.label,
-    })),
+    themes: themes.map(theme => ({ id: theme.id, label: theme.label })),
+    destinations: cities.map(city => ({ id: city.id, label: city.label })),
     durations: [
       { id: '3', label: 'Short (1-3 Days)' },
       { id: '7', label: 'Medium (4-7 Days)' },
       { id: '14', label: 'Long (8-14 Days)' },
       { id: '15', label: 'Extended (15+ Days)' },
     ],
-    priceRange: {
-      min: 3000,
-      max: 60000,
-    },
+    priceRange: { min: 3000, max: 60000 },
   };
 
-  // Format locations for the search tab
-  const locationOptions = cities.map(city => ({
-    id: city.id,
-    label: city.label,
-  }));
+  const locationOptions = cities.map(city => ({ id: city.id, label: city.label }));
+  const themeOptions = themes.map(theme => ({ id: theme.id, label: theme.label }));
 
-  // Format theme options for the search tab
-  const themeOptions = themes.map(theme => ({
-    id: theme.id,
-    label: theme.label,
-  }));
-
-  // Get the currently selected location as an object
   const selectedLocationObj = selectedCity
     ? locationOptions.find(city => city.id === selectedCity) || null
     : null;
 
-  // Initial filter state based on current selections
   const initialFilterState = {
     selectedThemes: selectedTheme ? [selectedTheme] : [],
     selectedDestinations: selectedCity ? [selectedCity] : [],
@@ -152,13 +124,11 @@ const ToursPage = () => {
     priceRange: [3000, 60000],
   };
 
-  // Define breadcrumbs for the page
   const breadcrumbs = [
     { href: '/', text: 'Home' },
     { href: '/tours', text: 'Tours' },
   ];
 
-  // Prepare the tours grid for DynamicListingPage children
   const toursGrid = (
     <Grid container spacing={3}>
       {tours.map(tour => (

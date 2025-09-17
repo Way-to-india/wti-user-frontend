@@ -233,7 +233,7 @@ export const RoomsSection: React.FC<RoomsSectionProps> = ({ hotel, roomSelection
           )}
         </div>
 
-        <PriceSummaryCard
+        <PriceSummaryCard 
           selectedRooms={selectedRooms}
           calculateTotalPrice={calculateTotalPrice}
           calculateTaxAmount={calculateTaxAmount}

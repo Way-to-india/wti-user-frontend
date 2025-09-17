@@ -9,7 +9,6 @@ import AirCharter from './AirCharterTour';
 import Deals from './Deals';
 import Inspiration from './Inspiration';
 import Package from './Package';
-// import TourCheckout from "@/app/trip-details/checkout/page";
 
 const LandingPage = () => {
   const theme = useTheme();
@@ -24,7 +23,6 @@ const LandingPage = () => {
         fontSize: theme.typography.fontSize.body,
       }}
     >
-      {/* Main contents */}
       <div className="relative z-10">
         <NavBar />
         <HeroPage />

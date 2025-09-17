@@ -1,8 +1,8 @@
 export enum BookingStatus {
-  PENDING = "pending",
-  CONFIRMED = "confirmed",
-  CANCELLED = "cancelled",
-  COMPLETED = "completed"
+  PENDING = 'pending',
+  CONFIRMED = 'confirmed',
+  CANCELLED = 'cancelled',
+  COMPLETED = 'completed',
 }
 
 export interface MealsIncluded {
@@ -74,4 +74,41 @@ export interface HotelBooking {
   hotelLocation?: any; // Using any for now as we don't have the exact structure
   cityName?: string;
   cityLabel?: string;
+}
+
+export interface MealsIncluded {
+  breakfast: boolean;
+  lunch: boolean;
+  dinner: boolean;
+}
+
+export interface RoomDetails {
+  roomType: string;
+  count: number;
+  price: number;
+  maxOccupancy?: number;
+  amenities?: string[];
+  mealsIncluded?: MealsIncluded;
+  imageUrls?: string[];
+  taxRate?: number;
+  priceWithTax?: number;
+}
+
+export interface GuestInformation {
+  title: string;
+  firstName: string;
+  lastName: string;
+  email: string;
+  phone: string;
+  specialRequests?: string;
+}
+
+export interface BookingDetails {
+  bookingId?: string;
+  hotelName?: string;
+  checkInDate?: Date | string;
+  checkOutDate?: Date | string;
+  totalAmount?: number;
+  subtotalAmount?: number;
+  taxAmount?: number;
 }

@@ -1,8 +1,11 @@
 'use client';
 import Image from 'next/image';
 import { useRouter } from 'next/navigation';
-import { ArrowCircleLeft } from "@phosphor-icons/react";
-import loginBackground from "@/assets/images/loginImage.png";
+import { ArrowCircleLeft } from '@phosphor-icons/react';
+import loginBackground from '@/assets/images/loginImage.png';
+import { useAuth } from '@/context/AuthContext'; // 👈 get token/user
+import { useEffect, useState } from 'react';
+import { CircularProgress, Box } from '@mui/material';
 
 interface AuthLayoutProps {
   children: React.ReactNode;
@@ -10,15 +13,32 @@ interface AuthLayoutProps {
 
 export default function AuthLayout({ children }: AuthLayoutProps) {
   const router = useRouter();
+  const { token, user } = useAuth();
+  const [isCheckingAuth, setIsCheckingAuth] = useState(true);
+
   const handleBackNavigation = () => {
-    // Use browser history to go back to the previous page
     if (window.history.length > 1) {
       window.history.back();
     } else {
-      // Fallback to homepage if there's no previous page in history
       router.push('/');
     }
   };
+
+  useEffect(() => {
+    if (token && user) {
+      router.replace('/');
+    } else {
+      setIsCheckingAuth(false);
+    }
+  }, [token, user, router]);
+
+  if (isCheckingAuth) {
+    return (
+      <Box display="flex" justifyContent="center" alignItems="center" minHeight="100vh">
+        <CircularProgress size={50} thickness={4} />
+      </Box>
+    );
+  }
 
   return (
     <div className="flex min-h-screen bg-white">
@@ -31,7 +51,7 @@ export default function AuthLayout({ children }: AuthLayoutProps) {
                 weight="fill"
                 color="#FF8B02"
                 className="cursor-pointer"
-                onClick={handleBackNavigation} 
+                onClick={handleBackNavigation}
               />
             </div>
             {children}

@@ -3,36 +3,24 @@ import { useRouter } from "next/navigation";
 import { useAuth } from "@/context/AuthContext";
 import { useTheme } from "@/context/ThemeContext";
 
-const AuthButtons = () => {
+const AuthButtons: React.FC = () => {
   const router = useRouter();
-  const { token, logoutUser } = useAuth();
+  const { token } = useAuth();
   const theme = useTheme();
 
-  if (!token) {
-    return (
-      <button
-        style={{
-          backgroundColor: theme.colors.carrotOrange,
-          borderRadius: '9999px',
-          padding: '0.5rem 1.25rem',
-          textAlign: 'center' as const,
-          fontWeight: theme.typography.fontWeight.regular,
-          marginLeft: '2.5rem',
-          fontFamily: theme.typography.fontFamily.regular,
-          cursor: 'pointer',
-          transition: 'background-color 0.3s ease',
-          color: theme.colors.milkWhite,
-          border: 'none',
-          fontSize: theme.typography.fontSize.body
-        }}
-        onClick={() => router.push("/auth/signup")}
-      >
-        Sign Up/Login
-      </button>
-    );
-  }
+  if (token) return null;
 
-  return null; // We'll show user dropdown instead
+  return (
+    <button
+      className="hidden lg:block bg-orange-500 hover:bg-orange-600 text-white px-4 py-2 rounded-full transition-colors duration-200 font-medium text-sm"
+      onClick={() => router.push("/auth/signup")}
+      style={{
+        fontFamily: theme.typography.fontFamily.regular,
+      }}
+    >
+      Sign Up / Login
+    </button>
+  );
 };
 
 export default AuthButtons;

@@ -12,7 +12,6 @@ import { FiInfo } from 'react-icons/fi';
 import BookingCard from '../../components/booking/BookingCard';
 import BookingDetailsModal from '../../components/booking/BookingDetailsModal';
 
-// SEO Metadata Component
 function PageMetadata() {
   return (
     <Head>
@@ -275,7 +274,6 @@ export default function MyBookingsPage() {
         )}
       </div>
 
-      {/* Booking Details Modal */}
       {selectedBooking && (
         <BookingDetailsModal
           isOpen={showDetailsModal}

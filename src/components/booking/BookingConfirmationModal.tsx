@@ -3,6 +3,7 @@
 import React from 'react';
 import { FiCheck } from 'react-icons/fi';
 import { formatDateForDisplay } from '@/utils/dateUtils';
+import {useRouter} from "next/navigation";
 
 interface BookingConfirmationModalProps {
   isOpen: boolean;
@@ -23,8 +24,8 @@ const BookingConfirmationModal: React.FC<BookingConfirmationModalProps> = ({
   onClose,
   bookingDetails
 }) => {
+  const router = useRouter();
   if (!isOpen) return null;
-
   return (
     <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4">
       <div className="bg-white rounded-lg max-w-md w-full p-6 max-h-[80vh] overflow-y-auto">
@@ -95,7 +96,7 @@ const BookingConfirmationModal: React.FC<BookingConfirmationModalProps> = ({
           </p>
           <div className="space-y-3">
             <button
-              onClick={() => window.location.href = '/my-bookings'}
+              onClick={() => router.push('/my-bookings')}
               className="w-full bg-orange-500 text-white font-medium py-2 rounded-lg hover:bg-orange-600 transition-colors"
             >
               View All My Bookings

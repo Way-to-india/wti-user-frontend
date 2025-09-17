@@ -1,15 +1,71 @@
 'use client';
+
+import React, { useEffect, useState, useCallback, useMemo } from 'react';
 import { Grid } from '@mui/material';
-import React, { useEffect, useState } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
+import { useSearchParams } from 'next/navigation';
+
 import DynamicCard from '../../components/common/DynamicCard';
 import DynamicListingPage from '../../components/common/DynamicListingPage';
 import DynamicSearchTab, { LocationOption } from '../../components/common/DynamicSearchTab';
+
 import { fetchHotels, fetchLocations, setCurrentPage } from '../redux/hotelsSlice';
 import { AppDispatch, RootState } from '../redux/store';
 
-const HotelsPage = () => {
+interface SearchParams {
+  location?: LocationOption;
+  checkIn?: string;
+  checkOut?: string;
+  guests?: number;
+}
+
+interface FilterParams {
+  starRatings: string[];
+  amenities: string[];
+  destinations: string[];
+  priceRange: [number, number];
+}
+
+interface HotelFetchParams {
+  page: number;
+  cityId?: string | null; 
+  starRating?: number;
+  minPrice?: number;
+  maxPrice?: number;
+  checkIn?: string;
+  checkOut?: string;
+  guests?: number;
+}
+
+const PRICE_RANGE = {
+  MIN: 1000,
+  MAX: 50000,
+} as const;
+
+const STAR_RATING_OPTIONS = [
+  { id: '3', label: '3 Stars & Above' },
+  { id: '4', label: '4 Stars & Above' },
+  { id: '5', label: '5 Stars' },
+] as const;
+
+const AMENITY_OPTIONS = [
+  { id: 'wifi', label: 'Free WiFi' },
+  { id: 'pool', label: 'Swimming Pool' },
+  { id: 'parking', label: 'Free Parking' },
+  { id: 'breakfast', label: 'Breakfast Included' },
+  { id: 'gym', label: 'Fitness Center' },
+  { id: 'spa', label: 'Spa' },
+] as const;
+
+const BREADCRUMBS = [
+  { href: '/', text: 'Home' },
+  { href: '/hotels', text: 'Hotels' },
+] as const;
+
+const HotelsPage: React.FC = () => {
   const dispatch = useDispatch<AppDispatch>();
+  const searchParams = useSearchParams();
+
   const {
     hotels,
     loading,
@@ -26,174 +82,217 @@ const HotelsPage = () => {
   const [isSearching, setIsSearching] = useState(false);
   const [isFiltering, setIsFiltering] = useState(false);
 
+  // 🔎 Initialize data based on query params
   useEffect(() => {
-    dispatch(fetchLocations());
-    dispatch(fetchHotels({ page: 1 }));
-  }, [dispatch]);
+    const initializeData = async () => {
+      try {
+        await dispatch(fetchLocations()).unwrap();
 
-  const handlePageChange = (event: React.ChangeEvent<unknown>, page: number) => {
-    dispatch(setCurrentPage(page));
-    dispatch(
-      fetchHotels({
-        page,
-        cityId: selectedLocation,
-        starRating: selectedRating,
-        minPrice: selectedPriceRange ? selectedPriceRange[0] : undefined,
-        maxPrice: selectedPriceRange ? selectedPriceRange[1] : undefined,
-      })
-    );
-  };
+        const locationId = searchParams?.get('city') || searchParams?.get('location') || undefined;
+        const checkIn = searchParams?.get('checkIn') || undefined;
+        const checkOut = searchParams?.get('checkOut') || undefined;
+        const guests = searchParams?.get('guests')
+          ? parseInt(searchParams.get('guests') as string, 10)
+          : undefined;
 
-  const handleFilterChange = (filters: {
-    starRatings: string[];
-    amenities: string[];
-    destinations: string[];
-    priceRange: [number, number];
-  }) => {
-    const locationId = filters.destinations.length > 0 ? filters.destinations[0] : null;
-    const starRating = filters.starRatings.length > 0 ? parseInt(filters.starRatings[0]) : null;
-    const priceRange = filters.priceRange;
+        const fetchParams: HotelFetchParams = {
+          page: 1,
+          cityId: locationId,
+          checkIn,
+          checkOut,
+          guests,
+        };
 
-    setIsFiltering(true);
+        await dispatch(fetchHotels(fetchParams)).unwrap();
+      } catch (error) {
+        console.error('Failed to initialize hotels page data:', error);
+      }
+    };
 
-    dispatch(
-      fetchHotels({
-        page: 1,
-        cityId: locationId,
-        starRating,
-        minPrice: priceRange[0],
-        maxPrice: priceRange[1],
-      })
-    ).finally(() => {
-      setIsFiltering(false);
-    });
-  };
+    if (searchParams) {
+      initializeData();
+    }
+  }, [dispatch, searchParams]);
 
-  // Function to handle search from DynamicSearchTab
-  const handleSearch = (searchParams: any) => {
-    setIsSearching(true);
+  const locationOptions = useMemo(
+    (): LocationOption[] =>
+      locations.map(location => ({
+        id: location,
+        label: location,
+      })),
+    [locations]
+  );
 
-    dispatch(
-      fetchHotels({
-        page: 1,
-        cityId: searchParams.location?.id || null,
-        checkIn: searchParams.checkIn,
-        checkOut: searchParams.checkOut,
-        guests: searchParams.guests,
-      })
-    ).finally(() => {
-      setIsSearching(false);
-    });
-  };
+  const selectedLocationObj = useMemo((): LocationOption | null => {
+    if (!selectedLocation) return null;
+    return locationOptions.find(location => location.id === selectedLocation) || null;
+  }, [selectedLocation, locationOptions]);
 
-  // Function to handle location change in the search tab
-  const handleLocationChange = (location: LocationOption | null) => {
-    if (location) {
-      setIsSearching(true);
+  const filterOptions = useMemo(
+    () => ({
+      starRatings: [...STAR_RATING_OPTIONS],
+      amenities: [...AMENITY_OPTIONS],
+      destinations: locationOptions,
+      priceRange: {
+        min: PRICE_RANGE.MIN,
+        max: PRICE_RANGE.MAX,
+      },
+    }),
+    [locationOptions]
+  );
 
-      dispatch(
-        fetchHotels({
+  const initialFilterState = useMemo(
+    () => ({
+      selectedStarRatings: selectedRating ? [selectedRating.toString()] : [],
+      selectedAmenities: [],
+      selectedDestinations: selectedLocation ? [selectedLocation] : [],
+      priceRange: selectedPriceRange || ([PRICE_RANGE.MIN, PRICE_RANGE.MAX] as [number, number]),
+    }),
+    [selectedRating, selectedLocation, selectedPriceRange]
+  );
+
+  const handlePageChange = useCallback(
+    async (event: React.ChangeEvent<unknown>, page: number) => {
+      try {
+        dispatch(setCurrentPage(page));
+
+        const fetchParams: HotelFetchParams = {
+          page,
+          cityId: selectedLocation,
+          starRating: selectedRating,
+          minPrice: selectedPriceRange?.[0],
+          maxPrice: selectedPriceRange?.[1],
+        };
+        
+
+        await dispatch(fetchHotels(fetchParams)).unwrap();
+      } catch (error) {
+        console.error('Failed to fetch hotels for page:', page, error);
+      }
+    },
+    [dispatch, selectedLocation, selectedRating, selectedPriceRange]
+  );
+
+  const handleFilterChange = useCallback(
+    async (filters: FilterParams) => {
+      try {
+        setIsFiltering(true);
+
+        const locationId = filters.destinations.length > 0 ? filters.destinations[0] : undefined;
+        const starRating =
+          filters.starRatings.length > 0 ? parseInt(filters.starRatings[0]) : undefined;
+        const [minPrice, maxPrice] = filters.priceRange;
+
+        const fetchParams: HotelFetchParams = {
+          page: 1,
+          cityId: locationId,
+          starRating,
+          minPrice,
+          maxPrice,
+        };
+
+        await dispatch(fetchHotels(fetchParams)).unwrap();
+      } catch (error) {
+        console.error('Failed to apply filters:', error);
+      } finally {
+        setIsFiltering(false);
+      }
+    },
+    [dispatch]
+  );
+
+  const handleSearch = useCallback(
+    async (params: SearchParams) => {
+      try {
+        setIsSearching(true);
+
+        const fetchParams: HotelFetchParams = {
+          page: 1,
+          cityId: params.location?.id,
+          checkIn: params.checkIn,
+          checkOut: params.checkOut,
+          guests: params.guests,
+        };
+
+        await dispatch(fetchHotels(fetchParams)).unwrap();
+      } catch (error) {
+        console.error('Failed to search hotels:', error);
+      } finally {
+        setIsSearching(false);
+      }
+    },
+    [dispatch]
+  );
+
+  const handleLocationChange = useCallback(
+    async (location: LocationOption | null) => {
+      if (!location) return;
+
+      try {
+        setIsSearching(true);
+
+        const fetchParams: HotelFetchParams = {
           page: 1,
           cityId: location.id,
-        })
-      ).finally(() => {
+        };
+
+        await dispatch(fetchHotels(fetchParams)).unwrap();
+      } catch (error) {
+        console.error('Failed to fetch hotels for location:', location.label, error);
+      } finally {
         setIsSearching(false);
-      });
-    }
-  };
-
-  // Convert location data to the format expected by DynamicFilterSidebar
-  const filterOptions = {
-    starRatings: [
-      { id: '3', label: '3 Stars & Above' },
-      { id: '4', label: '4 Stars & Above' },
-      { id: '5', label: '5 Stars' },
-    ],
-    amenities: [
-      { id: 'wifi', label: 'Free WiFi' },
-      { id: 'pool', label: 'Swimming Pool' },
-      { id: 'parking', label: 'Free Parking' },
-      { id: 'breakfast', label: 'Breakfast Included' },
-      { id: 'gym', label: 'Fitness Center' },
-      { id: 'spa', label: 'Spa' },
-    ],
-    destinations: locations.map(location => ({
-      id: location,
-      label: location,
-    })),
-    priceRange: {
-      min: 1000,
-      max: 50000,
+      }
     },
-  };
+    [dispatch]
+  );
 
-  // Format locations for the search tab
-  const locationOptions = locations.map(location => ({
-    id: location,
-    label: location,
-  }));
+  const hotelsGrid = useMemo(
+    () => (
+      <Grid container spacing={3}>
+        {hotels.map(hotel => (
+          <Grid item xs={12} sm={6} lg={4} key={hotel.id}>
+            <DynamicCard
+              id={hotel.id}
+              type="hotel"
+              imageUrls={hotel.imageUrls || []}
+              title={hotel.name}
+              description={hotel.description}
+              price={hotel.price}
+              rating={hotel.userRating} 
+              location={hotel.location}
+              priceUnit="per night"
+            />
+          </Grid>
+        ))}
+      </Grid>
+    ),
+    [hotels]
+  );
 
-  // Get the currently selected location as an object
-  const selectedLocationObj = selectedLocation
-    ? locationOptions.find(location => location.id === selectedLocation) || null
-    : null;
-
-  // Initial filter state based on current selections
-  const initialFilterState = {
-    selectedStarRatings: selectedRating ? [selectedRating.toString()] : [],
-    selectedAmenities: [],
-    selectedDestinations: selectedLocation ? [selectedLocation] : [],
-    priceRange: selectedPriceRange || [1000, 50000],
-  };
-
-  // Define breadcrumbs for the page
-  const breadcrumbs = [
-    { href: '/', text: 'Home' },
-    { href: '/hotels', text: 'Hotels' },
-  ];
-
-  // Prepare the hotels grid for DynamicListingPage children
-  const hotelsGrid = (
-    <Grid container spacing={3}>
-      {hotels.map(hotel => (
-        <Grid item xs={12} sm={6} lg={4} key={hotel.id}>
-          <DynamicCard
-            id={hotel.id}
-            type="hotel"
-            imageUrls={hotel.imageUrls || []}
-            title={hotel.name}
-            description={hotel.description}
-            price={hotel.price}
-            rating={hotel.rating}
-            location={hotel.location}
-            starRating={hotel.starRating}
-            priceUnit="per night"
-          />
-        </Grid>
-      ))}
-    </Grid>
+  const searchComponent = useMemo(
+    () => (
+      <DynamicSearchTab
+        type="hotel"
+        locations={locationOptions}
+        selectedLocation={selectedLocationObj}
+        onSearch={handleSearch}
+        onLocationChange={handleLocationChange}
+        dateRangeLabel="Check-in / Check-out"
+      />
+    ),
+    [locationOptions, selectedLocationObj, handleSearch, handleLocationChange]
   );
 
   return (
     <DynamicListingPage
       type="hotel"
       title="Find Your Perfect Stay"
-      searchComponent={
-        <DynamicSearchTab
-          type="hotel"
-          locations={locationOptions}
-          selectedLocation={selectedLocationObj}
-          onSearch={handleSearch}
-          onLocationChange={handleLocationChange}
-          includeGuests={true}
-          dateRangeLabel="Check-in / Check-out"
-        />
-      }
+      searchComponent={searchComponent}
       totalItems={totalItems}
       filterOptions={filterOptions}
       onFilterChange={handleFilterChange}
       initialFilterState={initialFilterState}
-      breadcrumbs={breadcrumbs}
+      breadcrumbs={[...BREADCRUMBS]}
       currentPage={currentPage}
       totalPages={totalPages}
       onPageChange={handlePageChange}
