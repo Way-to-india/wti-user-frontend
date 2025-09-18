@@ -54,10 +54,31 @@ const endpoints = {
     getByTheme: (themeId: string) => `${API_BASE}/inspiration/theme/${themeId}`,
   },
   bookings: {
-    createHotelBooking: `${API_BASE}/bookings/hotel`,
-    getUserHotelBookings: `${API_BASE}/bookings/hotel`,
-    getHotelBooking: (bookingId: string) => `${API_BASE}/bookings/hotel/${bookingId}`,
-    updateBookingStatus: (bookingId: string) => `${API_BASE}/bookings/hotel/${bookingId}/status`,
+    // Hotel Bookings
+    createHotelBooking: `${API_BASE}/user/booking/hotel`,
+    getUserHotelBookings: `${API_BASE}/user/booking/hotel`,
+    getHotelBooking: (bookingId: string) => `${API_BASE}/user/booking/hotel/${bookingId}`,
+    updateHotelBookingStatus: (bookingId: string) => `${API_BASE}/user/booking/hotel/${bookingId}/status`,
+    
+    // Tour Bookings  
+    createTourBooking: `${API_BASE}/user/tour-booking`,
+    getUserTourBookings: `${API_BASE}/user/tour-booking`,
+    getTourBooking: (bookingId: string) => `${API_BASE}/user/tour-booking/${bookingId}`,
+    updateTourBookingStatus: (bookingId: string) => `${API_BASE}/user/tour-booking/${bookingId}/status`,
+    cancelTourBooking: (bookingId: string) => `${API_BASE}/user/tour-booking/${bookingId}/cancel`,
+    
+    // Transport Bookings
+    createTransportBooking: `${API_BASE}/user/transport-booking`,
+    getUserTransportBookings: `${API_BASE}/user/transport-booking`,
+    getTransportBooking: (bookingId: string) => `${API_BASE}/user/transport-booking/${bookingId}`,
+    updateTransportBookingStatus: (bookingId: string) => `${API_BASE}/user/transport-booking/${bookingId}/status`,
+    cancelTransportBooking: (bookingId: string) => `${API_BASE}/user/transport-booking/${bookingId}/cancel`,
+    
+    // Consolidated bookings
+    getAllUserBookings: `${API_BASE}/user/bookings`,
+    getBookingStats: `${API_BASE}/user/bookings/stats`,
+    
+    updateBookingStatus: (bookingId: string) => `${API_BASE}/booking/${bookingId}/status`,
   },
 };
 

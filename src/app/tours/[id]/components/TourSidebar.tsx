@@ -1,4 +1,5 @@
 import React from 'react';
+import { useRouter } from 'next/navigation';
 import { useTheme } from '@/context/ThemeContext';
 
 interface TourSidebarProps {
@@ -8,6 +9,13 @@ interface TourSidebarProps {
 
 const TourSidebar: React.FC<TourSidebarProps> = ({ tourDetails, onEnquireClick }) => {
   const theme = useTheme();
+  const router = useRouter();
+
+  const handleBookNow = () => {
+    if (tourDetails?.id) {
+      router.push(`/tours/${tourDetails.id}/booking`);
+    }
+  };
 
   return (
     <>
@@ -33,17 +41,18 @@ const TourSidebar: React.FC<TourSidebarProps> = ({ tourDetails, onEnquireClick }
           *Excluding applicable taxes
         </p>
         <button
-          className="w-full py-2.5 rounded-lg font-medium transition-colors mb-3 text-sm"
+          className="w-full py-2.5 rounded-lg font-medium transition-colors mb-3 text-sm hover:opacity-90"
           style={{
             backgroundColor: theme.colors.carrotOrange,
             color: theme.colors.milkWhite,
             fontFamily: theme.typography.fontFamily.bold,
           }}
+          onClick={handleBookNow}
         >
           Book Now
         </button>
         <button
-          className="w-full border py-2.5 rounded-lg font-medium transition-colors text-sm"
+          className="w-full border py-2.5 rounded-lg font-medium transition-colors text-sm hover:bg-opacity-10"
           style={{
             borderColor: theme.colors.carrotOrange,
             color: theme.colors.carrotOrange,
@@ -68,7 +77,7 @@ const TourSidebar: React.FC<TourSidebarProps> = ({ tourDetails, onEnquireClick }
           Don't worry, our team is there to help you out
         </p>
         <button
-          className="w-full border py-2.5 rounded-lg font-medium transition-colors text-sm"
+          className="w-full border py-2.5 rounded-lg font-medium transition-colors text-sm hover:bg-opacity-10"
           style={{
             borderColor: theme.colors.carrotOrange,
             color: theme.colors.carrotOrange,

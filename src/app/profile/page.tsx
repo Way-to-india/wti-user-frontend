@@ -1,6 +1,6 @@
 'use client';
 
-import { getUserProfileById } from '@/services/userService'; 
+import { getUserProfileById } from '@/services/userService';
 import { User } from '@/types/user';
 import { NextPage } from 'next';
 import { useRouter } from 'next/navigation';

@@ -129,7 +129,6 @@ const TourDetails: React.FC<TourDetailsProps> = ({ params }) => {
       <TourBreadcrumb tourTitle={tourDetails?.title || 'Tour Details'} />
 
       <div className="max-w-7xl mx-auto px-4 py-6">
-
         <div className="grid grid-cols-12 gap-6 mb-6">
           <div className="col-span-6">
             <TourImageGallery
@@ -143,7 +142,6 @@ const TourDetails: React.FC<TourDetailsProps> = ({ params }) => {
             <TourOverview tourDetails={tourDetails} />
           </div>
         </div>
-
 
         <div className="grid grid-cols-12 gap-6">
           <div className="col-span-9">

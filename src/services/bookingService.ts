@@ -28,7 +28,7 @@ export const getHotelBooking = async (bookingId: string): Promise<ApiResponse<Ho
 
 export const updateBookingStatus = async (bookingId: string, status: BookingStatus): Promise<ApiResponse<any>> => {
   return handleApiCall(
-    async () => axios.put(endpoints.bookings.updateBookingStatus(bookingId), { status }),
-    "Booking status updated successfully"
+    async () => axios.patch(endpoints.bookings.updateHotelBookingStatus(bookingId), { status }),
+    "Hotel booking status updated successfully"
   );
 };

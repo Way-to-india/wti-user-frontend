@@ -47,7 +47,7 @@ const TransportDetails: React.FC<TransportDetailsProps> = ({ params }) => {
 
   // Function to handle booking button click
   const handleBookClick = () => {
-    // router.push(`/transport/${params.id}/booking`);
+    router.push(`/transport/${params.id}/booking`);
   };
 
   useEffect(() => {
@@ -617,6 +617,7 @@ const TransportDetails: React.FC<TransportDetailsProps> = ({ params }) => {
               <button
                 className="w-full py-2.5 rounded-lg font-medium transition-colors mb-1 text-sm bg-[#FF8B02] text-white hover:bg-[#e67f00]"
                 style={{ fontWeight: 700 }}
+                onClick={handleBookClick}
               >
                 Book Now
               </button>
