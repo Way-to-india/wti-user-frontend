@@ -24,7 +24,7 @@ export const getBlogPosts = async (limit: number = 5): Promise<ApiResponse<BlogP
     );
 
     if (response.success && response.data) {
-      return response;
+      return response as any;
     }
 
     // If no data from API or API doesn't exist yet, return fallback data
