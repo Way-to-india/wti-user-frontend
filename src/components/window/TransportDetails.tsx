@@ -1,37 +1,37 @@
 // components/window/TransportDetails.tsx
 import React from 'react';
-import TransportCard from '@/app/components/window/TransportCard';
+import DynamicCard from '@/components/common/DynamicCard';
 import { StaticImageData } from 'next/image';
 
 interface TransportDetail {
-    name: string;
-    capacity: string;
-    description: string;
-    amenities: string[];
-    price: number;
-    imageUrl: StaticImageData;
+  name: string;
+  capacity: string;
+  description: string;
+  amenities: string[];
+  price: number;
+  imageUrl: StaticImageData;
 }
 
 interface TransportDetailsProps {
-    transportData: TransportDetail[]; // Accept transport data as props
+  transportData: TransportDetail[]; // Accept transport data as props
 }
 
 const TransportDetails: React.FC<TransportDetailsProps> = ({ transportData }) => {
-    return (
-        <div>
-            {transportData.map((transport, index) => (
-                <TransportCard
-                    title={transport.name}
-                    key={index}
-                    capacity={transport.capacity}
-                    description={transport.description}
-                    amenities={transport.amenities}
-                    price={transport.price}
-                    imageUrl={transport.imageUrl}
-                />
-            ))}
-        </div>
-    );
+  return (
+    <div className="grid gap-4">
+      {transportData.map((transport, index) => (
+        <DynamicCard
+          key={index}
+          type="transport"
+          imageUrls={[typeof transport.imageUrl === 'string' ? transport.imageUrl : transport.imageUrl.src]}
+          title={transport.name}
+          description={transport.description}
+          price={transport.price}
+          amenities={transport.amenities}
+        />
+      ))}
+    </div>
+  );
 };
 
 export default TransportDetails;
