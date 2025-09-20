@@ -92,7 +92,7 @@ export interface Hotel {
   userRating?: number;
 }
 
-export interface HotelCardProps extends Hotel {}
+export type HotelCardProps = Hotel;
 
 export interface RoomType {
   id: string;
@@ -109,10 +109,15 @@ export interface HotelPolicy {
 }
 
 export interface HotelFilters {
-  location?: string;
-  priceRange?: string;
+  cityId?: string;
+  category?: string;
+  amenityIds?: string[];
+  minPrice?: number;
+  maxPrice?: number;
+  priceRange?: string; // Keep for backward compatibility
   rating?: number;
-  amenities?: string[];
+  amenities?: string[]; // Keep for backward compatibility
+  location?: string; // Keep for backward compatibility
 }
 
 export interface HotelPagination {
@@ -127,8 +132,3 @@ export interface HotelResponse {
   pagination: HotelPagination;
 }
 
-export interface ApiResponse<T> {
-  success: boolean;
-  message?: string;
-  data?: T;
-} 

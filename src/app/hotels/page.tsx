@@ -86,32 +86,65 @@ const HotelsPage: React.FC = () => {
   useEffect(() => {
     const initializeData = async () => {
       try {
+        // First fetch locations
         await dispatch(fetchLocations()).unwrap();
 
-        const locationId = searchParams?.get('city') || searchParams?.get('location') || undefined;
+        // Parse URL parameters - handle both old and new parameter formats
+        const cityId = searchParams?.get('city') || 
+                       searchParams?.get('cityId') || 
+                       searchParams?.get('location') || 
+                       undefined;
+        
         const checkIn = searchParams?.get('checkIn') || undefined;
         const checkOut = searchParams?.get('checkOut') || undefined;
-        const guests = searchParams?.get('guests')
+        
+        // Handle different guest parameter formats
+        const totalGuests = searchParams?.get('guests')
           ? parseInt(searchParams.get('guests') as string, 10)
           : undefined;
+        
+        const adults = searchParams?.get('adults')
+          ? parseInt(searchParams.get('adults') as string, 10)
+          : undefined;
+        
+        const seniorAdults = searchParams?.get('seniorAdults')
+          ? parseInt(searchParams.get('seniorAdults') as string, 10)
+          : undefined;
+        
+        const children = searchParams?.get('children')
+          ? parseInt(searchParams.get('children') as string, 10)
+          : undefined;
+
+        // Use the detailed guest breakdown if available, otherwise use total
+        const guestCount = adults ? (adults + (seniorAdults || 0) + (children || 0)) : totalGuests;
 
         const fetchParams: HotelFetchParams = {
           page: 1,
-          cityId: locationId,
+          cityId,
           checkIn,
           checkOut,
-          guests,
+          guests: guestCount,
         };
 
-        await dispatch(fetchHotels(fetchParams)).unwrap();
+        // Only fetch if we have meaningful search parameters
+        if (cityId || checkIn || checkOut || guestCount) {
+          await dispatch(fetchHotels(fetchParams)).unwrap();
+        } else {
+          // Fetch default hotels if no search parameters
+          await dispatch(fetchHotels({ page: 1 })).unwrap();
+        }
       } catch (error) {
         console.error('Failed to initialize hotels page data:', error);
+        // Try to fetch default hotels on error
+        try {
+          await dispatch(fetchHotels({ page: 1 })).unwrap();
+        } catch (fallbackError) {
+          console.error('Failed to fetch fallback hotels:', fallbackError);
+        }
       }
     };
 
-    if (searchParams) {
-      initializeData();
-    }
+    initializeData();
   }, [dispatch, searchParams]);
 
   const locationOptions = useMemo(
@@ -156,16 +189,15 @@ const HotelsPage: React.FC = () => {
       try {
         dispatch(setCurrentPage(page));
 
-        const fetchParams: HotelFetchParams = {
+        const [minPrice, maxPrice] = selectedPriceRange ? selectedPriceRange.split('-').map(Number) : [undefined, undefined];
+        
+        await dispatch(fetchHotels({
           page,
           cityId: selectedLocation,
-          starRating: selectedRating,
-          minPrice: selectedPriceRange?.[0],
-          maxPrice: selectedPriceRange?.[1],
-        };
-        
-
-        await dispatch(fetchHotels(fetchParams)).unwrap();
+          starRating: selectedRating || undefined,
+          minPrice,
+          maxPrice,
+        })).unwrap();
       } catch (error) {
         console.error('Failed to fetch hotels for page:', page, error);
       }
@@ -183,15 +215,13 @@ const HotelsPage: React.FC = () => {
           filters.starRatings.length > 0 ? parseInt(filters.starRatings[0]) : undefined;
         const [minPrice, maxPrice] = filters.priceRange;
 
-        const fetchParams: HotelFetchParams = {
+        await dispatch(fetchHotels({
           page: 1,
           cityId: locationId,
           starRating,
           minPrice,
           maxPrice,
-        };
-
-        await dispatch(fetchHotels(fetchParams)).unwrap();
+        })).unwrap();
       } catch (error) {
         console.error('Failed to apply filters:', error);
       } finally {
@@ -206,15 +236,13 @@ const HotelsPage: React.FC = () => {
       try {
         setIsSearching(true);
 
-        const fetchParams: HotelFetchParams = {
+        await dispatch(fetchHotels({
           page: 1,
           cityId: params.location?.id,
           checkIn: params.checkIn,
           checkOut: params.checkOut,
           guests: params.guests,
-        };
-
-        await dispatch(fetchHotels(fetchParams)).unwrap();
+        })).unwrap();
       } catch (error) {
         console.error('Failed to search hotels:', error);
       } finally {
@@ -231,12 +259,10 @@ const HotelsPage: React.FC = () => {
       try {
         setIsSearching(true);
 
-        const fetchParams: HotelFetchParams = {
+        await dispatch(fetchHotels({
           page: 1,
           cityId: location.id,
-        };
-
-        await dispatch(fetchHotels(fetchParams)).unwrap();
+        })).unwrap();
       } catch (error) {
         console.error('Failed to fetch hotels for location:', location.label, error);
       } finally {
@@ -259,8 +285,7 @@ const HotelsPage: React.FC = () => {
               description={hotel.description}
               price={hotel.price}
               rating={hotel.userRating} 
-              location={hotel.location}
-              priceUnit="per night"
+              location={hotel.location as any}
             />
           </Grid>
         ))}
@@ -299,7 +324,7 @@ const HotelsPage: React.FC = () => {
       loading={loading}
       isSearching={isSearching}
       isFiltering={isFiltering}
-      error={error}
+      error={error || undefined}
     >
       {hotelsGrid}
     </DynamicListingPage>

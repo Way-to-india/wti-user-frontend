@@ -2,8 +2,8 @@
 
 import HeroPage from '@/app/general/Hero';
 import BlogSection from '@/components/BlogSection';
-import Footer from '@/components/Footer';
-import NavBar from '@/components/navbar/NavBar';
+import Footer from '@/components/layout/Footer';
+import NavBar from '@/components/layout/navbar/NavBar';
 import { useTheme } from '@/context/ThemeContext';
 import AirCharter from './AirCharterTour';
 import Deals from './Deals';
@@ -33,45 +33,78 @@ const NewLandingPage = () => {
         {/* Hero Section with Search */}
         <HeroPage />
 
-        {/* Featured Tours Section - Added just below hero section */}
-        <section className="py-8 md:py-12 px-4 md:px-10" id="featured-tours">
+        {/* Featured Tours Section */}
+        <LandingSection id="featured-tours">
           <FeaturedTours />
-        </section>
+        </LandingSection>
 
         {/* Featured Packages Section */}
-        <section className="py-8 md:py-12 px-4 md:px-10" id="featured-packages">
+        <LandingSection id="featured-packages">
           <Package />
-        </section>
+        </LandingSection>
 
         {/* Trending Hotels and Stays */}
-        <section className="py-8 md:py-12 px-4 md:px-10 bg-gray-50" id="trending-hotels">
+        <LandingSection id="trending-hotels" className="bg-gray-50">
           <Trending />
-        </section>
+        </LandingSection>
 
         {/* Travel Inspiration Section */}
-        <section className="py-8 md:py-12 px-4 md:px-10" id="travel-inspiration">
+        <LandingSection id="travel-inspiration">
           <Inspiration />
-        </section>
+        </LandingSection>
 
         {/* Air Charter Tours Section */}
-        <section className="py-8 md:py-12 px-4 md:px-10 bg-gray-50" id="air-charter">
+        <LandingSection id="air-charter" className="bg-gray-50">
           <AirCharter />
-        </section>
+        </LandingSection>
 
         {/* Deals Section */}
-        <section className="py-6 md:py-8 px-4 md:px-10" id="deals">
+        <LandingSection id="deals" padding="sm">
           <Deals />
-        </section>
+        </LandingSection>
 
         {/* Blog Section */}
-        <section className="py-8 md:py-12 px-4 md:px-10" id="blog">
+        <LandingSection id="blog">
           <BlogSection />
-        </section>
+        </LandingSection>
 
         {/* Footer */}
         <Footer />
       </div>
     </div>
+  );
+};
+
+// Reusable section component for landing page sections
+interface LandingSectionProps {
+  children: React.ReactNode;
+  id?: string;
+  className?: string;
+  padding?: 'sm' | 'md' | 'lg';
+}
+
+const LandingSection: React.FC<LandingSectionProps> = ({ 
+  children, 
+  id, 
+  className = '', 
+  padding = 'md' 
+}) => {
+  const getPaddingClasses = () => {
+    const paddingMap = {
+      sm: 'py-6 md:py-8 px-4 sm:px-6 lg:px-8',
+      md: 'py-8 md:py-12 px-4 sm:px-6 lg:px-8',
+      lg: 'py-12 md:py-16 px-4 sm:px-6 lg:px-8'
+    };
+    return paddingMap[padding];
+  };
+
+  return (
+    <section 
+      id={id} 
+      className={`${getPaddingClasses()} ${className}`}
+    >
+      {children}
+    </section>
   );
 };
 

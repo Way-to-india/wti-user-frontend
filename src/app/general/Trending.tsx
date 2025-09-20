@@ -14,7 +14,7 @@ import { StaticImageData } from "next/image";
 interface Hotel {
   id: string;
   name: string;
-  location: string;
+  location: string | { address?: string; city?: string; latitude?: number; longitude?: number; } | undefined;
   image: string;
   imageUrl?: string;
 }
@@ -59,6 +59,9 @@ const Trending: React.FC = () => {
               // location: hotel?.location || "India",
               image: hotel.image || hotel.imageUrl || "",
               imageUrl: hotel.imageUrl || hotel.image || "",
+              location: typeof hotel.location === 'string' 
+                ? hotel.location 
+                : hotel.location?.address || hotel.location?.city || hotel.Location || "India"
             }))
           : [];
         setHotels(hotelData);
@@ -86,13 +89,12 @@ const Trending: React.FC = () => {
         .map((hotel, idx) => {
           const imgIndex = (startIdx + idx) % 5 as keyof HotelImageMap;
           return {
-            src:
-              hotel.image || hotel.imageUrl
-                ? { src: hotel.image || hotel.imageUrl }
-                : hotelImages[imgIndex] || hotelImages.default,
+            src: hotel.image || hotel.imageUrl || hotelImages[imgIndex] || hotelImages.default,
             desc: hotel.name,
             link: `/hotels/${hotel.id}`,
-            location: hotel?.location,
+            location: typeof hotel?.location === 'string' 
+              ? hotel?.location 
+              : hotel?.location?.address || hotel?.location?.city || "India",
           };
         });
 
@@ -101,13 +103,12 @@ const Trending: React.FC = () => {
         .map((hotel, idx) => {
           const imgIndex = (startIdx + 3 + idx) % 5 as keyof HotelImageMap;
           return {
-            src:
-              hotel.image || hotel.imageUrl
-                ? { src: hotel.image || hotel.imageUrl }
-                : hotelImages[imgIndex] || hotelImages.default,
+            src: hotel.image || hotel.imageUrl || hotelImages[imgIndex] || hotelImages.default,
             desc: hotel.name,
             link: `/hotels/${hotel.id}`,
-            location: hotel?.location,
+            location: typeof hotel?.location === 'string' 
+              ? hotel?.location 
+              : hotel?.location?.address || hotel?.location?.city || "India",
           };
         });
 
@@ -274,7 +275,7 @@ const Trending: React.FC = () => {
                 onClick={() => handleHotelClick(item.link)}
               >
                 <Image
-                  src={item.src}
+                  src={item.src!}
                   alt={item.desc}
                   fill
                   className="object-cover rounded-xl"

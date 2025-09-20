@@ -9,8 +9,8 @@ const TourOverview: React.FC<TourOverviewProps> = ({ tourDetails }) => {
   return (
     <>
       <div className="mb-6">
-        <h2 className="text-xl font-bold mb-4">Overview</h2>
-        <div className="grid grid-cols-2 gap-3">
+        <h2 className="text-lg sm:text-xl font-bold mb-4">Overview</h2>
+        <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
           <div className="bg-white rounded-lg p-3 border flex items-center gap-2">
             <div className="p-1.5 bg-orange-50 rounded-lg">
               <FiClock className="w-4 h-4 text-orange-500" />
@@ -61,8 +61,8 @@ const TourOverview: React.FC<TourOverviewProps> = ({ tourDetails }) => {
         </div>
       </div>
       <div className="mb-6">
-        <h2 className="text-xl font-bold mb-3">Description</h2>
-        <p className="text-gray-600 text-sm leading-relaxed">
+        <h2 className="text-lg sm:text-xl font-bold mb-3">Description</h2>
+        <p className="text-gray-600 text-sm sm:text-base leading-relaxed">
           {tourDetails?.description || 'No description available for this tour.'}
         </p>
       </div>

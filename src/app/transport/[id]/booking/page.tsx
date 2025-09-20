@@ -7,7 +7,8 @@ import { Snackbar, Alert, AlertColor } from '@mui/material';
   
 import BookingConfirmationModal from '@/components/booking/BookingConfirmationModal';
 import ErrorModal from '@/components/ErrorModal';
-import NavBar from '@/components/navbar/NavBar';
+import NavBar from '@/components/layout/navbar/NavBar';
+
 
 import { useAuth } from '@/context/AuthContext';
 import {
@@ -291,7 +292,7 @@ const PassengerInformationForm: React.FC<{
             <input
               type="number"
               value={passenger.age || ''}
-              onChange={e => onChange(index, 'age', parseInt(e.target.value) || undefined)}
+              onChange={e => onChange(index, 'age', parseInt(e.target.value))}
               min="1"
               max="120"
               className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-[#FF8B02] focus:border-[#FF8B02] outline-none"

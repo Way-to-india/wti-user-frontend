@@ -1,77 +1,62 @@
 'use client';
-import HotelTab from '@/components/SearchSection/HotelTab';
-import ToursTab from '@/components/SearchSection/ToursTab';
-import TransportationTab from '@/components/SearchSection/TransportationTab';
-import React, { useState, useEffect } from 'react';
-import { useRouter } from 'next/navigation';
-import { useDispatch, useSelector } from 'react-redux';
-import { RootState, AppDispatch } from '@/app/redux/store';
-import { fetchThemes, fetchCities } from '@/app/redux/toursSlice';
+import React, { useState } from 'react';
+import HotelSearchTab from '@/components/features/search/HotelSearchTab';
+import ToursSearchTab from '@/components/features/search/ToursSearchTab';
+import TransportSearchTab from '@/components/features/search/TransportSearchTab';
+import { Card } from '@/components/ui';
+import { cn } from '@/utils/classNames';
+
+type SearchTabType = 'hotels' | 'tours' | 'transport';
 
 const SearchSection = () => {
-  const [selectedTab, setSelectedTab] = useState('Buy Hotels');
-  const router = useRouter();
-  const dispatch = useDispatch<AppDispatch>();
+  const [selectedTab, setSelectedTab] = useState<SearchTabType>('hotels');
 
-  const { themes, cities } = useSelector((state: RootState) => state.tours);
+  const tabs = [
+    { id: 'hotels' as const, label: 'Hotels', icon: '🏨' },
+    { id: 'tours' as const, label: 'Tours/Packages', icon: '🎒' },
+    { id: 'transport' as const, label: 'Transportation', icon: '🚗' }
+  ];
 
-  useEffect(() => {
-    dispatch(fetchThemes());
-    dispatch(fetchCities());
-  }, [dispatch]);
-
-  const themeOptions = themes.map(theme => ({
-    id: theme.id,
-    label: theme.label,
-  }));
-
-  const handleToursSearch = (
-    page: number,
-    themeId?: string | null,
-    cityId?: string | null,
-    duration?: number | null
-  ) => {
-    const query = new URLSearchParams();
-    if (themeId) query.set('themeId', themeId);
-    if (cityId) query.set('cityId', cityId);
-    if (duration) query.set('duration', duration.toString());
-
-    router.push(`/tours?${query.toString()}`);
+  const renderTabContent = () => {
+    switch (selectedTab) {
+      case 'hotels':
+        return <HotelSearchTab />;
+      case 'tours':
+        return <ToursSearchTab />;
+      case 'transport':
+        return <TransportSearchTab />;
+      default:
+        return <HotelSearchTab />;
+    }
   };
 
   return (
-    <div className="relative w-full max-w-7xl mx-auto mt-8">
-      <div className="absolute inset-0 bg-milk-white rounded-b-2xl rounded-r-2xl shadow-lg"></div>
-
-      {selectedTab === 'Tours/Packages' && (
-        <ToursTab
-          onSearchResults={data => console.log('Results:', data)}
-          onSearchStart={() => console.log('Search started')}
-          onSearchError={err => console.error('Error:', err)}
-          onSearch={handleToursSearch}
-          selectedCity={null}
-          selectedTheme={null}
-          typesOptions={themeOptions} 
-          typeLabel="Tour Theme"
-        />
-      )}
-
-      {selectedTab === 'Buy Hotels' && <HotelTab />}
-      {selectedTab === 'Transportation' && <TransportationTab />}
-
-      <div className="absolute top-0 left-0 transform -translate-y-full flex w-full rounded-t-lg overflow-hidden">
-        {['Tours/Packages', 'Buy Hotels', 'Transportation'].map(tab => (
-          <button
-            key={tab}
-            onClick={() => setSelectedTab(tab)}
-            className={`flex-1 px-4 py-2 font-semibold ${
-              selectedTab === tab ? 'bg-white text-gray-800' : 'bg-heavy-metal text-white'
-            }`}
-          >
-            {tab}
-          </button>
-        ))}
+    <div className="relative w-full max-w-7xl mx-auto">
+      {/* Tab Headers */}
+      <div className="flex justify-center mb-6">
+        <div className="inline-flex bg-white rounded-lg shadow-lg p-1 border border-gray-200">
+          {tabs.map((tab) => (
+            <button
+              key={tab.id}
+              onClick={() => setSelectedTab(tab.id)}
+              className={cn(
+                'flex items-center gap-2 px-6 py-3 rounded-lg font-medium transition-all duration-200 text-sm',
+                selectedTab === tab.id
+                  ? 'bg-carrot-orange text-white shadow-md'
+                  : 'text-gray-600 hover:text-gray-900 hover:bg-gray-50'
+              )}
+            >
+              <span>{tab.icon}</span>
+              <span>{tab.label}</span>
+            </button>
+          ))}
+        </div>
       </div>
+
+      {/* Search Form */}
+      <Card className="p-6 shadow-lg">
+        {renderTabContent()}
+      </Card>
     </div>
   );
 };

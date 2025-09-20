@@ -3,7 +3,8 @@
 import React from "react";
 import { Overview } from "./components/overview";
 import { OtherPlaces } from "./components/other-places";
-import NavBar from '@/components/navbar/NavBar';
+import NavBar from '@/components/layout/navbar/NavBar';
+
 
 export default function SinglePlacesOfInterestPage() {
   return (

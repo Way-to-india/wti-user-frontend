@@ -5,7 +5,8 @@ import { fetchTourById } from '@/app/redux/toursSlice';
 import HotelChangeModalContent from '@/components/TripDetails/HotelChangeModalContent';
 import ImageModal from '@/components/TripDetails/ImageModal';
 import TransportChangeModalContent from '@/components/TripDetails/TransportChangeModalContent';
-import NavBar from '@/components/navbar/NavBar';
+import NavBar from '@/components/layout/navbar/NavBar';
+
 import EnquireNowModal from '@/components/tours/EnquireNowModal';
 import Modal from '@/lib/modals/modals';
 import { CircularProgress } from '@mui/material';
@@ -128,23 +129,23 @@ const TourDetails: React.FC<TourDetailsProps> = ({ params }) => {
 
       <TourBreadcrumb tourTitle={tourDetails?.title || 'Tour Details'} />
 
-      <div className="max-w-7xl mx-auto px-4 py-6">
-        <div className="grid grid-cols-12 gap-6 mb-6">
-          <div className="col-span-6">
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-4 sm:py-6">
+        <div className="grid grid-cols-1 lg:grid-cols-2 gap-4 sm:gap-6 mb-6">
+          <div className="order-2 lg:order-1">
             <TourImageGallery
               images={tourDetails?.imageUrls || []}
               title={tourDetails?.title || 'Tour'}
               onImageClick={openImageModal}
             />
           </div>
-          <div className="col-span-6">
+          <div className="order-1 lg:order-2">
             <TourHeader tourDetails={tourDetails} />
             <TourOverview tourDetails={tourDetails} />
           </div>
         </div>
 
-        <div className="grid grid-cols-12 gap-6">
-          <div className="col-span-9">
+        <div className="grid grid-cols-1 lg:grid-cols-4 gap-4 sm:gap-6">
+          <div className="lg:col-span-3 order-2 lg:order-1">
             <TourTabs
               activeTab={activeTab}
               setActiveTab={setActiveTab}
@@ -154,12 +155,15 @@ const TourDetails: React.FC<TourDetailsProps> = ({ params }) => {
               onOpenChangeModal={openChangeModal}
             />
           </div>
-          <div className="col-span-3">
+          <div className="lg:col-span-1 order-1 lg:order-2">
             <TourSidebar tourDetails={tourDetails} onEnquireClick={openEnquireModal} />
           </div>
         </div>
       </div>
 
+      {/* Add padding bottom for mobile booking bar */}
+      <div className="h-20 lg:hidden"></div>
+      
       <MobileBookingBar tourDetails={tourDetails} />
     </div>
   );

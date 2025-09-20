@@ -5,8 +5,8 @@ import TabSection from '@/app/trip-details/components/Tab';
 import BreadcrumbNav from '@/components/details-page/Breadcrumb-Nav';
 import ImageGallery from '@/components/details-page/ImageGallery';
 import React, { useState } from 'react';
-import Footer from '../../components/Footer';
-import NavBar from '../../components/navbar/NavBar';
+import Footer from '@/components/layout/Footer';
+import NavBar from '@/components/layout/navbar/NavBar';
 import { breadcrumbs } from './content.dto';
 
 import { StaticImageData } from 'next/image';
@@ -24,7 +24,7 @@ const DetailsPage = () => {
 
   const searchParams = useSearchParams();
 
-  const id = searchParams.get('tour_id');
+  const id = searchParams?.get('tour_id');
 
   const url = process.env.api_base_url + `user/tour-packages/filter?tour_id=${id}`;
   // console.log(url);

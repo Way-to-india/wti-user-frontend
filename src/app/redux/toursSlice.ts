@@ -4,7 +4,6 @@ import {
   TourCardProps, 
   Theme, 
   City, 
-  TourFilters,
   TourResponse,
   ApiResponse 
 } from '@/types/tour';
@@ -22,6 +21,7 @@ interface ToursState {
   selectedTheme: string | null;
   selectedCity: string | null;
   selectedDuration: number | null;
+  selectedPriceRange: [number, number];
 }
 
 const initialState: ToursState = {
@@ -37,27 +37,38 @@ const initialState: ToursState = {
   selectedTheme: null,
   selectedCity: null,
   selectedDuration: null,
+  selectedPriceRange: [3000, 60000],
 };
 
 export const fetchTours = createAsyncThunk<
   ApiResponse<TourResponse>,
-  { page: number; themeId?: string | null; cityId?: string | null; duration?: number | null },
+  { 
+    page: number; 
+    themeId?: string | null; 
+    cityId?: string | null; 
+    duration?: number | null;
+    priceRange?: [number, number] | null;
+  },
   { rejectValue: string }
 >(
   'tours/fetchTours',
-  async ({ page, themeId, cityId, duration }, { rejectWithValue, dispatch }) => {
+  async ({ page, themeId, cityId, duration, priceRange }, { rejectWithValue, dispatch }) => {
     try {
       // Update filter state first
       dispatch(setSelectedTheme(themeId ?? null));
       dispatch(setSelectedCity(cityId ?? null));
       dispatch(setSelectedDuration(duration ?? null));
+      if (priceRange) dispatch(setSelectedPriceRange(priceRange));
       dispatch(setCurrentPage(page));
 
-      // Prepare filters for API call
       const filters: any = {};
       if (themeId) filters.themeId = themeId;
       if (cityId) filters.cityId = cityId;
       if (duration) filters.durationDays = duration;
+      if (priceRange && (priceRange[0] > 3000 || priceRange[1] < 60000)) {
+        filters.minPrice = priceRange[0];
+        filters.maxPrice = priceRange[1];
+      }
 
       const response = await getTours({
         page,
@@ -135,6 +146,10 @@ const toursSlice = createSlice({
       state.selectedDuration = action.payload;
       state.currentPage = 1;
     },
+    setSelectedPriceRange: (state, action: PayloadAction<[number, number]>) => {
+      state.selectedPriceRange = action.payload;
+      state.currentPage = 1;
+    },
     setCurrentPage: (state, action: PayloadAction<number>) => {
       state.currentPage = action.payload;
     },
@@ -202,6 +217,7 @@ export const {
   setSelectedTheme, 
   setSelectedCity, 
   setSelectedDuration,
+  setSelectedPriceRange,
   setCurrentPage
 } = toursSlice.actions;
 

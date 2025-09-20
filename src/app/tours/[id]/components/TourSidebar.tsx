@@ -19,7 +19,7 @@ const TourSidebar: React.FC<TourSidebarProps> = ({ tourDetails, onEnquireClick }
 
   return (
     <>
-      <div className="bg-white rounded-lg p-4 border shadow-sm mb-4 mt-[147px]">
+      <div className="bg-white rounded-lg p-4 border shadow-sm mb-4">
         <h3
           className="text-sm font-medium p-4 -mt-4 -mx-4 mb-4 border-b"
           style={{
@@ -29,11 +29,11 @@ const TourSidebar: React.FC<TourSidebarProps> = ({ tourDetails, onEnquireClick }
         >
           TRIP PRICE
         </h3>
-        <div className="flex items-baseline mb-1">
-          <span className="text-2xl font-bold" style={{ color: theme.colors.carrotOrange }}>
+        <div className="flex flex-col sm:flex-row lg:flex-col items-start sm:items-baseline lg:items-start mb-1">
+          <span className="text-xl sm:text-2xl font-bold" style={{ color: theme.colors.carrotOrange }}>
             ₹{tourDetails?.price ? parseInt(tourDetails.price).toLocaleString() : '0'}
           </span>
-          <span className="ml-2 text-xs" style={{ color: theme.colors.heavyMetal + '80' }}>
+          <span className="sm:ml-2 lg:ml-0 text-xs" style={{ color: theme.colors.heavyMetal + '80' }}>
             per person
           </span>
         </div>

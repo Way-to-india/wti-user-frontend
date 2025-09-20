@@ -1,14 +1,14 @@
 'use client';
 import HeroPage from '@/app/general/Hero';
 import Trending from '@/app/general/Trending';
-import NavBar from '@/components/navbar/NavBar';
 import { useTheme } from '@/context/ThemeContext';
 import BlogSection from '../../components/BlogSection';
-import Footer from '../../components/Footer';
 import AirCharter from './AirCharterTour';
 import Deals from './Deals';
 import Inspiration from './Inspiration';
 import Package from './Package';
+import NavBar from '@/components/layout/navbar/NavBar';
+import Footer from '@/components/layout/Footer';
 
 const LandingPage = () => {
   const theme = useTheme();

@@ -8,7 +8,7 @@ import DynamicListingPage from '../../components/common/DynamicListingPage';
 import DynamicSearchTab, { LocationOption } from '../../components/common/DynamicSearchTab';
 import ToursSkeleton from '../../components/tours/ToursSkeleton';
 import { AppDispatch, RootState } from '../redux/store';
-import { fetchCities, fetchThemes, fetchTours, setCurrentPage } from '../redux/toursSlice';
+import { fetchCities, fetchThemes, fetchTours, setCurrentPage, setSelectedPriceRange } from '../redux/toursSlice';
 
 const ToursPage = () => {
   const dispatch = useDispatch<AppDispatch>();
@@ -26,22 +26,57 @@ const ToursPage = () => {
     cities,
     selectedCity,
     selectedDuration,
+    selectedPriceRange,
   } = useSelector((state: RootState) => state.tours);
 
   const [isSearching, setIsSearching] = useState(false);
   const [isFiltering, setIsFiltering] = useState(false);
 
   useEffect(() => {
-    dispatch(fetchThemes());
-    dispatch(fetchCities());
+    const initializeToursPage = async () => {
+      // First fetch themes and cities
+      await Promise.all([
+        dispatch(fetchThemes()).unwrap(),
+        dispatch(fetchCities()).unwrap()
+      ]);
 
-    const themeId = searchParams?.get('themeId') || null;
-    const cityId = searchParams?.get('cityId') || null;
-    const duration = searchParams?.get('duration')
-      ? parseInt(searchParams.get('duration') as string)
-      : null;
+      // Parse search parameters from URL
+      const themeId = searchParams?.get('themeId') || null;
+      const cityId = searchParams?.get('cityId') || null;
+      const duration = searchParams?.get('duration')
+        ? parseInt(searchParams.get('duration') as string)
+        : null;
+      
+      // Parse date-based parameters from our new search tabs
+      const startDate = searchParams?.get('startDate');
+      const endDate = searchParams?.get('endDate');
+      const guests = searchParams?.get('guests')
+        ? parseInt(searchParams.get('guests') as string)
+        : null;
 
-    dispatch(fetchTours({ page: 1, themeId, cityId, duration }));
+      // Calculate duration from dates if provided
+      let calculatedDuration = duration;
+      if (startDate && endDate && !duration) {
+        const start = new Date(startDate);
+        const end = new Date(endDate);
+        const diffTime = Math.abs(end.getTime() - start.getTime());
+        calculatedDuration = Math.ceil(diffTime / (1000 * 60 * 60 * 24));
+      }
+
+      // Fetch tours with the parsed parameters
+      try {
+        await dispatch(fetchTours({ 
+          page: 1, 
+          themeId, 
+          cityId, 
+          duration: calculatedDuration 
+        })).unwrap();
+      } catch (error) {
+        console.error('Failed to fetch tours with search parameters:', error);
+      }
+    };
+
+    initializeToursPage();
   }, [dispatch, searchParams]);
 
   const handlePageChange = (event: React.ChangeEvent<unknown>, page: number) => {
@@ -52,6 +87,7 @@ const ToursPage = () => {
         themeId: selectedTheme,
         cityId: selectedCity,
         duration: selectedDuration,
+        priceRange: selectedPriceRange,
       })
     );
   };
@@ -65,11 +101,16 @@ const ToursPage = () => {
     const themeId = filters.themes.length > 0 ? filters.themes[0] : null;
     const cityId = filters.destinations.length > 0 ? filters.destinations[0] : null;
     const duration = filters.durations.length > 0 ? parseInt(filters.durations[0]) : null;
+    const priceRange: [number, number] = filters.priceRange;
 
     setIsFiltering(true);
-    dispatch(fetchTours({ page: 1, themeId, cityId, duration })).finally(() =>
-      setIsFiltering(false)
-    );
+    dispatch(fetchTours({ 
+      page: 1, 
+      themeId, 
+      cityId, 
+      duration,
+      priceRange 
+    })).finally(() => setIsFiltering(false));
   };
 
   const handleSearch = (searchParams: any) => {
@@ -80,6 +121,7 @@ const ToursPage = () => {
         themeId: selectedTheme,
         cityId: searchParams.location?.id || null,
         duration: searchParams.durationDays,
+        priceRange: selectedPriceRange,
       })
     ).finally(() => setIsSearching(false));
   };
@@ -93,6 +135,7 @@ const ToursPage = () => {
           themeId: selectedTheme,
           cityId: location.id,
           duration: selectedDuration,
+          priceRange: selectedPriceRange,
         })
       ).finally(() => setIsSearching(false));
     }
@@ -121,7 +164,7 @@ const ToursPage = () => {
     selectedThemes: selectedTheme ? [selectedTheme] : [],
     selectedDestinations: selectedCity ? [selectedCity] : [],
     selectedDurations: selectedDuration ? [selectedDuration.toString()] : [],
-    priceRange: [3000, 60000],
+    priceRange: selectedPriceRange,
   };
 
   const breadcrumbs = [
@@ -175,16 +218,7 @@ const ToursPage = () => {
       loading={loading}
       isSearching={isSearching}
       isFiltering={isFiltering}
-      error={error}
-      loadingComponent={
-        <Grid container spacing={3}>
-          {[...Array(9)].map((_, index) => (
-            <Grid item xs={12} sm={6} lg={4} key={index}>
-              <ToursSkeleton />
-            </Grid>
-          ))}
-        </Grid>
-      }
+      error={error || undefined}
     >
       {toursGrid}
     </DynamicListingPage>

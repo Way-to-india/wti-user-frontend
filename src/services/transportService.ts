@@ -206,8 +206,28 @@ export async function getTransports(params?: any): Promise<ApiResponse<Transport
   
   if (params?.page) queryParams.append('page', params.page.toString());
   if (params?.limit) queryParams.append('limit', params.limit.toString());
-  if (params?.type) queryParams.append('type', params.type);
+  if (params?.sortBy) queryParams.append('sortBy', params.sortBy);
+  if (params?.sortOrder) queryParams.append('sortOrder', params.sortOrder);
+  
+  // Enhanced filtering parameters
   if (params?.startCityId) queryParams.append('startCityId', params.startCityId);
+  if (params?.vehicleType) queryParams.append('vehicleType', params.vehicleType);
+  if (params?.rentalType) queryParams.append('rentalType', params.rentalType);
+  if (params?.minPrice !== undefined && params?.minPrice !== null) {
+    queryParams.append('minPrice', params.minPrice.toString());
+  }
+  if (params?.maxPrice !== undefined && params?.maxPrice !== null) {
+    queryParams.append('maxPrice', params.maxPrice.toString());
+  }
+  if (params?.minSeats !== undefined && params?.minSeats !== null) {
+    queryParams.append('minSeats', params.minSeats.toString());
+  }
+  if (params?.maxSeats !== undefined && params?.maxSeats !== null) {
+    queryParams.append('maxSeats', params.maxSeats.toString());
+  }
+  
+  // Backward compatibility parameters
+  if (params?.type) queryParams.append('type', params.type);
   if (params?.toCity) queryParams.append('toCity', params.toCity);
 
   const url = `${endpoints.transport.getAll}${queryParams.toString() ? `?${queryParams.toString()}` : ''}`;

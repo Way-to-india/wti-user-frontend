@@ -1,6 +1,7 @@
 'use client';
 
-import NavBar from '@/components/navbar/NavBar';
+import NavBar from '@/components/layout/navbar/NavBar';
+
 import { Address } from './components/address';
 import { Overview } from './components/overview';
 import { Payments } from './components/payments';

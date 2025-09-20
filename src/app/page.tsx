@@ -1,6 +1,6 @@
 'use client';
 import { Suspense } from 'react';
-import LandingSkeleton from '../components/landing/LandingSkeleton';
+import LandingSkeleton from '../components/shared/LandingSkeleton';
 import NewLandingPage from './general/NewLandingPage';
 
 export default function Home() {

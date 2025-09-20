@@ -2,7 +2,8 @@
 
 import React, { useState, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
-import NavBar from '@/components/navbar/NavBar';
+import NavBar from '@/components/layout/navbar/NavBar';
+
 import { Box, Typography, CircularProgress, Grid } from '@mui/material';
 
 interface RoomPageProps {

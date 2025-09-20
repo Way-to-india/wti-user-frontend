@@ -13,6 +13,8 @@ interface GetToursParams {
     cityId?: string;
     durationDays?: number;
     themeId?: string;
+    minPrice?: number;
+    maxPrice?: number;
   };
 }
 
@@ -76,6 +78,12 @@ export const getTours = async (params?: GetToursParams): Promise<ApiResponse<any
     queryParams.append('durationDays', params.filters.durationDays.toString());
   }
   if (params?.filters?.themeId) queryParams.append('themeId', params.filters.themeId);
+  if (params?.filters?.minPrice !== undefined && params?.filters?.minPrice !== null) {
+    queryParams.append('minPrice', params.filters.minPrice.toString());
+  }
+  if (params?.filters?.maxPrice !== undefined && params?.filters?.maxPrice !== null) {
+    queryParams.append('maxPrice', params.filters.maxPrice.toString());
+  }
 
   const url = `${endpoints.tours.getTours}${queryParams.toString() ? `?${queryParams.toString()}` : ''}`;
   

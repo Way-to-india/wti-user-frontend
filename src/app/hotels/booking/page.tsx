@@ -5,7 +5,8 @@ import Link from 'next/link';
 
 import BookingConfirmationModal from '@/components/booking/BookingConfirmationModal';
 import ErrorModal from '@/components/ErrorModal';
-import NavBar from '@/components/navbar/NavBar';
+import NavBar from '@/components/layout/navbar/NavBar';
+
 import {
   HotelInfoCard,
   DateSelection,
@@ -286,7 +287,7 @@ export default function BookingPage() {
   ) => {
     if (!selectedRooms) return;
 
-    let updatedRooms = { ...selectedRooms };
+    const updatedRooms = { ...selectedRooms };
 
     switch (operation) {
       case 'increment':

@@ -5,7 +5,7 @@ import { User } from '@/types/user';
 import { NextPage } from 'next';
 import { useRouter } from 'next/navigation';
 import { useEffect, useState } from 'react';
-import NavBar from '../../components/navbar/NavBar';
+import NavBar from '@/components/layout/navbar/NavBar';
 import ProfileComponent from '../../components/profile/ProfileComponent';
 import ProfileSkeleton from '../../components/profile/ProfileSkeleton';
 import { useAuth } from '../../context/AuthContext';

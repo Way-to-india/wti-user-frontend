@@ -1,7 +1,7 @@
 'use client';
-import NavBar from '@/components/navbar/NavBar';
+import NavBar from '@/components/layout/navbar/NavBar';
+import Footer from '@/components/layout/Footer';
 import placeholderImage from '@/assets/images/destination.png';
-import Footer from '@/components/Footer';
 import Box from '@mui/material/Box';
 import BookingCard from '../../../components/BookingsScreen/BookingCard';
 import Checkout from '../../../components/BookingsScreen/Checkout';

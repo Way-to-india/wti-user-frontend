@@ -3,7 +3,7 @@
 import React, { useState } from 'react';
 import { Alert, Box, CircularProgress } from '@mui/material';
 import Link from 'next/link';
-import NavBar from '@/components/navbar/NavBar';
+import NavBar from '@/components/layout/navbar/NavBar';
 import ImageModal from '@/components/TripDetails/ImageModal';
 import { useHotelDetails } from '@/hooks/useHotelDetails';
 import { useRoomSelection } from '@/hooks/useRoomSelection';

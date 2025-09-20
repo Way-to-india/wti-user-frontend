@@ -4,11 +4,16 @@ import Image from "next/image";
 import { ArrowCircleLeft, ArrowCircleRight } from "@phosphor-icons/react";
 import Bridge from "../../../public/assets/images/inspiration.png";
 import {
-  getInspirationalTours,
-  ThemeGroup,
+  getInspirationalTours
 } from "@/services/inspirationService";
 import { CircularProgress } from "@mui/material";
 import { useRouter } from "next/navigation";
+
+interface ThemeGroup {
+  id : string;
+  name : string;
+  tours : any[]
+}
 
 const Inspiration: React.FC = () => {
   const [selectedTab, setSelectedTab] = useState<string>("");
@@ -18,7 +23,7 @@ const Inspiration: React.FC = () => {
 
   useEffect(() => {
     fetchInspirationalTours();
-  }, []);
+  },[]);
 
   const fetchInspirationalTours = async () => {
     try {
@@ -182,7 +187,7 @@ const Inspiration: React.FC = () => {
           <div className="text-[#FF8B02] text-2xl md:text-3xl font-firaSans font-semibold py-4 md:py-6">
             Travel Inspiration
           </div>
-          {/* Right side: arrows */}
+         
           <div className="flex gap-2">
             <ArrowCircleLeft
               size={45}
@@ -199,7 +204,7 @@ const Inspiration: React.FC = () => {
           </div>
         </div>
 
-        {/* Tab buttons */}
+       
         {isLoading ? (
           <div className="flex justify-center items-center h-80">
             <CircularProgress sx={{ color: "#FF8B02" }} />
@@ -222,7 +227,7 @@ const Inspiration: React.FC = () => {
               ))}
             </div>
 
-            {/* Tour cards for selected tab */}
+           
             <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
               {getActiveTours().map((tour, index) => (
                 <div

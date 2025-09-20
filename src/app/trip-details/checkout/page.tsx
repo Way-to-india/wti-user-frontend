@@ -1,10 +1,10 @@
 'use client';
-import Footer from '@/components/Footer';
+import NavBar from '@/components/layout/navbar/NavBar';
+import Footer from '@/components/layout/Footer';
 import { CalendarBlank, CurrencyInr, User } from '@phosphor-icons/react';
 import Image from 'next/image';
 import Bridge from '../../../../public/assets/images/inspiration.png';
 import BreadcrumbNav from '../../../components/details-page/Breadcrumb-Nav';
-import NavBar from '../../../components/navbar/NavBar/navbar/NavBar';
 import Address from './AddressDetails';
 import CardDetails from './CardDetails';
 

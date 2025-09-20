@@ -21,7 +21,7 @@ interface Tour {
   imageUrls: string[];
   duration_count?: number;
   city_ids?: string[];
-  location: string | LocationObject;
+  location?: string | LocationObject;
 }
 
 interface TourCardProps {

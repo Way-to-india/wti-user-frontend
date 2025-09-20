@@ -1,5 +1,6 @@
 import { createSlice, createAsyncThunk, PayloadAction } from '@reduxjs/toolkit';
-import { HotelCardProps, HotelFilters, HotelResponse, ApiResponse } from '@/types/hotel';
+import { HotelCardProps, HotelFilters, HotelResponse } from '@/types/hotel';
+import { ApiResponse } from '@/types/apiResponse';
 import { getHotels, getHotelById, getLocations, getAmenities } from '@/services/hotelService';
 
 interface HotelsState {
@@ -36,13 +37,28 @@ const initialState: HotelsState = {
 
 export const fetchHotels = createAsyncThunk<
   ApiResponse<HotelResponse>,
-  { page: number; filters?: HotelFilters },
+  {
+    page: number;
+    cityId?: string | null;
+    starRating?: number;
+    minPrice?: number;
+    maxPrice?: number;
+    checkIn?: string;
+    checkOut?: string;
+    guests?: number;
+    filters?: HotelFilters;
+  },
   { rejectValue: string }
 >(
   'hotels/fetchHotels',
-  async ({ page, filters }, { rejectWithValue, dispatch }) => {
+  async ({ page, cityId, starRating, minPrice, maxPrice, checkIn, checkOut, guests, filters }, { rejectWithValue, dispatch }) => {
     try {
       // Update filter state first
+      if (cityId) dispatch(setSelectedLocation(cityId));
+      if (starRating) dispatch(setSelectedRating(starRating));
+      if (minPrice && maxPrice) dispatch(setSelectedPriceRange(`${minPrice}-${maxPrice}`));
+      
+      // Handle legacy filters format
       if (filters) {
         if (filters.location) dispatch(setSelectedLocation(filters.location));
         if (filters.priceRange) dispatch(setSelectedPriceRange(filters.priceRange));
@@ -51,10 +67,24 @@ export const fetchHotels = createAsyncThunk<
       }
       dispatch(setCurrentPage(page));
 
+      // Build filters object for API call
+      const apiFilters: HotelFilters = {};
+      
+      if (cityId) apiFilters.cityId = cityId;
+      if (starRating) apiFilters.rating = starRating;
+      if (minPrice) apiFilters.minPrice = minPrice;
+      if (maxPrice) apiFilters.maxPrice = maxPrice;
+      // if (checkIn) apiFilters.checkIn = checkIn;
+      // if (checkOut) apiFilters.checkOut = checkOut;
+      // if (guests) apiFilters.guests = guests;
+      
+      // Merge with additional filters if provided
+      const finalFilters = { ...apiFilters, ...filters };
+
       const response = await getHotels({
         page,
         limit: 9,
-        filters: filters && Object.keys(filters).length > 0 ? filters : undefined
+        filters: Object.keys(finalFilters).length > 0 ? finalFilters : undefined
       });
 
       if (!response.success) {

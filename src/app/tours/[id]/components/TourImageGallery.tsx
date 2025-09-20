@@ -10,7 +10,7 @@ interface TourImageGalleryProps {
 const TourImageGallery: React.FC<TourImageGalleryProps> = ({ images, title, onImageClick }) => {
   return (
     <>
-      <div className="relative h-[400px] w-full rounded-lg overflow-hidden mb-3">
+      <div className="relative h-[250px] sm:h-[300px] lg:h-[400px] w-full rounded-lg overflow-hidden mb-3">
         <Image
           src={images?.[0] || '/placeholder-image.jpg'}
           alt={title}
@@ -19,7 +19,7 @@ const TourImageGallery: React.FC<TourImageGalleryProps> = ({ images, title, onIm
           onClick={() => images?.length > 0 && onImageClick(0)}
         />
       </div>
-      <div className="grid grid-cols-3 gap-3">
+      <div className="grid grid-cols-2 sm:grid-cols-3 gap-2 sm:gap-3">
         {images?.slice(1, 4).map((url: string, index: number) => (
           <div
             key={index}

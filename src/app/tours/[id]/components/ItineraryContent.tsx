@@ -40,37 +40,41 @@ const ItineraryContent: React.FC<ItineraryContentProps> = ({
 
   return (
     <div>
-      <h2 className="text-2xl font-bold mb-8">Itinerary Details</h2>
-      <div className="flex gap-8">
-        <div className="flex flex-col gap-2 min-w-[80px] border-dashed border-gray-300 pr-6">
-          {availableDays.length > 0
-            ? availableDays.map((day: number) => (
-                <button
-                  key={day}
-                  onClick={() => setSelectedDay(day)}
-                  className={`px-3 py-2 text-sm font-medium text-left ${
-                    selectedDay === day
-                      ? 'bg-orange-500 text-white rounded-md'
-                      : 'text-gray-500 hover:text-orange-500'
-                  }`}
-                >
-                  {getDayLabel(day)}
-                </button>
-              ))
-            : tourDetails?.duration?.days &&
-              Array.from({ length: tourDetails.duration.days }, (_, i) => (
-                <button
-                  key={i + 1}
-                  onClick={() => setSelectedDay(i + 1)}
-                  className={`px-3 py-2 text-sm font-medium text-left ${
-                    selectedDay === i + 1
-                      ? 'bg-orange-500 text-white rounded-md'
-                      : 'text-gray-500 hover:text-orange-500'
-                  }`}
-                >
-                  DAY {i + 1}
-                </button>
-              ))}
+      <h2 className="text-lg sm:text-xl lg:text-2xl font-bold mb-4 sm:mb-6 lg:mb-8">
+        Itinerary Details
+      </h2>
+      <div className="flex flex-col lg:flex-row gap-4 lg:gap-8">
+        <div className="flex lg:flex-col gap-2 min-w-[80px] lg:border-dashed lg:border-gray-300 lg:pr-6 overflow-x-auto lg:overflow-x-visible">
+          <div className="flex lg:flex-col gap-2 min-w-max lg:min-w-0">
+            {availableDays.length > 0
+              ? availableDays.map((day: number) => (
+                  <button
+                    key={day}
+                    onClick={() => setSelectedDay(day)}
+                    className={`px-3 py-2 text-xs sm:text-sm font-medium text-left whitespace-nowrap ${
+                      selectedDay === day
+                        ? 'bg-orange-500 text-white rounded-md'
+                        : 'text-gray-500 hover:text-orange-500'
+                    }`}
+                  >
+                    {getDayLabel(day)}
+                  </button>
+                ))
+              : tourDetails?.duration?.days &&
+                Array.from({ length: tourDetails.duration.days }, (_, i) => (
+                  <button
+                    key={i + 1}
+                    onClick={() => setSelectedDay(i + 1)}
+                    className={`px-3 py-2 text-xs sm:text-sm font-medium text-left whitespace-nowrap ${
+                      selectedDay === i + 1
+                        ? 'bg-orange-500 text-white rounded-md'
+                        : 'text-gray-500 hover:text-orange-500'
+                    }`}
+                  >
+                    DAY {i + 1}
+                  </button>
+                ))}
+          </div>
         </div>
 
         <div className="flex-1">
@@ -120,8 +124,12 @@ interface CardProps {
   tourDetails: any;
   theme: any;
   onOpenChangeModal?: (type: 'hotel' | 'transport') => void;
+}
+
+interface InclusionExclusionCardProps {
   inclusions?: any[];
   exclusions?: any[];
+  theme: any;
 }
 
 const PlanOfActionCard: React.FC<CardProps> = ({
@@ -140,9 +148,9 @@ const PlanOfActionCard: React.FC<CardProps> = ({
     >
       PLAN OF ACTION
     </h3>
-    <div className="p-6">
-      <div className="flex gap-6">
-        <div className="w-72 h-48 rounded-lg overflow-hidden border flex-shrink-0">
+    <div className="p-4 sm:p-6">
+      <div className="flex flex-col sm:flex-row gap-4 sm:gap-6">
+        <div className="w-full sm:w-72 h-48 rounded-lg overflow-hidden border flex-shrink-0">
           <Image
             src={
               currentItinerary?.plan_of_action?.image_url ||
@@ -157,7 +165,7 @@ const PlanOfActionCard: React.FC<CardProps> = ({
         </div>
         <div className="flex-1 flex flex-col">
           <h4
-            className="text-lg font-medium mb-3"
+            className="text-base sm:text-lg font-medium mb-3"
             style={{
               color: theme.colors.heavyMetal,
               fontFamily: theme.typography.fontFamily.bold,
@@ -166,7 +174,7 @@ const PlanOfActionCard: React.FC<CardProps> = ({
             {currentItinerary?.plan_of_action?.title || `Day ${selectedDay} Activities`}
           </h4>
           <p
-            className="text-sm leading-relaxed flex-1"
+            className="text-sm sm:text-base leading-relaxed flex-1"
             style={{
               color: theme.colors.heavyMetal + '90',
               fontFamily: theme.typography.fontFamily.regular,
@@ -206,12 +214,12 @@ const HotelInformationCard: React.FC<CardProps> = ({
           Change
         </button>
       </h3>
-      <div className="p-6">
+      <div className="p-4 sm:p-6">
         <p className="text-sm mb-4" style={{ color: theme.colors.heavyMetal }}>
           1 night stay in {currentItinerary?.accommodation?.location || 'Hotel Location'}
         </p>
-        <div className="flex gap-6">
-          <div className="w-72 h-48 rounded-lg overflow-hidden border">
+        <div className="flex flex-col sm:flex-row gap-4 sm:gap-6">
+          <div className="w-full sm:w-72 h-48 rounded-lg overflow-hidden border flex-shrink-0">
             <Image
               src={
                 currentItinerary?.accommodation?.image ||
@@ -225,8 +233,11 @@ const HotelInformationCard: React.FC<CardProps> = ({
             />
           </div>
           <div className="flex-1">
-            <div className="flex items-center justify-between mb-4">
-              <h3 className="text-xl font-medium" style={{ color: theme.colors.heavyMetal }}>
+            <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between mb-4 gap-2">
+              <h3
+                className="text-lg sm:text-xl font-medium"
+                style={{ color: theme.colors.heavyMetal }}
+              >
                 {currentItinerary?.accommodation?.name || 'Hotel Name'}
               </h3>
               <div className="flex items-center gap-1">
@@ -344,12 +355,12 @@ const TransportationInformationCard: React.FC<CardProps> = ({
           Change
         </button>
       </h3>
-      <div className="p-6">
+      <div className="p-4 sm:p-6">
         <p className="text-sm mb-4" style={{ color: theme.colors.heavyMetal }}>
           {currentItinerary?.transportation?.route || 'Transport Route'}
         </p>
-        <div className="flex gap-6">
-          <div className="w-72 h-48 rounded-lg overflow-hidden border">
+        <div className="flex flex-col sm:flex-row gap-4 sm:gap-6">
+          <div className="w-full sm:w-72 h-48 rounded-lg overflow-hidden border flex-shrink-0">
             <Image
               src={
                 currentItinerary?.transportation?.image ||
@@ -363,8 +374,11 @@ const TransportationInformationCard: React.FC<CardProps> = ({
             />
           </div>
           <div className="flex-1">
-            <div className="flex items-center justify-between mb-4">
-              <h3 className="text-xl font-medium" style={{ color: theme.colors.heavyMetal }}>
+            <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between mb-4 gap-2">
+              <h3
+                className="text-lg sm:text-xl font-medium"
+                style={{ color: theme.colors.heavyMetal }}
+              >
                 {currentItinerary?.transportation?.type || 'Volvo'}
               </h3>
               <div className="flex items-center gap-1">
@@ -450,7 +464,7 @@ const TransportationInformationCard: React.FC<CardProps> = ({
   </div>
 );
 
-const InclusionsCard: React.FC<CardProps> = ({ inclusions, theme }) => (
+const InclusionsCard: React.FC<InclusionExclusionCardProps> = ({ inclusions, theme }) => (
   <div className="mt-6">
     <div className="bg-white rounded-lg border shadow-sm">
       <h3
@@ -462,7 +476,7 @@ const InclusionsCard: React.FC<CardProps> = ({ inclusions, theme }) => (
       >
         INCLUSIONS
       </h3>
-      <div className="p-6">
+      <div className="p-4 sm:p-6">
         <div className="space-y-4">
           {inclusions?.map((inclusion: any, index: number) => (
             <div key={index} className="pb-3 last:pb-0">
@@ -495,7 +509,7 @@ const InclusionsCard: React.FC<CardProps> = ({ inclusions, theme }) => (
   </div>
 );
 
-const ExclusionsCard: React.FC<CardProps> = ({ exclusions, theme }) => (
+const ExclusionsCard: React.FC<InclusionExclusionCardProps> = ({ exclusions, theme }) => (
   <div className="mt-6">
     <div className="bg-white rounded-lg border shadow-sm">
       <h3
@@ -507,7 +521,7 @@ const ExclusionsCard: React.FC<CardProps> = ({ exclusions, theme }) => (
       >
         EXCLUSIONS
       </h3>
-      <div className="p-6">
+      <div className="p-4 sm:p-6">
         <div className="space-y-4">
           {Array.isArray(exclusions) ? (
             exclusions.map((exclusion: any, index: number) => (

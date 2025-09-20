@@ -13,7 +13,7 @@ interface Tour {
   price: string;
   rating?: number;
   imageUrls: string[];
-  location?: string;
+  location?: string;  
 }
 
 const FeaturedTours: React.FC = () => {
@@ -255,7 +255,7 @@ const FeaturedTours: React.FC = () => {
               </div>
             </div>
           ) : tours.length > 0 ? (
-            visibleTours.map(tour => <TourCard key={tour.id} tour={tour} />)
+            visibleTours.map(tour => <TourCard key={tour.id} tour={tour as any} />)
           ) : (
             <div className="col-span-3 text-center py-8 text-gray-500">
               No featured tours available at the moment.

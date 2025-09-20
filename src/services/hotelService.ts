@@ -8,6 +8,8 @@ import { getCities as fetchCitiesFromAPI } from '@/services/cityService';
 interface GetHotelsParams {
   page?: number;
   limit?: number;
+  sortBy?: string;
+  sortOrder?: 'asc' | 'desc';
   filters?: HotelFilters;
 }
 
@@ -16,8 +18,23 @@ export const getHotels = async (params?: GetHotelsParams): Promise<ApiResponse<H
   
   if (params?.page) queryParams.append('page', params.page.toString());
   if (params?.limit) queryParams.append('limit', params.limit.toString());
+  if (params?.sortBy) queryParams.append('sortBy', params.sortBy);
+  if (params?.sortOrder) queryParams.append('sortOrder', params.sortOrder);
   
   if (params?.filters) {
+    if (params.filters.cityId) queryParams.append('cityId', params.filters.cityId);
+    if (params.filters.category) queryParams.append('category', params.filters.category);
+    if (params.filters.minPrice !== undefined && params.filters.minPrice !== null) {
+      queryParams.append('minPrice', params.filters.minPrice.toString());
+    }
+    if (params.filters.maxPrice !== undefined && params.filters.maxPrice !== null) {
+      queryParams.append('maxPrice', params.filters.maxPrice.toString());
+    }
+    if (params.filters.amenityIds?.length) {
+      queryParams.append('amenityIds', params.filters.amenityIds.join(','));
+    }
+    
+    // Backward compatibility filters
     if (params.filters.location) queryParams.append('location', params.filters.location);
     if (params.filters.priceRange) queryParams.append('priceRange', params.filters.priceRange);
     if (params.filters.rating) queryParams.append('rating', params.filters.rating.toString());

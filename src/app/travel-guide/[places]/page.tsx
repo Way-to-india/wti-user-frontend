@@ -1,7 +1,8 @@
 "use client";
 
 import React from "react";
-import NavBar from '@/components/navbar/NavBar';
+import NavBar from '@/components/layout/navbar/NavBar';
+
 import { Overview } from "./components/overview";
 import { Facts } from "./components/facts";
 import { PlacesToVisits } from "./components/places-to-visits";

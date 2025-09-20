@@ -7,7 +7,7 @@ const endpoints = {
   },
   user: {
     create : `${API_BASE}/user/user-routes/create`,
-    profileById: (id: string | number) => `${API_BASE}/user/user-routes/${id}`,
+    profileById: (id: string | number) => `${API_BASE}/user/user-routes/profile/${id}`,
     updateProfile: `${API_BASE}/user/user-routes/update`,
   },
   tours: {

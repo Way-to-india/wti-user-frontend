@@ -280,6 +280,7 @@ interface FetchTransportsParams {
   type?: string | null;
   startCityId?: string | null;
   toCity?: string | null;
+  vehicleType?: string | null;
 }
 
 // Async thunks
@@ -364,7 +365,7 @@ const transportSlice = createSlice({
       })
       .addCase(fetchCities.fulfilled, (state, action) => {
         state.loading = false;
-        state.cities = action.payload;
+        state.cities = action.payload || [];
       })
       .addCase(fetchCities.rejected, (state, action) => {
         state.loading = false;

@@ -1,7 +1,8 @@
 'use client';
 
 import placeholderImage from '@/assets/images/destination.png';
-import NavBar from '@/components/navbar/NavBar';
+import NavBar from '@/components/layout/navbar/NavBar';
+
 import ImageModal from '@/components/TripDetails/ImageModal';
 import { useTheme } from '@/context/ThemeContext';
 import { getTransportById } from '@/services/transportService';

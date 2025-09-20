@@ -8,47 +8,27 @@ import DynamicPagination from './DynamicPagination';
 import DynamicBreadcrumb, { BreadcrumbItem } from './DynamicBreadcrumb';
 import DynamicFilterSidebarSkeleton from './DynamicFilterSidebarSkeleton';
 import DynamicCardSkeleton from './DynamicCardSkeleton';
-import NavBar from '../navbar/NavBar';
+import NavBar from '../layout/navbar/NavBar';
 
 export interface DynamicListingPageProps {
-  // Page type
   type: 'tour' | 'hotel' | 'transport';
-  
-  // Page title
   title?: string;
-  
-  // Search section
   searchComponent: ReactNode;
   totalItems?: number;
-  
-  // Filter sidebar
   filterOptions: FilterOptions;
   onFilterChange: (filters: any) => void;
   initialFilterState?: any;
-  
-  // Breadcrumb
   breadcrumbs?: BreadcrumbItem[];
-  
-  // Pagination
   currentPage: number;
   totalPages: number;
   onPageChange: (event: React.ChangeEvent<unknown>, page: number) => void;
-  
-  // Content
   children: ReactNode;
-  
-  // Loading states
   loading?: boolean;
   isSearching?: boolean;
   isFiltering?: boolean;
   error?: string;
 }
 
-/**
- * A unified layout component for listing pages (tours, hotels, transport)
- * that combines all common components with a consistent structure.
- * Includes improved loading states for better user experience.
- */
 const DynamicListingPage: React.FC<DynamicListingPageProps> = ({
   type,
   title,
@@ -65,16 +45,14 @@ const DynamicListingPage: React.FC<DynamicListingPageProps> = ({
   loading = false,
   isSearching = false,
   isFiltering = false,
-  error
+  error,
 }) => {
   const theme = useTheme();
 
   const handleEnquiryClick = () => {
     console.log(`Enquiry clicked for ${type}`);
-    // Handle enquiry - could navigate to contact page or open a modal
   };
 
-  // Create skeleton cards grid for content loading
   const renderSkeletonCards = () => (
     <Grid container spacing={3}>
       {[...Array(9)].map((_, index) => (
@@ -88,8 +66,7 @@ const DynamicListingPage: React.FC<DynamicListingPageProps> = ({
   return (
     <div style={{ backgroundColor: theme.colors.milkWhite, minHeight: '100vh' }}>
       <NavBar />
-      
-      {/* Dynamic Search Section - always shown */}
+
       <DynamicSearchSection
         type={type}
         title={title}
@@ -119,7 +96,7 @@ const DynamicListingPage: React.FC<DynamicListingPageProps> = ({
               {isFiltering ? (
                 <DynamicFilterSidebarSkeleton />
               ) : (
-                <DynamicFilterSidebar 
+                <DynamicFilterSidebar
                   type={type}
                   options={filterOptions}
                   onFilterChange={onFilterChange}
@@ -128,12 +105,8 @@ const DynamicListingPage: React.FC<DynamicListingPageProps> = ({
               )}
             </Grid>
 
-            {/* Main Content Area */}
             <Grid item xs={12} md={9}>
-              {/* Content - Show skeleton during loading, otherwise actual content */}
               {loading ? renderSkeletonCards() : children}
-
-              {/* Pagination - Only show if not loading */}
               {!loading && (
                 <DynamicPagination
                   currentPage={currentPage}

@@ -63,12 +63,12 @@ const TourTabs: React.FC<TourTabsProps> = ({
   return (
     <>
       <div className="mb-6">
-        <div className="flex gap-4">
+        <div className="flex flex-wrap gap-2 sm:gap-4">
           {tabsConfig.map(tab => (
             <button
               key={tab.key}
               onClick={() => setActiveTab(tab.key)}
-              className={`px-4 py-2 text-sm font-medium rounded-md ${
+              className={`px-3 sm:px-4 py-2 text-xs sm:text-sm font-medium rounded-md whitespace-nowrap ${
                 activeTab === tab.key
                   ? 'bg-orange-500 text-white'
                   : 'text-gray-500 hover:text-orange-500'

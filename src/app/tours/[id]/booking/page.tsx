@@ -8,7 +8,8 @@ import { Snackbar, Alert, AlertColor } from '@mui/material';
 import BookingConfirmationModal from '@/components/booking/BookingConfirmationModal';
 import ErrorModal from '@/components/ErrorModal';
 import TravelerInformationForm from '@/components/booking/TravelerInformationForm';
-import NavBar from '@/components/navbar/NavBar';
+import NavBar from '@/components/layout/navbar/NavBar';
+
 import { TravelerInformation } from '@/components/booking/TravelerInformationForm';
 
 import { useAuth } from '@/context/AuthContext';
@@ -119,7 +120,9 @@ const TourInfoCard: React.FC<{ tour: TourCardProps }> = ({ tour }) => (
               {tour.startingLocation}
             </span>
           )}
-          <span className="text-[#FF8B02] font-semibold">₹{tour.price}</span>
+          <span className="text-[#FF8B02] font-semibold">
+            ₹{typeof tour.price === 'number' ? tour.price : tour.price}
+          </span>
         </div>
       </div>
     </div>
@@ -412,7 +415,9 @@ export default function TourBookingPage({ params }: TourBookingPageProps) {
     try {
       setIsBooking(true);
 
-      const basePrice = parseFloat(tourDetails.price.replace(/[^0-9.-]+/g, ''));
+      const basePrice = typeof tourDetails.price === 'string' 
+        ? parseFloat(tourDetails.price.replace(/[^0-9.-]+/g, ''))
+        : parseFloat(tourDetails.price);
       const { finalAmount } = calculateTourBookingTotal(basePrice, numberOfTravelers);
       const travelerNames = travelers.map(t => `${t.firstName} ${t.lastName}`);
 
@@ -471,7 +476,9 @@ export default function TourBookingPage({ params }: TourBookingPageProps) {
   if (error) return <ErrorState error={error} />;
   if (!tourDetails) return <ErrorState error="Tour not found" />;
 
-  const basePrice = parseFloat(tourDetails.price.replace(/[^0-9.-]+/g, ''));
+  const basePrice = typeof tourDetails.price === 'string' 
+    ? parseFloat(tourDetails.price.replace(/[^0-9.-]+/g, ''))
+    : parseFloat(tourDetails.price);
 
   return (
     <div className="min-h-screen bg-gray-50">
