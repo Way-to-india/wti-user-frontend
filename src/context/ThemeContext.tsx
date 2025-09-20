@@ -6,6 +6,8 @@ const colors = {
   carrotOrange: '#FF8B02',
   milkWhite: '#FFFFFF',
   heavyMetal: '#262626',
+  borderColor: '#E5E7EB',
+  textLight: '#757575',
 };
 
 // Typography settings
@@ -29,6 +31,8 @@ const typography = {
     h6: '1rem',
     body: '1rem',
     small: '0.875rem',
+    label: '0.875rem',
+    button: '0.875rem',
   },
 };
 

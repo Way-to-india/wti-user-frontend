@@ -233,7 +233,14 @@ const BookingCard: React.FC<BookingCardProps> = ({
           {isTourBooking && (booking as TourBooking).tourStartCity && (
             <div className="flex items-center text-gray-600">
               <FiMapPin className="mr-2 flex-shrink-0" />
-              <span>{(booking as TourBooking).tourStartCity}</span>
+              <span>
+                {typeof (booking as TourBooking).tourStartCity === 'string' 
+                  ? (booking as TourBooking).tourStartCity 
+                  : ((booking as TourBooking).tourStartCity as any)?.name || 
+                    ((booking as TourBooking).tourStartCity as any)?.label || 
+                    'Tour Location'
+                }
+              </span>
             </div>
           )}
           

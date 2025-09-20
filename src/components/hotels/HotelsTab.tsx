@@ -209,7 +209,7 @@ const HotelsTab: React.FC<HotelsTabProps> = ({ onSearchStart, onSearchResults, o
         {/* Search Button */}
         <Button 
           type="submit" 
-          style={{
+          sx={{
             backgroundColor: theme.colors.carrotOrange,
             color: theme.colors.milkWhite,
             fontFamily: theme.typography.fontFamily.bold,

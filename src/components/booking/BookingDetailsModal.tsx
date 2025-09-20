@@ -40,21 +40,25 @@ const BookingDetailsModal: React.FC<BookingDetailsModalProps> = ({
     checkInDate > new Date();
   
   // Get status display information
-  const getStatusInfo = (status: BookingStatus) => {
-    switch(status) {
+  const getStatusInfo = (status: BookingStatus | string) => {
+    const statusValue = typeof status === 'string' ? status.toUpperCase() : status;
+    switch(statusValue) {
       case BookingStatus.CONFIRMED:
+      case 'CONFIRMED':
         return {
           color: 'text-green-600',
           bgColor: 'bg-green-100',
           text: 'Confirmed'
         };
       case BookingStatus.CANCELLED:
+      case 'CANCELLED':
         return {
           color: 'text-red-600',
           bgColor: 'bg-red-100',
           text: 'Cancelled'
         };
       case BookingStatus.COMPLETED:
+      case 'COMPLETED':
         return {
           color: 'text-blue-600',
           bgColor: 'bg-blue-100',

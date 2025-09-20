@@ -281,6 +281,11 @@ interface FetchTransportsParams {
   startCityId?: string | null;
   toCity?: string | null;
   vehicleType?: string | null;
+  rentalType?: string | null;
+  minPrice?: number;
+  maxPrice?: number;
+  minSeats?: number;
+  maxSeats?: number;
 }
 
 // Async thunks
