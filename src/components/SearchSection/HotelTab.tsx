@@ -22,12 +22,18 @@ const HotelTab = () => {
   const router = useRouter();
 
   const [location, setLocation] = useState<string | null>(null);
-  const [dateRange, setValue] = useState({
+  const [dateRange, setDateRange] = useState({
     start: parseDate(new Date().toISOString().split('T')[0]),
     end: parseDate(
       new Date(new Date().setDate(new Date().getDate() + 7)).toISOString().split('T')[0]
     ),
   });
+
+  const handleDateChange = (value: any) => {
+    if (value) {
+      setDateRange(value);
+    }
+  };
 
   const [adults, setAdults] = useState(1);
   const [seniorAdults, setSeniorAdults] = useState(0);
@@ -86,7 +92,7 @@ const HotelTab = () => {
           <DateRangePicker
             label="Check in - Check Out"
             value={dateRange}
-            onChange={setValue}
+            onChange={handleDateChange}
             radius="sm"
             variant="bordered"
             className="text-carrot-orange w-full"

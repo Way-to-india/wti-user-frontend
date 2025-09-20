@@ -96,6 +96,12 @@ const DynamicSearchTab: React.FC<SearchTabProps> = ({
     if (selectedType) setTypeValue(selectedType);
   }, [selectedLocation, selectedFromLocation, selectedToLocation, selectedType]);
 
+  const handleDateRangeChange = (value: any) => {
+    if (value) {
+      setDateRange(value);
+    }
+  };
+
   const guestTypes = [
     { label: 'Adults', value: adults, setValue: setAdults, minValue: 1 },
     {
@@ -165,7 +171,7 @@ const DynamicSearchTab: React.FC<SearchTabProps> = ({
           <DateRangePicker
             label={dateRangeLabel || 'Check in - Check Out'}
             value={dateRange}
-            onChange={setDateRange}
+            onChange={handleDateRangeChange}
             radius="sm"
             variant="bordered"
             className="w-full"
