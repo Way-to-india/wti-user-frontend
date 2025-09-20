@@ -26,7 +26,7 @@ export const getAirCharterTours = async (limit: number = 6): Promise<ApiResponse
     );
 
     if (transportResponse.success && Array.isArray(transportResponse.data) && transportResponse.data.length > 0) {
-      return transportResponse;
+      return transportResponse as any;
     }
 
     // If no helicopter transports, try to get helicopter-tagged tours
@@ -36,7 +36,7 @@ export const getAirCharterTours = async (limit: number = 6): Promise<ApiResponse
     );
 
     if (toursResponse.success && toursResponse.data) {
-      return toursResponse;
+      return toursResponse as any;
     }
 
     // If no data from API, return fallback data

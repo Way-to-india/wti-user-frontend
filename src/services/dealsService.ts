@@ -21,7 +21,7 @@ export const getDeals = async (): Promise<ApiResponse<Deal[]>> => {
     );
 
     if (response.success && response.data) {
-      return response;
+      return response as any;
     }
 
     // If no data from API or API doesn't exist yet, return fallback data
