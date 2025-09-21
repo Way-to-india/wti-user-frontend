@@ -6,6 +6,7 @@ import Image from 'next/image';
 import React, { useState, useEffect } from 'react';
 import { FaCheck } from 'react-icons/fa';
 import { useAuth } from '../../context/AuthContext';
+import endpoints from '@/api/endpoints';
 
 interface UserProfileProps {
   user: User;
@@ -62,7 +63,7 @@ const ProfileComponent: React.FC<UserProfileProps> = ({ user, onUserUpdate }) =>
       };
 
       const response = await axios.post(
-        'http://localhost:5000/api/user/user-routes/update',
+        `${process.env.NEXT_PUBLIC_BASE_URL}${endpoints.user.updateProfile}`,
         {
           ...updatedData,
           id: authUser.id,
