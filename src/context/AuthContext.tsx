@@ -10,6 +10,7 @@ interface AuthContextType {
   user: any;
   login: (token: string, user: any) => void;
   logoutUser: () => void;
+  updateUser: (updatedUser: any) => void;
 }
 
 const AuthContext = createContext<AuthContextType | undefined>(undefined);
@@ -44,6 +45,12 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
     dispatch(setUser(newUser)); // update Redux
   };
 
+  const updateUser = (updatedUser: any) => {
+    setUserState(updatedUser);
+    localStorage.setItem("user", JSON.stringify(updatedUser));
+    dispatch(setUser(updatedUser)); // update Redux
+  };
+
   const logoutUser = () => {
     setToken(null);
     setUserState(null);
@@ -54,7 +61,7 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
   };
 
   return (
-    <AuthContext.Provider value={{ token, user, login, logoutUser }}>
+    <AuthContext.Provider value={{ token, user, login, logoutUser, updateUser }}>
       {children}
     </AuthContext.Provider>
   );

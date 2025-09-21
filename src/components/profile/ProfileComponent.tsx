@@ -26,7 +26,7 @@ const ProfileComponent: React.FC<UserProfileProps> = ({ user, onUserUpdate }) =>
   const [saving, setSaving] = useState(false);
   const [saveError, setSaveError] = useState<string | null>(null);
   const [saveSuccess, setSaveSuccess] = useState(false);
-  const { user: authUser, token } = useAuth();
+  const { user: authUser, token, updateUser } = useAuth();
 
   useEffect(() => {
     setFormData({
@@ -74,6 +74,26 @@ const ProfileComponent: React.FC<UserProfileProps> = ({ user, onUserUpdate }) =>
           },
         }
       );
+
+      // Update the AuthContext with the new user information
+      const updatedAuthUser = {
+        ...authUser,
+        firstName: updatedData.firstName,
+        lastName: updatedData.lastName,
+        email: updatedData.email,
+        phone: updatedData.phone,
+        address: updatedData.address,
+        bio: updatedData.bio,
+        name: `${updatedData.firstName} ${updatedData.lastName}`.trim(), // Update display name
+      };
+      
+      updateUser(updatedAuthUser);
+      setSaveSuccess(true);
+      
+      // Hide success message after 3 seconds
+      setTimeout(() => {
+        setSaveSuccess(false);
+      }, 3000);
 
       if (onUserUpdate) {
         onUserUpdate();
@@ -168,7 +188,6 @@ const ProfileComponent: React.FC<UserProfileProps> = ({ user, onUserUpdate }) =>
                   placeholder="Enter your last name"
                   value={formData.lastName}
                   onChange={handleChange}
-                  required
                 />
               </div>
               <div>
