@@ -3,15 +3,16 @@
 import { User } from '@/types/user';
 import axios from 'axios';
 import Image from 'next/image';
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { FaCheck } from 'react-icons/fa';
 import { useAuth } from '../../context/AuthContext';
 
 interface UserProfileProps {
   user: User;
+  onUserUpdate?: () => void;
 }
 
-const ProfileComponent: React.FC<UserProfileProps> = ({ user }) => {
+const ProfileComponent: React.FC<UserProfileProps> = ({ user, onUserUpdate }) => {
   const [formData, setFormData] = useState({
     firstName: user.firstName,
     lastName: user.lastName,
@@ -25,6 +26,17 @@ const ProfileComponent: React.FC<UserProfileProps> = ({ user }) => {
   const [saveError, setSaveError] = useState<string | null>(null);
   const [saveSuccess, setSaveSuccess] = useState(false);
   const { user: authUser, token } = useAuth();
+
+  useEffect(() => {
+    setFormData({
+      firstName: user.firstName,
+      lastName: user.lastName,
+      email: user.email,
+      phone: user.phone || '',
+      address: user.address || '',
+      bio: user.bio || '',
+    });
+  }, [user]);
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
     const { name, value } = e.target;
@@ -45,12 +57,12 @@ const ProfileComponent: React.FC<UserProfileProps> = ({ user }) => {
 
       const updatedData = {
         ...rest,
-        name: `${firstName} ${lastName}`.trim(),
+        firstName: firstName.trim(),
+        lastName: lastName.trim(),
       };
-      console.log('User ID: ', authUser.id);
-      // Simulate API call success
+
       const response = await axios.post(
-        'http://localhost:5000/api/user/update',
+        'http://localhost:5000/api/user/user-routes/update',
         {
           ...updatedData,
           id: authUser.id,
@@ -61,8 +73,10 @@ const ProfileComponent: React.FC<UserProfileProps> = ({ user }) => {
           },
         }
       );
-      setSaveSuccess(true);
-      setTimeout(() => setSaveSuccess(false), 3000);
+
+      if (onUserUpdate) {
+        onUserUpdate();
+      }
     } catch (err) {
       console.error('Error saving profile:', err);
       setSaveError(err instanceof Error ? err.message : 'Failed to save profile');
@@ -73,7 +87,6 @@ const ProfileComponent: React.FC<UserProfileProps> = ({ user }) => {
 
   return (
     <div className="min-h-screen bg-white font-sans text-gray-800">
-      {/* Profile Section */}
       <div className="max-w-4xl mx-auto py-8 px-6">
         <div className="flex flex-col items-center mb-10">
           {/* Profile Picture */}
@@ -96,7 +109,6 @@ const ProfileComponent: React.FC<UserProfileProps> = ({ user }) => {
             </div>
           </div>
 
-          {/* User Info */}
           <div className="text-center">
             <div className="flex items-center justify-center">
               <h2 className="text-xl font-semibold">

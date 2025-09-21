@@ -32,3 +32,10 @@ export const updateBookingStatus = async (bookingId: string, status: BookingStat
     "Hotel booking status updated successfully"
   );
 };
+
+export const cancelHotelBooking = async (bookingId: string, cancellationReason?: string): Promise<ApiResponse<any>> => {
+  return handleApiCall(
+    async () => axios.patch(endpoints.bookings.cancelHotelBooking(bookingId), { cancellationReason }),
+    "Hotel booking cancelled successfully"
+  );
+};

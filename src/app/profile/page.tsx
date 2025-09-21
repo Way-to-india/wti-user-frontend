@@ -89,7 +89,7 @@ const ProfilePage: NextPage = () => {
           </div>
         )
       ) : (
-        <ProfileComponent user={userData} />
+        <ProfileComponent user={userData} onUserUpdate={fetchUserProfile} />
       )}
     </>
   );

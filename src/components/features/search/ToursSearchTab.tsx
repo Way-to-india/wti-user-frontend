@@ -101,7 +101,16 @@ const ToursSearchTab: React.FC<ToursSearchTabProps> = ({ onSearch, className }) 
   const handleSearch = useCallback(async (e: React.FormEvent) => {
     e.preventDefault();
 
-    if (!validateForm()) return;
+    console.log('=== TOURS SEARCH: Starting search ===');
+    console.log('Search data:', searchData);
+    console.log('Available cities:', cities);
+    console.log('Available themes:', themes);
+    console.log('Validation result:', validateForm());
+
+    if (!validateForm()) {
+      console.log('Validation failed, stopping search');
+      return;
+    }
 
     setIsSearching(true);
 
@@ -109,6 +118,9 @@ const ToursSearchTab: React.FC<ToursSearchTabProps> = ({ onSearch, className }) 
       // Add to search history
       const selectedCity = cities.find(city => city.id === searchData.city);
       const selectedTheme = themes.find(theme => theme.id === searchData.theme);
+      
+      console.log('Selected city:', selectedCity);
+      console.log('Selected theme:', selectedTheme);
       
       addSearchHistory({
         type: 'tours',
@@ -118,6 +130,7 @@ const ToursSearchTab: React.FC<ToursSearchTabProps> = ({ onSearch, className }) 
 
       // Call onSearch if provided
       if (onSearch) {
+        console.log('Calling onSearch callback...');
         onSearch(searchData);
       } else {
         // Navigate to tours page with search parameters
@@ -129,7 +142,9 @@ const ToursSearchTab: React.FC<ToursSearchTabProps> = ({ onSearch, className }) 
         params.set('startDate', searchData.checkIn);
         params.set('endDate', searchData.checkOut);
 
-        router.push(`/tours?${params.toString()}`);
+        const url = `/tours?${params.toString()}`;
+        console.log('Navigating to:', url);
+        router.push(url);
       }
     } catch (error) {
       console.error('Search error:', error);

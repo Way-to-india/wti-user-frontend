@@ -39,7 +39,7 @@ const TransportPage = () => {
         // Initialize Redux state
         await dispatch(fetchCities()).unwrap();
 
-        // Parse URL parameters from search
+        // Parse URL parameters from search with comprehensive fallback
         const startCityId = searchParams?.get('startCityId') || 
                            searchParams?.get('fromCity') ||
                            searchParams?.get('city') ||
@@ -52,8 +52,16 @@ const TransportPage = () => {
         const departureDate = searchParams?.get('departureDate') || null;
         const returnDate = searchParams?.get('returnDate') || null;
         const tripType = searchParams?.get('tripType') || 'one-way';
-        const guests = searchParams?.get('guests')
-          ? parseInt(searchParams.get('guests') as string, 10)
+        
+        // Handle multiple parameter names for passengers/guests
+        const guests = searchParams?.get('passengers') ||
+                      searchParams?.get('guests') ||
+                      searchParams?.get('numberOfPassengers')
+          ? parseInt(
+              (searchParams.get('passengers') || 
+               searchParams.get('guests') || 
+               searchParams.get('numberOfPassengers')) as string, 10
+            )
           : null;
 
         // Prepare filters for API call

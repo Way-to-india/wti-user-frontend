@@ -5,7 +5,7 @@ import SearchSection from '@/app/general/SearchSection';
 
 const HeroPage: React.FC = () => {
   return (
-    <section className="relative h-[600px] sm:h-[700px] md:h-[800px] w-full overflow-hidden">
+    <section className="relative h-screen sm:h-[700px] md:h-[800px] w-full overflow-hidden">
       {/* Background Image */}
       <div className="absolute inset-0">
         <Image
@@ -21,11 +21,10 @@ const HeroPage: React.FC = () => {
       </div>
 
       {/* Content */}
-      <div className="relative z-20 flex flex-col items-start justify-center h-full px-4 sm:px-6 md:px-10 lg:px-20">
+      <div className="relative z-20 flex flex-col items-start justify-center h-full px-4 sm:px-6 md:px-10 lg:px-20 pt-16 lg:pt-20">
         <div className="max-w-4xl">
           <h1 className="text-3xl sm:text-4xl md:text-5xl lg:text-6xl font-bold text-white mb-6 md:mb-8 font-limeLight leading-tight">
-            Come, Explore the incredible{' '}
-            <span className="block">land</span>
+            Come, Explore the incredible <span className="block">land</span>
           </h1>
         </div>
 

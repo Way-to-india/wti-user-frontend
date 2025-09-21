@@ -86,15 +86,11 @@ const HotelsPage: React.FC = () => {
   useEffect(() => {
     const initializeData = async () => {
       try {
-        // First fetch locations
         await dispatch(fetchLocations()).unwrap();
-
-        // Parse URL parameters - handle both old and new parameter formats
-        const cityId = searchParams?.get('city') || 
-                       searchParams?.get('cityId') || 
+        const cityId = searchParams?.get('cityId') || 
+                       searchParams?.get('city') || 
                        searchParams?.get('location') || 
                        undefined;
-        
         const checkIn = searchParams?.get('checkIn') || undefined;
         const checkOut = searchParams?.get('checkOut') || undefined;
         

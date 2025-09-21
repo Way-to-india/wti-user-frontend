@@ -121,7 +121,17 @@ const TourInfoCard: React.FC<{ tour: TourCardProps }> = ({ tour }) => (
             </span>
           )}
           <span className="text-[#FF8B02] font-semibold">
-            ₹{typeof tour.price === 'number' ? tour.price : tour.price}
+            ₹{(() => {
+              const priceValue = tour.price as string | number;
+              if (typeof priceValue === 'number') {
+                return priceValue.toLocaleString('en-IN');
+              }
+              if (typeof priceValue === 'string') {
+                const numericPrice = parseFloat(priceValue.replace(/[^0-9.-]+/g, ''));
+                return numericPrice.toLocaleString('en-IN');
+              }
+              return '0';
+            })()}
           </span>
         </div>
       </div>
@@ -415,9 +425,18 @@ export default function TourBookingPage({ params }: TourBookingPageProps) {
     try {
       setIsBooking(true);
 
-      const basePrice = typeof tourDetails.price === 'string' 
-        ? parseFloat(tourDetails.price.replace(/[^0-9.-]+/g, ''))
-        : parseFloat(tourDetails.price);
+      // Parse price safely - handle both string and number types from API
+      const priceValue = tourDetails.price as string | number;
+      const basePrice = (() => {
+        if (typeof priceValue === 'number') {
+          return priceValue;
+        }
+        if (typeof priceValue === 'string') {
+          return parseFloat(priceValue.replace(/[^0-9.-]+/g, ''));
+        }
+        // Fallback if price is neither string nor number
+        return parseFloat(String(priceValue || 0).replace(/[^0-9.-]+/g, ''));
+      })();
       const { finalAmount } = calculateTourBookingTotal(basePrice, numberOfTravelers);
       const travelerNames = travelers.map(t => `${t.firstName} ${t.lastName}`);
 
@@ -476,9 +495,18 @@ export default function TourBookingPage({ params }: TourBookingPageProps) {
   if (error) return <ErrorState error={error} />;
   if (!tourDetails) return <ErrorState error="Tour not found" />;
 
-  const basePrice = typeof tourDetails.price === 'string' 
-    ? parseFloat(tourDetails.price.replace(/[^0-9.-]+/g, ''))
-    : parseFloat(tourDetails.price);
+  // Parse price safely - handle both string and number types from API
+  const priceValue = tourDetails.price as string | number;
+  const basePrice = (() => {
+    if (typeof priceValue === 'number') {
+      return priceValue;
+    }
+    if (typeof priceValue === 'string') {
+      return parseFloat(priceValue.replace(/[^0-9.-]+/g, ''));
+    }
+    // Fallback if price is neither string nor number
+    return parseFloat(String(priceValue || 0).replace(/[^0-9.-]+/g, ''));
+  })();
 
   return (
     <div className="min-h-screen bg-gray-50">

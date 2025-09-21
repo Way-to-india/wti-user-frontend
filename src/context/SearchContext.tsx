@@ -162,6 +162,38 @@ function searchReducer(state: SearchState, action: SearchAction): SearchState {
   }
 }
 
+// Utility function to normalize search parameters
+export const normalizeSearchParams = (searchParams: URLSearchParams, type: 'hotels' | 'tours' | 'transport') => {
+  const normalized: Record<string, string> = {};
+  
+  // Common normalization
+  if (type === 'hotels') {
+    normalized.cityId = searchParams.get('cityId') || searchParams.get('city') || searchParams.get('location') || '';
+    normalized.checkIn = searchParams.get('checkIn') || '';
+    normalized.checkOut = searchParams.get('checkOut') || '';
+    normalized.guests = searchParams.get('guests') || searchParams.get('numberOfGuests') || '1';
+    normalized.adults = searchParams.get('adults') || '1';
+    normalized.children = searchParams.get('children') || '0';
+    normalized.seniorAdults = searchParams.get('seniorAdults') || '0';
+  } else if (type === 'tours') {
+    normalized.cityId = searchParams.get('cityId') || searchParams.get('city') || '';
+    normalized.themeId = searchParams.get('themeId') || searchParams.get('theme') || '';
+    normalized.startDate = searchParams.get('startDate') || searchParams.get('checkIn') || '';
+    normalized.endDate = searchParams.get('endDate') || searchParams.get('checkOut') || '';
+    normalized.guests = searchParams.get('guests') || searchParams.get('travelers') || searchParams.get('numberOfTravelers') || '1';
+    normalized.duration = searchParams.get('duration') || searchParams.get('durationDays') || '';
+  } else if (type === 'transport') {
+    normalized.startCityId = searchParams.get('startCityId') || searchParams.get('fromCity') || searchParams.get('city') || '';
+    normalized.toCityId = searchParams.get('toCityId') || searchParams.get('toCity') || '';
+    normalized.departureDate = searchParams.get('departureDate') || searchParams.get('startDate') || '';
+    normalized.returnDate = searchParams.get('returnDate') || searchParams.get('endDate') || '';
+    normalized.passengers = searchParams.get('passengers') || searchParams.get('guests') || searchParams.get('numberOfPassengers') || '1';
+    normalized.tripType = searchParams.get('tripType') || 'one-way';
+  }
+  
+  return normalized;
+};
+
 // Context
 interface SearchContextType {
   state: SearchState;
@@ -173,6 +205,7 @@ interface SearchContextType {
   getCachedThemes: () => SearchTheme[];
   getCachedLocations: () => string[];
   clearCache: () => void;
+  normalizeSearchParams: (searchParams: URLSearchParams, type: 'hotels' | 'tours' | 'transport') => Record<string, string>;
 }
 
 const SearchContext = createContext<SearchContextType | undefined>(undefined);
@@ -189,15 +222,24 @@ export const SearchProvider: React.FC<{ children: React.ReactNode }> = ({ childr
 
   // Fetch cities with caching
   const fetchCities = useCallback(async () => {
+    console.log('=== SEARCH CONTEXT: Fetching Cities ===');
+    console.log('Current cities cache:', state.cities);
+    console.log('Cities cached at:', state.citiesCachedAt);
+    console.log('Cache valid:', isCacheValid(state.citiesCachedAt));
+    
     // Check if cache is valid
     if (isCacheValid(state.citiesCachedAt) && state.cities.length > 0) {
+      console.log('Using cached cities data');
       return;
     }
 
+    console.log('Fetching fresh cities data from API...');
     dispatch({ type: 'SET_CITIES_LOADING', payload: true });
     
     try {
       const response = await getCities();
+      console.log('Cities API response:', response);
+      
       if (response.success && response.data) {
         const formattedCities: SearchCity[] = response.data.map((city: any) => ({
           id: city.id,
@@ -206,14 +248,18 @@ export const SearchProvider: React.FC<{ children: React.ReactNode }> = ({ childr
           stateId: city.stateId
         }));
         
+        console.log('Formatted cities:', formattedCities);
+        
         dispatch({ 
           type: 'SET_CITIES', 
           payload: { cities: formattedCities, timestamp: Date.now() } 
         });
       } else {
+        console.error('Cities API failed:', response);
         dispatch({ type: 'SET_CITIES_ERROR', payload: 'Failed to fetch cities' });
       }
     } catch (error) {
+      console.error('Cities fetch error:', error);
       dispatch({ 
         type: 'SET_CITIES_ERROR', 
         payload: error instanceof Error ? error.message : 'Unknown error' 
@@ -223,15 +269,24 @@ export const SearchProvider: React.FC<{ children: React.ReactNode }> = ({ childr
 
   // Fetch themes with caching
   const fetchThemes = useCallback(async () => {
+    console.log('=== SEARCH CONTEXT: Fetching Themes ===');
+    console.log('Current themes cache:', state.themes);
+    console.log('Themes cached at:', state.themesCachedAt);
+    console.log('Cache valid:', isCacheValid(state.themesCachedAt));
+    
     // Check if cache is valid
     if (isCacheValid(state.themesCachedAt) && state.themes.length > 0) {
+      console.log('Using cached themes data');
       return;
     }
 
+    console.log('Fetching fresh themes data from API...');
     dispatch({ type: 'SET_THEMES_LOADING', payload: true });
     
     try {
       const response = await getThemes();
+      console.log('Themes API response:', response);
+      
       if (response.success && response.data) {
         const formattedThemes: SearchTheme[] = response.data.map((theme: any) => ({
           id: theme.id,
@@ -240,14 +295,18 @@ export const SearchProvider: React.FC<{ children: React.ReactNode }> = ({ childr
           description: theme.description
         }));
         
+        console.log('Formatted themes:', formattedThemes);
+        
         dispatch({ 
           type: 'SET_THEMES', 
           payload: { themes: formattedThemes, timestamp: Date.now() } 
         });
       } else {
+        console.error('Themes API failed:', response);
         dispatch({ type: 'SET_THEMES_ERROR', payload: 'Failed to fetch themes' });
       }
     } catch (error) {
+      console.error('Themes fetch error:', error);
       dispatch({ 
         type: 'SET_THEMES_ERROR', 
         payload: error instanceof Error ? error.message : 'Unknown error' 
@@ -322,6 +381,7 @@ export const SearchProvider: React.FC<{ children: React.ReactNode }> = ({ childr
     getCachedThemes,
     getCachedLocations,
     clearCache,
+    normalizeSearchParams,
   };
 
   return (

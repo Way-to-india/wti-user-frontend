@@ -15,6 +15,8 @@ export interface Transport {
   title: string;
   description: string;
   price: number;
+  taxRate?: number;
+  priceWithTax?: number;
   imageUrl?: string;
   imageUrls?: string[];
   amenities?: string[];
@@ -26,6 +28,11 @@ export interface Transport {
   rentalCompany?: string;
   rentalType?: string;
   seatCount?: number;
+  isActive?: boolean;
+  availableVehicles?: number;
+  fuelType?: string;
+  transmission?: string;
+  features?: string[];
   rentalDetails?: {
     title: string;
     description: string;
@@ -34,6 +41,10 @@ export interface Transport {
     title: string;
     description: string;
   };
+  itinerary?: {
+    day: number;
+    cityId: string;
+  }[];
   startCity?: City;
   cities?: City[];
 }

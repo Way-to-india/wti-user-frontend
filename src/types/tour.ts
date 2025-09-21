@@ -3,7 +3,7 @@ export interface TourCardProps {
   imageUrls: string[];
   title: string;
   description?: string;
-  price: string;
+  price: number;
   rating?: number;
   inclusions?: Inclusion[];
   exclusions?: string[];

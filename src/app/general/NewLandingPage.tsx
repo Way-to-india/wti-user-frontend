@@ -25,50 +25,39 @@ const NewLandingPage = () => {
         fontSize: theme.typography.fontSize.body,
       }}
     >
-      {/* Main contents with proper spacing for all devices */}
       <div className="relative z-10">
-        {/* NavBar is already sticky from its component definition */}
         <NavBar />
 
-        {/* Hero Section with Search */}
         <HeroPage />
 
-        {/* Featured Tours Section */}
         <LandingSection id="featured-tours">
           <FeaturedTours />
         </LandingSection>
 
-        {/* Featured Packages Section */}
         <LandingSection id="featured-packages">
           <Package />
         </LandingSection>
 
-        {/* Trending Hotels and Stays */}
         <LandingSection id="trending-hotels" className="bg-gray-50">
           <Trending />
         </LandingSection>
 
-        {/* Travel Inspiration Section */}
         <LandingSection id="travel-inspiration">
           <Inspiration />
         </LandingSection>
 
-        {/* Air Charter Tours Section */}
         <LandingSection id="air-charter" className="bg-gray-50">
           <AirCharter />
         </LandingSection>
 
-        {/* Deals Section */}
         <LandingSection id="deals" padding="sm">
           <Deals />
         </LandingSection>
 
-        {/* Blog Section */}
         <LandingSection id="blog">
           <BlogSection />
         </LandingSection>
 
-        {/* Footer */}
         <Footer />
       </div>
     </div>
@@ -83,26 +72,23 @@ interface LandingSectionProps {
   padding?: 'sm' | 'md' | 'lg';
 }
 
-const LandingSection: React.FC<LandingSectionProps> = ({ 
-  children, 
-  id, 
-  className = '', 
-  padding = 'md' 
+const LandingSection: React.FC<LandingSectionProps> = ({
+  children,
+  id,
+  className = '',
+  padding = 'md',
 }) => {
   const getPaddingClasses = () => {
     const paddingMap = {
       sm: 'py-6 md:py-8 px-4 sm:px-6 lg:px-8',
       md: 'py-8 md:py-12 px-4 sm:px-6 lg:px-8',
-      lg: 'py-12 md:py-16 px-4 sm:px-6 lg:px-8'
+      lg: 'py-12 md:py-16 px-4 sm:px-6 lg:px-8',
     };
     return paddingMap[padding];
   };
 
   return (
-    <section 
-      id={id} 
-      className={`${getPaddingClasses()} ${className}`}
-    >
+    <section id={id} className={`${getPaddingClasses()} ${className}`}>
       {children}
     </section>
   );

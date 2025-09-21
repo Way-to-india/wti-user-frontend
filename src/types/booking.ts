@@ -88,32 +88,7 @@ export interface HotelBooking {
   cityLabel?: string;
 }
 
-export interface MealsIncluded {
-  breakfast: boolean;
-  lunch: boolean;
-  dinner: boolean;
-}
-
-export interface RoomDetails {
-  roomType: string;
-  count: number;
-  price: number;
-  maxOccupancy?: number;
-  amenities?: string[];
-  mealsIncluded?: MealsIncluded;
-  imageUrls?: string[];
-  taxRate?: number;
-  priceWithTax?: number;
-}
-
-export interface GuestInformation {
-  title: string;
-  firstName: string;
-  lastName: string;
-  email: string;
-  phone: string;
-  specialRequests?: string;
-}
+// Note: Duplicate interfaces removed - using the ones defined above
 
 export interface BookingDetails {
   bookingId?: string;

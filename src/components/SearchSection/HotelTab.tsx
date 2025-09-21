@@ -49,15 +49,17 @@ const HotelTab = () => {
 
   const handleSearch = (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
-
     const query = new URLSearchParams();
     if (location) query.set('city', location);
-    if (dateRange?.start) query.set('checkIn', dateRange.start.toString());
-    if (dateRange?.end) query.set('checkOut', dateRange.end.toString());
-    query.set('guests', totalGuests.toString());
+    console.log(query);
+    // if (dateRange?.start) query.set('checkIn', dateRange.start.toString());
+    // if (dateRange?.end) query.set('checkOut', dateRange.end.toString());
+    // query.set('guests', totalGuests.toString());
 
     router.push(`/hotels?${query.toString()}`);
   };
+
+  console.log("helo")
 
   return (
     <form

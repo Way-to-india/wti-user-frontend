@@ -59,6 +59,7 @@ const endpoints = {
     getUserHotelBookings: `${API_BASE}/user/booking/hotel`,
     getHotelBooking: (bookingId: string) => `${API_BASE}/user/booking/hotel/${bookingId}`,
     updateHotelBookingStatus: (bookingId: string) => `${API_BASE}/user/booking/hotel/${bookingId}/status`,
+    cancelHotelBooking: (bookingId: string) => `${API_BASE}/user/booking/hotel/${bookingId}/cancel`,
     
     // Tour Bookings  
     createTourBooking: `${API_BASE}/user/tour-booking`,

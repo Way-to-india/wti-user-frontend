@@ -41,9 +41,7 @@ import { useAuth } from '@/context/AuthContext';
 import { useTheme } from '@/context/ThemeContext';
 
 // Services
-import { getUserHotelBookings } from '@/services/bookingService';
-import { getUserTourBookings } from '@/services/tourBookingService';
-import { getUserTransportBookings } from '@/services/transportBookingService';
+import { getAllUserBookings, getBookingStats } from '@/services/consolidatedBookingService';
 import {
   cancelAnyBooking,
   canCancelBooking,
@@ -163,13 +161,10 @@ const BookingStats: React.FC<{ bookings: UnifiedBooking[] }> = ({ bookings }) =>
             <p className="text-3xl font-bold text-gray-800">{totalCount}</p>
             <p className="text-xs text-gray-500 mt-1">All time</p>
           </div>
-          <div className="w-12 h-12 bg-gray-100 rounded-full flex items-center justify-center">
-            <span className="text-2xl">📊</span>
-          </div>
         </div>
       </div>
 
-      <div className="bg-white p-6 rounded-xl shadow-sm border border-blue-100 hover:shadow-md transition-all duration-200 border-l-4 border-l-blue-500">
+      <div className="bg-white p-6 rounded-xl shadow-sm border border-blue-100 hover:shadow-md transition-all duration-200 border-l-4">
         <div className="flex items-center justify-between">
           <div>
             <p className="text-blue-600 text-sm font-medium mb-1">Upcoming</p>
@@ -182,7 +177,7 @@ const BookingStats: React.FC<{ bookings: UnifiedBooking[] }> = ({ bookings }) =>
         </div>
       </div>
 
-      <div className="bg-white p-6 rounded-xl shadow-sm border border-green-100 hover:shadow-md transition-all duration-200 border-l-4 border-l-green-500">
+      <div className="bg-white p-6 rounded-xl shadow-sm border border-green-100 hover:shadow-md transition-all duration-200 border-l-4">
         <div className="flex items-center justify-between">
           <div>
             <p className="text-green-600 text-sm font-medium mb-1">Completed</p>
@@ -195,7 +190,7 @@ const BookingStats: React.FC<{ bookings: UnifiedBooking[] }> = ({ bookings }) =>
         </div>
       </div>
 
-      <div className="bg-white p-6 rounded-xl shadow-sm border border-red-100 hover:shadow-md transition-all duration-200 border-l-4 border-l-red-500">
+      <div className="bg-white p-6 rounded-xl shadow-sm border border-red-100 hover:shadow-md transition-all duration-200 border-l-4">
         <div className="flex items-center justify-between">
           <div>
             <p className="text-red-600 text-sm font-medium mb-1">Cancelled</p>
@@ -497,12 +492,22 @@ const BookingDetailsModal: React.FC<{
               </div>
               <div>
                 <p className="text-sm text-gray-500">Duration</p>
-                <p className="font-medium">{originalBooking.tourDuration || 'Not specified'}</p>
+                <p className="font-medium">
+                  {originalBooking.tourDuration
+                    ? typeof originalBooking.tourDuration === 'object'
+                      ? `${originalBooking.tourDuration.days} days, ${originalBooking.tourDuration.nights} nights`
+                      : originalBooking.tourDuration
+                    : 'Not specified'}
+                </p>
               </div>
               <div>
                 <p className="text-sm text-gray-500">Start City</p>
                 <p className="font-medium">
-                  {originalBooking.tourStartCity?.name || 'Not specified'}
+                  {originalBooking.tourStartCity
+                    ? typeof originalBooking.tourStartCity === 'string'
+                      ? originalBooking.tourStartCity
+                      : originalBooking.tourStartCity?.name || 'Not specified'
+                    : 'Not specified'}
                 </p>
               </div>
             </div>
@@ -560,7 +565,9 @@ const BookingDetailsModal: React.FC<{
               <div>
                 <p className="text-sm text-gray-500">Seat Capacity</p>
                 <p className="font-medium">
-                  {originalBooking.transportSeatCount || 'Not specified'} seats
+                  {originalBooking.transportSeatCount
+                    ? `${originalBooking.transportSeatCount} seats`
+                    : 'Not specified'}
                 </p>
               </div>
             </div>
@@ -843,38 +850,33 @@ export default function MyBookingsPage() {
         setLoading(true);
         setError(null);
 
-        const [hotelResponse, tourResponse, transportResponse] = await Promise.allSettled([
-          getUserHotelBookings(),
-          getUserTourBookings(),
-          getUserTransportBookings(),
-        ]);
+        // Use the consolidated booking API for better performance and consistency
+        const consolidatedResponse = await getAllUserBookings();
 
-        const newBookings: AllBookings = {
-          hotels:
-            hotelResponse.status === 'fulfilled' && hotelResponse.value.success
-              ? hotelResponse.value.data || []
-              : [],
-          tours:
-            tourResponse.status === 'fulfilled' && tourResponse.value.success
-              ? tourResponse.value.data || []
-              : [],
-          transport:
-            transportResponse.status === 'fulfilled' && transportResponse.value.success
-              ? transportResponse.value.data || []
-              : [],
-        };
+        if (consolidatedResponse.success && consolidatedResponse.data) {
+          const data = consolidatedResponse.data;
+          const newBookings: AllBookings = {
+            hotels: data.hotels.success ? (data.hotels.data || []) : [],
+            tours: data.tours.success ? (data.tours.data || []) : [],
+            transport: data.transport.success ? (data.transport.data || []) : [],
+          };
 
-        setAllBookings(newBookings);
+          setAllBookings(newBookings);
 
-        // Log any errors
-        if (hotelResponse.status === 'rejected') {
-          console.warn('Failed to fetch hotel bookings:', hotelResponse.reason);
-        }
-        if (tourResponse.status === 'rejected') {
-          console.warn('Failed to fetch tour bookings:', tourResponse.reason);
-        }
-        if (transportResponse.status === 'rejected') {
-          console.warn('Failed to fetch transport bookings:', transportResponse.reason);
+          // Log any errors from the consolidated response
+          if (!data.hotels.success && data.hotels.error) {
+            console.warn('Failed to fetch hotel bookings:', data.hotels.error);
+          }
+          if (!data.tours.success && data.tours.error) {
+            console.warn('Failed to fetch tour bookings:', data.tours.error);
+          }
+          if (!data.transport.success && data.transport.error) {
+            console.warn('Failed to fetch transport bookings:', data.transport.error);
+          }
+        } else {
+          // If consolidated API fails, log the error but set empty bookings
+          console.error('Consolidated booking API failed:', consolidatedResponse.message || consolidatedResponse.error);
+          setAllBookings({ hotels: [], tours: [], transport: [] });
         }
       } catch (error) {
         console.error('Error fetching bookings:', error);
@@ -981,7 +983,7 @@ export default function MyBookingsPage() {
         {/* Header */}
         <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between mb-8">
           <div className="mb-4 sm:mb-0">
-            <h1 className="text-4xl font-bold bg-gradient-to-r from-gray-900 via-orange-800 to-orange-600 bg-clip-text text-transparent mb-2">
+            <h1 className="text-4xl font-bold mb-2">
               My Bookings
             </h1>
             <p className="text-lg text-gray-600">Manage all your travel bookings in one place</p>
@@ -1068,7 +1070,6 @@ export default function MyBookingsPage() {
                   <Tab
                     label={
                       <div className="flex items-center space-x-2">
-                        <span>📊</span>
                         <span>All ({unifiedBookings.length})</span>
                       </div>
                     }

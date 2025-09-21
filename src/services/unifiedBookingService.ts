@@ -1,5 +1,5 @@
 import { cancelTourBooking } from './tourBookingService';
-import { updateBookingStatus } from './bookingService';
+import { updateBookingStatus, cancelHotelBooking } from './bookingService';
 import { cancelTransportBooking } from './transportBookingService';
 import { BookingStatus } from '@/types/booking';
 import { ApiResponse } from '@/types/apiResponse';
@@ -21,8 +21,8 @@ export const cancelAnyBooking = async (request: UnifiedCancelRequest): Promise<A
   try {
     switch (bookingType) {
       case 'hotel':
-        // Hotel bookings use the general booking service
-        return await updateBookingStatus(bookingId, BookingStatus.CANCELLED);
+        // Hotel bookings have their own cancellation endpoint
+        return await cancelHotelBooking(bookingId, cancellationReason);
         
       case 'tour':
         // Tour bookings have their own cancellation endpoint

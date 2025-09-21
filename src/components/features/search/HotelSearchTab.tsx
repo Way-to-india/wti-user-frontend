@@ -44,11 +44,9 @@ const HotelSearchTab: React.FC<HotelSearchTabProps> = ({ onSearch, className }) 
 
   const cities = getCachedCities();
 
-  // Get today's date and one week from today as default dates
   const today = new Date().toISOString().split('T')[0];
   const weekFromToday = new Date(Date.now() + 7 * 24 * 60 * 60 * 1000).toISOString().split('T')[0];
 
-  // Initialize dates if not set
   React.useEffect(() => {
     if (!searchData.checkIn) {
       setSearchData(prev => ({
@@ -93,11 +91,20 @@ const HotelSearchTab: React.FC<HotelSearchTabProps> = ({ onSearch, className }) 
   const handleSearch = useCallback(async (e: React.FormEvent) => {
     e.preventDefault();
 
-    if (!validateForm()) return;
+    console.log('=== HOTEL SEARCH: Starting search ===');
+    console.log('Search data:', searchData);
+    console.log('Available cities:', cities);
+    console.log('Validation result:', validateForm());
+
+    if (!validateForm()) {
+      console.log('Validation failed, stopping search');
+      return;
+    }
 
     setIsSearching(true);
 
     try {
+      console.log('Adding to search history...');
       // Add to search history
       addSearchHistory({
         type: 'hotels',
@@ -107,11 +114,12 @@ const HotelSearchTab: React.FC<HotelSearchTabProps> = ({ onSearch, className }) 
 
       // Call onSearch if provided
       if (onSearch) {
+        console.log('Calling onSearch callback...');
         onSearch(searchData);
       } else {
         // Navigate to hotels page with search parameters
         const params = new URLSearchParams({
-          city: searchData.city,
+          cityId: searchData.city, // Use cityId for consistency with backend
           checkIn: searchData.checkIn,
           checkOut: searchData.checkOut,
           guests: (searchData.guests.adults + searchData.guests.seniorAdults + searchData.guests.children).toString(),
@@ -120,7 +128,9 @@ const HotelSearchTab: React.FC<HotelSearchTabProps> = ({ onSearch, className }) 
           children: searchData.guests.children.toString()
         });
 
-        router.push(`/hotels?${params.toString()}`);
+        const url = `/hotels?${params.toString()}`;
+        console.log('Navigating to:', url);
+        router.push(url);
       }
     } catch (error) {
       console.error('Search error:', error);

@@ -104,7 +104,15 @@ const TransportSearchTab: React.FC<TransportSearchTabProps> = ({ onSearch, class
   const handleSearch = useCallback(async (e: React.FormEvent) => {
     e.preventDefault();
 
-    if (!validateForm()) return;
+    console.log('=== TRANSPORT SEARCH: Starting search ===');
+    console.log('Search data:', searchData);
+    console.log('Available cities:', cities);
+    console.log('Validation result:', validateForm());
+
+    if (!validateForm()) {
+      console.log('Validation failed, stopping search');
+      return;
+    }
 
     setIsSearching(true);
 
@@ -112,6 +120,9 @@ const TransportSearchTab: React.FC<TransportSearchTabProps> = ({ onSearch, class
       // Add to search history
       const selectedFromCity = cities.find(city => city.id === searchData.fromCity);
       const selectedToCity = searchData.toCity ? cities.find(city => city.id === searchData.toCity) : null;
+      
+      console.log('Selected from city:', selectedFromCity);
+      console.log('Selected to city:', selectedToCity);
       
       const query = `${selectedFromCity?.name || ''} ${selectedToCity ? `to ${selectedToCity.name}` : ''} - ${searchData.isRoundTrip ? 'Round Trip' : 'One Way'}`;
       
@@ -123,13 +134,16 @@ const TransportSearchTab: React.FC<TransportSearchTabProps> = ({ onSearch, class
 
       // Call onSearch if provided
       if (onSearch) {
+        console.log('Calling onSearch callback...');
         onSearch(searchData);
       } else {
         // Navigate to transport page with search parameters
         const params = new URLSearchParams({
-          startCityId: searchData.fromCity,
+          fromCity: searchData.fromCity, // Use fromCity as primary parameter
+          startCityId: searchData.fromCity, // Keep for backend compatibility
           departureDate: searchData.departureDate,
           guests: searchData.guests.toString(),
+          passengers: searchData.guests.toString(), // Backend expects passengers
           tripType: searchData.isRoundTrip ? 'round' : 'one-way'
         });
         
@@ -141,7 +155,9 @@ const TransportSearchTab: React.FC<TransportSearchTabProps> = ({ onSearch, class
           params.set('returnDate', searchData.returnDate);
         }
 
-        router.push(`/transport?${params.toString()}`);
+        const url = `/transport?${params.toString()}`;
+        console.log('Navigating to:', url);
+        router.push(url);
       }
     } catch (error) {
       console.error('Search error:', error);
