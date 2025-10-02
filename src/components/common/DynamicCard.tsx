@@ -49,7 +49,7 @@ const DynamicCard: React.FC<DynamicCardProps> = ({
   amenities,
   isAvailable = true,
   category,
-  onActionClick
+  onActionClick,
 }) => {
   const theme = useTheme();
   const router = useRouter();
@@ -82,13 +82,11 @@ const DynamicCard: React.FC<DynamicCardProps> = ({
   // Calculate rating based on category for hotels
   const calculateRating = () => {
     if (rating) return rating;
-    
+
     if (type === 'hotel' && category) {
-      return category === 'Luxury' ? 5 : 
-             category === 'Premium' ? 4 :
-             category === 'Budget' ? 3 : 4;
+      return category === 'Luxury' ? 5 : category === 'Premium' ? 4 : category === 'Budget' ? 3 : 4;
     }
-    
+
     return 5; // Default rating
   };
 
@@ -132,30 +130,29 @@ const DynamicCard: React.FC<DynamicCardProps> = ({
         display: 'flex',
         flexDirection: 'column',
         transition: 'box-shadow 0.2s',
-        '&:hover': { 
+        cursor: 'pointer',
+        '&:hover': {
           boxShadow: '2px 4px 8px rgba(0, 0, 0, 0.3)',
         },
       }}
+      onClick={handleActionClick}
     >
       {/* Image Container */}
       <Box sx={{ position: 'relative', width: '100%', height: '180px', flexShrink: 0 }}>
-        <Image
-          src={imageUrl}
-          alt={title}
-          fill
-          style={{ objectFit: 'cover' }}
-        />
+        <Image src={imageUrl} alt={title} fill style={{ objectFit: 'cover' }} />
       </Box>
 
       {/* Content Container */}
-      <Box sx={{ 
-        p: 1.5,
-        display: 'flex',
-        flexDirection: 'column',
-        flex: '1 1 auto',
-        justifyContent: 'space-between',
-        height: type === 'transport' ? '250px' : '220px',
-      }}>
+      <Box
+        sx={{
+          p: 1.5,
+          display: 'flex',
+          flexDirection: 'column',
+          flex: '1 1 auto',
+          justifyContent: 'space-between',
+          height: type === 'transport' ? '250px' : '220px',
+        }}
+      >
         <Box>
           {/* Rating */}
           <Box sx={{ display: 'flex', alignItems: 'center', mb: 1 }}>
@@ -164,16 +161,16 @@ const DynamicCard: React.FC<DynamicCardProps> = ({
                 key={index}
                 sx={{
                   color: index < actualRating ? '#FDB827' : '#D1D5DB',
-                  fontSize: '14px'
+                  fontSize: '14px',
                 }}
               />
             ))}
-            <Typography 
-              sx={{ 
+            <Typography
+              sx={{
                 ml: 0.5,
                 color: '#4B5563',
                 fontSize: '12px',
-                fontWeight: 400
+                fontWeight: 400,
               }}
             >
               ({actualRating})
@@ -199,12 +196,14 @@ const DynamicCard: React.FC<DynamicCardProps> = ({
 
           {/* Location for hotels */}
           {type === 'hotel' && location && (
-            <Box sx={{ 
-              display: 'flex', 
-              alignItems: 'center',
-              mb: 1,
-              gap: 0.5,
-            }}>
+            <Box
+              sx={{
+                display: 'flex',
+                alignItems: 'center',
+                mb: 1,
+                gap: 0.5,
+              }}
+            >
               <Box sx={{ display: 'flex', alignItems: 'center', gap: 0.5 }}>
                 <LocationOn sx={{ fontSize: 14, color: '#4B5563' }} />
                 <Typography
@@ -226,7 +225,7 @@ const DynamicCard: React.FC<DynamicCardProps> = ({
                   textDecoration: 'none',
                   '&:hover': {
                     textDecoration: 'underline',
-                  }
+                  },
                 }}
               >
                 View Map
@@ -237,12 +236,9 @@ const DynamicCard: React.FC<DynamicCardProps> = ({
           {/* Description if available */}
           {description && (
             <Box sx={{ position: 'relative' }}>
-              <Tooltip 
-                title={description} 
-                placement="top"
-              >
+              <Tooltip title={description} placement="top">
                 <Typography
-                  ref={(el) => {
+                  ref={el => {
                     if (el) {
                       const isTruncated = el.scrollHeight > el.clientHeight;
                       el.setAttribute('data-truncated', isTruncated.toString());
@@ -263,9 +259,9 @@ const DynamicCard: React.FC<DynamicCardProps> = ({
                       '&::after': {
                         content: '"..."',
                         color: theme.colors.carrotOrange,
-                        marginLeft: '2px'
-                      }
-                    }
+                        marginLeft: '2px',
+                      },
+                    },
                   }}
                 >
                   {description}
@@ -285,19 +281,21 @@ const DynamicCard: React.FC<DynamicCardProps> = ({
         {/* Bottom section with price and button - separated from the top content */}
         <Box sx={{ mt: 'auto' }}>
           {/* Price Section */}
-          <Box sx={{ 
-            display: 'flex', 
-            alignItems: 'center', 
-            justifyContent: 'space-between',
-            mb: 1,
-          }}>
+          <Box
+            sx={{
+              display: 'flex',
+              alignItems: 'center',
+              justifyContent: 'space-between',
+              mb: 1,
+            }}
+          >
             <Box>
               <Box sx={{ display: 'flex', alignItems: 'baseline', gap: 0.5 }}>
                 <Typography
                   sx={{
                     fontSize: '12px',
                     color: '#4B5563',
-                    fontWeight: 400
+                    fontWeight: 400,
                   }}
                 >
                   From
@@ -317,7 +315,7 @@ const DynamicCard: React.FC<DynamicCardProps> = ({
                 sx={{
                   fontSize: '10px',
                   color: '#6B7280',
-                  fontWeight: 400
+                  fontWeight: 400,
                 }}
               >
                 {type === 'transport' ? '(Excludes Taxes)' : '(Includes Taxes And Charges)'}
@@ -337,7 +335,7 @@ const DynamicCard: React.FC<DynamicCardProps> = ({
                   alignItems: 'center',
                   '&:hover': {
                     textDecoration: 'underline',
-                  }
+                  },
                 }}
               >
                 What&apos;s included?
@@ -346,14 +344,15 @@ const DynamicCard: React.FC<DynamicCardProps> = ({
           </Box>
 
           {/* Button */}
-          <Box sx={{ 
-            display: 'flex', 
-            justifyContent: 'center',
-            mb: 0.5,
-          }}>
+          <Box
+            sx={{
+              display: 'flex',
+              justifyContent: 'center',
+              mb: 0.5,
+            }}
+          >
             <Button
               variant="contained"
-              onClick={handleActionClick}
               disabled={type === 'hotel' && !isAvailable}
               sx={{
                 backgroundColor: theme.colors.carrotOrange,
@@ -375,7 +374,7 @@ const DynamicCard: React.FC<DynamicCardProps> = ({
                 '&:disabled': {
                   backgroundColor: '#E5E7EB',
                   color: '#9CA3AF',
-                }
+                },
               }}
             >
               {getButtonText()}

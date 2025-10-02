@@ -20,6 +20,7 @@ import TourOverview from './components/TourOverview';
 import TourTabs from './components/TourTabs';
 import TourSidebar from './components/TourSidebar';
 import MobileBookingBar from './components/MobileBookingBar';
+import { BookingPolicy } from '@/components/tours/BookingPolicy';
 
 interface TourDetailsProps {
   params: {
@@ -52,10 +53,14 @@ const TourDetails: React.FC<TourDetailsProps> = ({ params }) => {
   }, [tourDetails]);
 
   useEffect(() => {
+    const abortController = new AbortController();
     if (params.id) {
       dispatch(fetchTourById(params.id));
     }
-  }, [params.id, dispatch]);
+    return () => {
+      abortController.abort();
+    };
+  }, [params.id]);
 
   const openChangeModal = (type: 'hotel' | 'transport') => {
     setChangeModalType(type);
@@ -159,11 +164,11 @@ const TourDetails: React.FC<TourDetailsProps> = ({ params }) => {
             <TourSidebar tourDetails={tourDetails} onEnquireClick={openEnquireModal} />
           </div>
         </div>
+        <BookingPolicy cancellationPolicies={[]} termsAndConditions={[]} />
       </div>
 
-      {/* Add padding bottom for mobile booking bar */}
       <div className="h-20 lg:hidden"></div>
-      
+
       <MobileBookingBar tourDetails={tourDetails} />
     </div>
   );

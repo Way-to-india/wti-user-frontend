@@ -2,6 +2,7 @@ import React from 'react';
 import Image from 'next/image';
 import { FiStar, FiUsers, FiHome, FiMapPin, FiCoffee, FiTruck, FiClock } from 'react-icons/fi';
 import { useTheme } from '@/context/ThemeContext';
+import FAQSection from './FaqTab';
 
 interface ItineraryContentProps {
   selectedDay: number;
@@ -85,7 +86,9 @@ const ItineraryContent: React.FC<ItineraryContentProps> = ({
             theme={theme}
           />
 
-          {(currentItinerary?.hotel_ids?.length ||
+          <FAQSection tourSpecificFAQs={tourDetails?.faqs || []} />
+
+          {/* {(currentItinerary?.hotel_ids?.length ||
             selectedDay < (tourDetails?.duration?.days || 0)) && (
             <HotelInformationCard
               currentItinerary={currentItinerary}
@@ -94,9 +97,9 @@ const ItineraryContent: React.FC<ItineraryContentProps> = ({
               onOpenChangeModal={onOpenChangeModal}
               theme={theme}
             />
-          )}
+          )} */}
 
-          {(currentItinerary?.transportation_ids?.length || selectedDay === 1) && (
+          {/* {(currentItinerary?.transportation_ids?.length || selectedDay === 1) && (
             <TransportationInformationCard
               currentItinerary={currentItinerary}
               selectedDay={selectedDay}
@@ -104,15 +107,7 @@ const ItineraryContent: React.FC<ItineraryContentProps> = ({
               onOpenChangeModal={onOpenChangeModal}
               theme={theme}
             />
-          )}
-
-          {tourDetails?.inclusions && tourDetails?.inclusions?.length > 0 && (
-            <InclusionsCard inclusions={tourDetails.inclusions} theme={theme} />
-          )}
-
-          {tourDetails?.exclusions && tourDetails?.exclusions?.length > 0 && (
-            <ExclusionsCard exclusions={tourDetails.exclusions} theme={theme} />
-          )}
+          )} */}
         </div>
       </div>
     </div>
@@ -124,12 +119,6 @@ interface CardProps {
   tourDetails: any;
   theme: any;
   onOpenChangeModal?: (type: 'hotel' | 'transport') => void;
-}
-
-interface InclusionExclusionCardProps {
-  inclusions?: any[];
-  exclusions?: any[];
-  theme: any;
 }
 
 const PlanOfActionCard: React.FC<CardProps> = ({
@@ -189,375 +178,279 @@ const PlanOfActionCard: React.FC<CardProps> = ({
   </div>
 );
 
-const HotelInformationCard: React.FC<CardProps> = ({
-  currentItinerary,
-  selectedDay,
-  tourDetails,
-  onOpenChangeModal,
-  theme,
-}) => (
-  <div className="mt-6">
-    <div className="bg-white rounded-lg border shadow-sm">
-      <h3
-        className="text-sm font-medium p-4 border-b"
-        style={{
-          color: theme.colors.heavyMetal,
-          fontFamily: theme.typography.fontFamily.bold,
-        }}
-      >
-        HOTEL INFORMATION
-        <button
-          className="float-right text-sm font-medium"
-          style={{ color: theme.colors.carrotOrange }}
-          onClick={() => onOpenChangeModal && onOpenChangeModal('hotel')}
-        >
-          Change
-        </button>
-      </h3>
-      <div className="p-4 sm:p-6">
-        <p className="text-sm mb-4" style={{ color: theme.colors.heavyMetal }}>
-          1 night stay in {currentItinerary?.accommodation?.location || 'Hotel Location'}
-        </p>
-        <div className="flex flex-col sm:flex-row gap-4 sm:gap-6">
-          <div className="w-full sm:w-72 h-48 rounded-lg overflow-hidden border flex-shrink-0">
-            <Image
-              src={
-                currentItinerary?.accommodation?.image ||
-                tourDetails?.imageUrls?.[0] ||
-                '/placeholder-hotel.jpg'
-              }
-              alt="Hotel"
-              width={288}
-              height={192}
-              className="object-cover w-full h-full"
-            />
-          </div>
-          <div className="flex-1">
-            <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between mb-4 gap-2">
-              <h3
-                className="text-lg sm:text-xl font-medium"
-                style={{ color: theme.colors.heavyMetal }}
-              >
-                {currentItinerary?.accommodation?.name || 'Hotel Name'}
-              </h3>
-              <div className="flex items-center gap-1">
-                <FiStar className="w-4 h-4" style={{ color: theme.colors.carrotOrange }} />
-                <span className="text-sm" style={{ color: theme.colors.heavyMetal }}>
-                  {currentItinerary?.accommodation?.rating || 4.5} Ratings
-                </span>
-              </div>
-            </div>
-            <div className="flex flex-wrap gap-3 mb-6">
-              <div
-                className="flex items-center gap-2 px-3 py-1 rounded-full border text-sm"
-                style={{ color: theme.colors.heavyMetal }}
-              >
-                <FiUsers className="w-4 h-4" style={{ color: theme.colors.heavyMetal + '60' }} />
-                {currentItinerary?.accommodation?.capacity || '2-3'} Guests
-              </div>
-              <div
-                className="flex items-center gap-2 px-3 py-1 rounded-full border text-sm"
-                style={{ color: theme.colors.heavyMetal }}
-              >
-                <FiHome className="w-4 h-4" style={{ color: theme.colors.heavyMetal + '60' }} />
-                {currentItinerary?.accommodation?.roomSize || '150'} sq.ft
-              </div>
-              <div
-                className="flex items-center gap-2 px-3 py-1 rounded-full border text-sm"
-                style={{ color: theme.colors.heavyMetal }}
-              >
-                <FiStar className="w-4 h-4" style={{ color: theme.colors.heavyMetal + '60' }} />
-                {currentItinerary?.accommodation?.starRating || '4'} Star
-              </div>
-              <div
-                className="flex items-center gap-2 px-3 py-1 rounded-full border text-sm"
-                style={{ color: theme.colors.heavyMetal }}
-              >
-                <FiMapPin className="w-4 h-4" style={{ color: theme.colors.heavyMetal + '60' }} />
-                {currentItinerary?.accommodation?.location || 'Location'}
-              </div>
-            </div>
-            <div>
-              <p className="text-sm mb-2" style={{ color: theme.colors.heavyMetal }}>
-                {currentItinerary?.accommodation?.roomType || 'Standard Room'} x 1
-              </p>
-              <h4 className="text-sm font-medium mb-2" style={{ color: theme.colors.heavyMetal }}>
-                Amenities
-              </h4>
-              <div className="flex flex-wrap gap-2">
-                {currentItinerary?.accommodation?.amenities ? (
-                  currentItinerary.accommodation.amenities.map((amenity: string, index: number) => (
-                    <div
-                      key={index}
-                      className="flex items-center gap-2 px-3 py-1 rounded-full border text-sm"
-                      style={{ color: theme.colors.heavyMetal }}
-                    >
-                      {amenity}
-                    </div>
-                  ))
-                ) : (
-                  <>
-                    <div
-                      className="flex items-center gap-2 px-3 py-1 rounded-full border text-sm"
-                      style={{ color: theme.colors.heavyMetal }}
-                    >
-                      <FiCoffee
-                        className="w-4 h-4"
-                        style={{ color: theme.colors.heavyMetal + '60' }}
-                      />
-                      Only Breakfast
-                    </div>
-                    <div
-                      className="flex items-center gap-2 px-3 py-1 rounded-full border text-sm"
-                      style={{ color: theme.colors.heavyMetal }}
-                    >
-                      Comfortable bedding and linens
-                    </div>
-                    <div
-                      className="flex items-center gap-2 px-3 py-1 rounded-full border text-sm"
-                      style={{ color: theme.colors.heavyMetal }}
-                    >
-                      Private Bathroom
-                    </div>
-                  </>
-                )}
-              </div>
-            </div>
-          </div>
-        </div>
-      </div>
-    </div>
-  </div>
-);
+// const HotelInformationCard: React.FC<CardProps> = ({
+//   currentItinerary,
+//   selectedDay,
+//   tourDetails,
+//   onOpenChangeModal,
+//   theme,
+// }) => (
+//   <div className="mt-6">
+//     <div className="bg-white rounded-lg border shadow-sm">
+//       <h3
+//         className="text-sm font-medium p-4 border-b"
+//         style={{
+//           color: theme.colors.heavyMetal,
+//           fontFamily: theme.typography.fontFamily.bold,
+//         }}
+//       >
+//         HOTEL INFORMATION
+//         <button
+//           className="float-right text-sm font-medium"
+//           style={{ color: theme.colors.carrotOrange }}
+//           onClick={() => onOpenChangeModal && onOpenChangeModal('hotel')}
+//         >
+//           Change
+//         </button>
+//       </h3>
+//       <div className="p-4 sm:p-6">
+//         <p className="text-sm mb-4" style={{ color: theme.colors.heavyMetal }}>
+//           1 night stay in {currentItinerary?.accommodation?.location || 'Hotel Location'}
+//         </p>
+//         <div className="flex flex-col sm:flex-row gap-4 sm:gap-6">
+//           <div className="w-full sm:w-72 h-48 rounded-lg overflow-hidden border flex-shrink-0">
+//             <Image
+//               src={
+//                 currentItinerary?.accommodation?.image ||
+//                 tourDetails?.imageUrls?.[0] ||
+//                 '/placeholder-hotel.jpg'
+//               }
+//               alt="Hotel"
+//               width={288}
+//               height={192}
+//               className="object-cover w-full h-full"
+//             />
+//           </div>
+//           <div className="flex-1">
+//             <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between mb-4 gap-2">
+//               <h3
+//                 className="text-lg sm:text-xl font-medium"
+//                 style={{ color: theme.colors.heavyMetal }}
+//               >
+//                 {currentItinerary?.accommodation?.name || 'Hotel Name'}
+//               </h3>
+//               <div className="flex items-center gap-1">
+//                 <FiStar className="w-4 h-4" style={{ color: theme.colors.carrotOrange }} />
+//                 <span className="text-sm" style={{ color: theme.colors.heavyMetal }}>
+//                   {currentItinerary?.accommodation?.rating || 4.5} Ratings
+//                 </span>
+//               </div>
+//             </div>
+//             <div className="flex flex-wrap gap-3 mb-6">
+//               <div
+//                 className="flex items-center gap-2 px-3 py-1 rounded-full border text-sm"
+//                 style={{ color: theme.colors.heavyMetal }}
+//               >
+//                 <FiUsers className="w-4 h-4" style={{ color: theme.colors.heavyMetal + '60' }} />
+//                 {currentItinerary?.accommodation?.capacity || '2-3'} Guests
+//               </div>
+//               <div
+//                 className="flex items-center gap-2 px-3 py-1 rounded-full border text-sm"
+//                 style={{ color: theme.colors.heavyMetal }}
+//               >
+//                 <FiHome className="w-4 h-4" style={{ color: theme.colors.heavyMetal + '60' }} />
+//                 {currentItinerary?.accommodation?.roomSize || '150'} sq.ft
+//               </div>
+//               <div
+//                 className="flex items-center gap-2 px-3 py-1 rounded-full border text-sm"
+//                 style={{ color: theme.colors.heavyMetal }}
+//               >
+//                 <FiStar className="w-4 h-4" style={{ color: theme.colors.heavyMetal + '60' }} />
+//                 {currentItinerary?.accommodation?.starRating || '4'} Star
+//               </div>
+//               <div
+//                 className="flex items-center gap-2 px-3 py-1 rounded-full border text-sm"
+//                 style={{ color: theme.colors.heavyMetal }}
+//               >
+//                 <FiMapPin className="w-4 h-4" style={{ color: theme.colors.heavyMetal + '60' }} />
+//                 {currentItinerary?.accommodation?.location || 'Location'}
+//               </div>
+//             </div>
+//             <div>
+//               <p className="text-sm mb-2" style={{ color: theme.colors.heavyMetal }}>
+//                 {currentItinerary?.accommodation?.roomType || 'Standard Room'} x 1
+//               </p>
+//               <h4 className="text-sm font-medium mb-2" style={{ color: theme.colors.heavyMetal }}>
+//                 Amenities
+//               </h4>
+//               <div className="flex flex-wrap gap-2">
+//                 {currentItinerary?.accommodation?.amenities ? (
+//                   currentItinerary.accommodation.amenities.map((amenity: string, index: number) => (
+//                     <div
+//                       key={index}
+//                       className="flex items-center gap-2 px-3 py-1 rounded-full border text-sm"
+//                       style={{ color: theme.colors.heavyMetal }}
+//                     >
+//                       {amenity}
+//                     </div>
+//                   ))
+//                 ) : (
+//                   <>
+//                     <div
+//                       className="flex items-center gap-2 px-3 py-1 rounded-full border text-sm"
+//                       style={{ color: theme.colors.heavyMetal }}
+//                     >
+//                       <FiCoffee
+//                         className="w-4 h-4"
+//                         style={{ color: theme.colors.heavyMetal + '60' }}
+//                       />
+//                       Only Breakfast
+//                     </div>
+//                     <div
+//                       className="flex items-center gap-2 px-3 py-1 rounded-full border text-sm"
+//                       style={{ color: theme.colors.heavyMetal }}
+//                     >
+//                       Comfortable bedding and linens
+//                     </div>
+//                     <div
+//                       className="flex items-center gap-2 px-3 py-1 rounded-full border text-sm"
+//                       style={{ color: theme.colors.heavyMetal }}
+//                     >
+//                       Private Bathroom
+//                     </div>
+//                   </>
+//                 )}
+//               </div>
+//             </div>
+//           </div>
+//         </div>
+//       </div>
+//     </div>
+//   </div>
+// );
 
-const TransportationInformationCard: React.FC<CardProps> = ({
-  currentItinerary,
-  selectedDay,
-  tourDetails,
-  onOpenChangeModal,
-  theme,
-}) => (
-  <div className="mt-6">
-    <div className="bg-white rounded-lg border shadow-sm">
-      <h3
-        className="text-sm font-medium p-4 border-b"
-        style={{
-          color: theme.colors.heavyMetal,
-          fontFamily: theme.typography.fontFamily.bold,
-        }}
-      >
-        TRANSPORTATION INFORMATION
-        <button
-          className="float-right text-sm font-medium"
-          style={{ color: theme.colors.carrotOrange }}
-          onClick={() => onOpenChangeModal && onOpenChangeModal('transport')}
-        >
-          Change
-        </button>
-      </h3>
-      <div className="p-4 sm:p-6">
-        <p className="text-sm mb-4" style={{ color: theme.colors.heavyMetal }}>
-          {currentItinerary?.transportation?.route || 'Transport Route'}
-        </p>
-        <div className="flex flex-col sm:flex-row gap-4 sm:gap-6">
-          <div className="w-full sm:w-72 h-48 rounded-lg overflow-hidden border flex-shrink-0">
-            <Image
-              src={
-                currentItinerary?.transportation?.image ||
-                tourDetails?.imageUrls?.[0] ||
-                '/placeholder-transport.jpg'
-              }
-              alt="Transportation"
-              width={288}
-              height={192}
-              className="object-cover w-full h-full"
-            />
-          </div>
-          <div className="flex-1">
-            <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between mb-4 gap-2">
-              <h3
-                className="text-lg sm:text-xl font-medium"
-                style={{ color: theme.colors.heavyMetal }}
-              >
-                {currentItinerary?.transportation?.type || 'Volvo'}
-              </h3>
-              <div className="flex items-center gap-1">
-                <FiStar className="w-4 h-4" style={{ color: theme.colors.carrotOrange }} />
-                <span className="text-sm" style={{ color: theme.colors.heavyMetal }}>
-                  {currentItinerary?.transportation?.rating || 4.5} Ratings
-                </span>
-              </div>
-            </div>
-            <div className="flex flex-wrap gap-3 mb-6">
-              <div
-                className="flex items-center gap-2 px-3 py-1 rounded-full border text-sm"
-                style={{ color: theme.colors.heavyMetal }}
-              >
-                <FiUsers className="w-4 h-4" style={{ color: theme.colors.heavyMetal + '60' }} />
-                {currentItinerary?.transportation?.capacity || '24'} Passengers
-              </div>
-              <div
-                className="flex items-center gap-2 px-3 py-1 rounded-full border text-sm"
-                style={{ color: theme.colors.heavyMetal }}
-              >
-                <FiTruck className="w-4 h-4" style={{ color: theme.colors.heavyMetal + '60' }} />
-                {currentItinerary?.transportation?.category || 'Public Transport'}
-              </div>
-              {currentItinerary?.transportation?.pickupLocation && (
-                <div
-                  className="flex items-center gap-2 px-3 py-1 rounded-full border text-sm"
-                  style={{ color: theme.colors.carrotOrange }}
-                >
-                  <FiMapPin className="w-4 h-4" style={{ color: theme.colors.carrotOrange }} />
-                  Pick up from {currentItinerary.transportation.pickupLocation}
-                </div>
-              )}
-              {currentItinerary?.transportation?.pickupTime && (
-                <div
-                  className="flex items-center gap-2 px-3 py-1 rounded-full border text-sm"
-                  style={{ color: theme.colors.carrotOrange }}
-                >
-                  <FiClock className="w-4 h-4" style={{ color: theme.colors.carrotOrange }} />
-                  {currentItinerary.transportation.pickupTime}
-                </div>
-              )}
-            </div>
-            <div>
-              <p className="text-sm font-medium mb-2" style={{ color: theme.colors.heavyMetal }}>
-                {currentItinerary?.transportation?.features?.[0] || 'A/C Semi Sleeper'}
-              </p>
-              <div className="flex flex-wrap gap-2">
-                {currentItinerary?.transportation?.features ? (
-                  currentItinerary.transportation.features
-                    .slice(1)
-                    .map((feature: string, index: number) => (
-                      <div
-                        key={index}
-                        className="flex items-center gap-2 px-3 py-1 rounded-full border text-sm"
-                        style={{ color: theme.colors.heavyMetal }}
-                      >
-                        {feature}
-                      </div>
-                    ))
-                ) : (
-                  <>
-                    <div
-                      className="flex items-center gap-2 px-3 py-1 rounded-full border text-sm"
-                      style={{ color: theme.colors.heavyMetal }}
-                    >
-                      Reclining Chair
-                    </div>
-                    <div
-                      className="flex items-center gap-2 px-3 py-1 rounded-full border text-sm"
-                      style={{ color: theme.colors.heavyMetal }}
-                    >
-                      Water Bottle
-                    </div>
-                  </>
-                )}
-              </div>
-            </div>
-          </div>
-        </div>
-      </div>
-    </div>
-  </div>
-);
-
-const InclusionsCard: React.FC<InclusionExclusionCardProps> = ({ inclusions, theme }) => (
-  <div className="mt-6">
-    <div className="bg-white rounded-lg border shadow-sm">
-      <h3
-        className="text-sm font-medium p-4 border-b"
-        style={{
-          color: theme.colors.heavyMetal,
-          fontFamily: theme.typography.fontFamily.bold,
-        }}
-      >
-        INCLUSIONS
-      </h3>
-      <div className="p-4 sm:p-6">
-        <div className="space-y-4">
-          {inclusions?.map((inclusion: any, index: number) => (
-            <div key={index} className="pb-3 last:pb-0">
-              <div className="flex items-start">
-                <div className="flex-1">
-                  {inclusion.title ? (
-                    <>
-                      <h4
-                        className="font-medium text-sm mb-1"
-                        style={{ color: theme.colors.heavyMetal }}
-                      >
-                        {inclusion.title}:
-                      </h4>
-                      <p className="text-sm" style={{ color: theme.colors.heavyMetal + '90' }}>
-                        {inclusion.description}
-                      </p>
-                    </>
-                  ) : (
-                    <p className="text-sm" style={{ color: theme.colors.heavyMetal + '90' }}>
-                      {typeof inclusion === 'string' ? inclusion : inclusion.description || ''}
-                    </p>
-                  )}
-                </div>
-              </div>
-            </div>
-          ))}
-        </div>
-      </div>
-    </div>
-  </div>
-);
-
-const ExclusionsCard: React.FC<InclusionExclusionCardProps> = ({ exclusions, theme }) => (
-  <div className="mt-6">
-    <div className="bg-white rounded-lg border shadow-sm">
-      <h3
-        className="text-sm font-medium p-4 border-b"
-        style={{
-          color: theme.colors.heavyMetal,
-          fontFamily: theme.typography.fontFamily.bold,
-        }}
-      >
-        EXCLUSIONS
-      </h3>
-      <div className="p-4 sm:p-6">
-        <div className="space-y-4">
-          {Array.isArray(exclusions) ? (
-            exclusions.map((exclusion: any, index: number) => (
-              <div key={index} className="pb-3 last:pb-0">
-                <div className="flex items-start">
-                  <div className="flex-1">
-                    {typeof exclusion === 'object' && exclusion?.title ? (
-                      <>
-                        <h4
-                          className="font-medium text-sm mb-1"
-                          style={{ color: theme.colors.heavyMetal }}
-                        >
-                          {exclusion.title}:
-                        </h4>
-                        <p className="text-sm" style={{ color: theme.colors.heavyMetal + '90' }}>
-                          {exclusion.description}
-                        </p>
-                      </>
-                    ) : (
-                      <p className="text-sm" style={{ color: theme.colors.heavyMetal + '90' }}>
-                        {typeof exclusion === 'string' ? exclusion : exclusion.description || ''}
-                      </p>
-                    )}
-                  </div>
-                </div>
-              </div>
-            ))
-          ) : (
-            <p className="text-sm" style={{ color: theme.colors.heavyMetal + '90' }}>
-              {exclusions}
-            </p>
-          )}
-        </div>
-      </div>
-    </div>
-  </div>
-);
+// const TransportationInformationCard: React.FC<CardProps> = ({
+//   currentItinerary,
+//   selectedDay,
+//   tourDetails,
+//   onOpenChangeModal,
+//   theme,
+// }) => (
+//   <div className="mt-6">
+//     <div className="bg-white rounded-lg border shadow-sm">
+//       <h3
+//         className="text-sm font-medium p-4 border-b"
+//         style={{
+//           color: theme.colors.heavyMetal,
+//           fontFamily: theme.typography.fontFamily.bold,
+//         }}
+//       >
+//         TRANSPORTATION INFORMATION
+//         <button
+//           className="float-right text-sm font-medium"
+//           style={{ color: theme.colors.carrotOrange }}
+//           onClick={() => onOpenChangeModal && onOpenChangeModal('transport')}
+//         >
+//           Change
+//         </button>
+//       </h3>
+//       <div className="p-4 sm:p-6">
+//         <p className="text-sm mb-4" style={{ color: theme.colors.heavyMetal }}>
+//           {currentItinerary?.transportation?.route || 'Transport Route'}
+//         </p>
+//         <div className="flex flex-col sm:flex-row gap-4 sm:gap-6">
+//           <div className="w-full sm:w-72 h-48 rounded-lg overflow-hidden border flex-shrink-0">
+//             <Image
+//               src={
+//                 currentItinerary?.transportation?.image ||
+//                 tourDetails?.imageUrls?.[0] ||
+//                 '/placeholder-transport.jpg'
+//               }
+//               alt="Transportation"
+//               width={288}
+//               height={192}
+//               className="object-cover w-full h-full"
+//             />
+//           </div>
+//           <div className="flex-1">
+//             <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between mb-4 gap-2">
+//               <h3
+//                 className="text-lg sm:text-xl font-medium"
+//                 style={{ color: theme.colors.heavyMetal }}
+//               >
+//                 {currentItinerary?.transportation?.type || 'Volvo'}
+//               </h3>
+//               <div className="flex items-center gap-1">
+//                 <FiStar className="w-4 h-4" style={{ color: theme.colors.carrotOrange }} />
+//                 <span className="text-sm" style={{ color: theme.colors.heavyMetal }}>
+//                   {currentItinerary?.transportation?.rating || 4.5} Ratings
+//                 </span>
+//               </div>
+//             </div>
+//             <div className="flex flex-wrap gap-3 mb-6">
+//               <div
+//                 className="flex items-center gap-2 px-3 py-1 rounded-full border text-sm"
+//                 style={{ color: theme.colors.heavyMetal }}
+//               >
+//                 <FiUsers className="w-4 h-4" style={{ color: theme.colors.heavyMetal + '60' }} />
+//                 {currentItinerary?.transportation?.capacity || '24'} Passengers
+//               </div>
+//               <div
+//                 className="flex items-center gap-2 px-3 py-1 rounded-full border text-sm"
+//                 style={{ color: theme.colors.heavyMetal }}
+//               >
+//                 <FiTruck className="w-4 h-4" style={{ color: theme.colors.heavyMetal + '60' }} />
+//                 {currentItinerary?.transportation?.category || 'Public Transport'}
+//               </div>
+//               {currentItinerary?.transportation?.pickupLocation && (
+//                 <div
+//                   className="flex items-center gap-2 px-3 py-1 rounded-full border text-sm"
+//                   style={{ color: theme.colors.carrotOrange }}
+//                 >
+//                   <FiMapPin className="w-4 h-4" style={{ color: theme.colors.carrotOrange }} />
+//                   Pick up from {currentItinerary.transportation.pickupLocation}
+//                 </div>
+//               )}
+//               {currentItinerary?.transportation?.pickupTime && (
+//                 <div
+//                   className="flex items-center gap-2 px-3 py-1 rounded-full border text-sm"
+//                   style={{ color: theme.colors.carrotOrange }}
+//                 >
+//                   <FiClock className="w-4 h-4" style={{ color: theme.colors.carrotOrange }} />
+//                   {currentItinerary.transportation.pickupTime}
+//                 </div>
+//               )}
+//             </div>
+//             <div>
+//               <p className="text-sm font-medium mb-2" style={{ color: theme.colors.heavyMetal }}>
+//                 {currentItinerary?.transportation?.features?.[0] || 'A/C Semi Sleeper'}
+//               </p>
+//               <div className="flex flex-wrap gap-2">
+//                 {currentItinerary?.transportation?.features ? (
+//                   currentItinerary.transportation.features
+//                     .slice(1)
+//                     .map((feature: string, index: number) => (
+//                       <div
+//                         key={index}
+//                         className="flex items-center gap-2 px-3 py-1 rounded-full border text-sm"
+//                         style={{ color: theme.colors.heavyMetal }}
+//                       >
+//                         {feature}
+//                       </div>
+//                     ))
+//                 ) : (
+//                   <>
+//                     <div
+//                       className="flex items-center gap-2 px-3 py-1 rounded-full border text-sm"
+//                       style={{ color: theme.colors.heavyMetal }}
+//                     >
+//                       Reclining Chair
+//                     </div>
+//                     <div
+//                       className="flex items-center gap-2 px-3 py-1 rounded-full border text-sm"
+//                       style={{ color: theme.colors.heavyMetal }}
+//                     >
+//                       Water Bottle
+//                     </div>
+//                   </>
+//                 )}
+//               </div>
+//             </div>
+//           </div>
+//         </div>
+//       </div>
+//     </div>
+//   </div>
+// );
 
 export default ItineraryContent;

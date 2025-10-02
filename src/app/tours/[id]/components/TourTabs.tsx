@@ -3,6 +3,7 @@ import { InclusionsExclusions } from '@/components/tours/InclusionsExclusions';
 import { FAQSection } from '@/components/tours/FAQSection';
 import { BookingPolicy } from '@/components/tours/BookingPolicy';
 import ItineraryContent from './ItineraryContent';
+import TravelTipsSection from './TravelTips';
 
 interface TourTabsProps {
   activeTab: string;
@@ -24,8 +25,7 @@ const TourTabs: React.FC<TourTabsProps> = ({
   const tabsConfig = [
     { name: 'Itinerary Details', key: 'itinerary' },
     { name: 'Inclusions & Exclusions', key: 'inclusions' },
-    { name: "General FAQ's", key: 'faq' },
-    { name: 'Booking Policy', key: 'policy' },
+    { name: 'Travel Tips For This Tour', key: 'travel-tips' },
   ];
 
   const renderTabContent = () => {
@@ -46,8 +46,8 @@ const TourTabs: React.FC<TourTabsProps> = ({
             exclusions={tourDetails?.exclusions || []}
           />
         );
-      case 'faq':
-        return <FAQSection faqs={tourDetails?.faqs || []} />;
+      // case 'faq':
+      //   return <FAQSection faqs={tourDetails?.faqs || []} />;
       case 'policy':
         return (
           <BookingPolicy
@@ -55,6 +55,8 @@ const TourTabs: React.FC<TourTabsProps> = ({
             termsAndConditions={tourDetails?.termsAndConditions || []}
           />
         );
+      case 'travel-tips':
+        return <TravelTipsSection travelTips={tourDetails?.travel_tips || []} />;
       default:
         return null;
     }
@@ -68,10 +70,10 @@ const TourTabs: React.FC<TourTabsProps> = ({
             <button
               key={tab.key}
               onClick={() => setActiveTab(tab.key)}
-              className={`px-3 sm:px-4 py-2 text-xs sm:text-sm font-medium rounded-md whitespace-nowrap ${
+              className={`px-3 sm:px-4 py-2 text-xs sm:text-sm font-medium rounded-md whitespace-nowrap transition-colors ${
                 activeTab === tab.key
                   ? 'bg-orange-500 text-white'
-                  : 'text-gray-500 hover:text-orange-500'
+                  : 'text-gray-500 hover:text-orange-500 hover:bg-orange-50'
               }`}
             >
               {tab.name}
