@@ -29,7 +29,7 @@ interface TourDetailsProps {
 }
 
 const TourDetails: React.FC<TourDetailsProps> = ({ params }) => {
-  const [activeTab, setActiveTab] = useState('itinerary');
+  const [activeTab, setActiveTab] = useState('overview');
   const [selectedDay, setSelectedDay] = useState(1);
   const dispatch = useDispatch<AppDispatch>();
   const { tourDetails, loading, error } = useSelector((state: RootState) => state.tours);

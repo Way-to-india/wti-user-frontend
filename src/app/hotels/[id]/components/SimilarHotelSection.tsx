@@ -9,9 +9,9 @@ interface SimilarHotelsSectionProps {
   cityDetails: City | null;
 }
 
-export const SimilarHotelsSection: React.FC<SimilarHotelsSectionProps> = ({ 
-  similarHotels, 
-  cityDetails 
+export const SimilarHotelsSection: React.FC<SimilarHotelsSectionProps> = ({
+  similarHotels,
+  cityDetails,
 }) => {
   return (
     <div className="mt-12 pb-8 border-t border-gray-200 pt-8">
@@ -113,7 +113,8 @@ export const SimilarHotelsSection: React.FC<SimilarHotelsSectionProps> = ({
                 <p className="text-sm text-gray-600 mb-3">3 room types</p>
 
                 <p className="text-sm text-gray-600 mb-4 line-clamp-2 flex-grow">
-                  Enjoy a peaceful night's sleep in a well-appointed space featuring modern amenities.
+                  Enjoy a peaceful night's sleep in a well-appointed space featuring modern
+                  amenities.
                 </p>
 
                 <div className="flex justify-between items-center mt-auto">
@@ -137,5 +138,5 @@ export const SimilarHotelsSection: React.FC<SimilarHotelsSectionProps> = ({
         )}
       </div>
     </div>
-  )
-}
+  );
+};

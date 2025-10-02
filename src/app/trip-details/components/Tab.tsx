@@ -1,24 +1,19 @@
-// components/DetailsPage.tsx
-import React, { useRef, useState } from "react";
-import { Tabs, Tab, Box } from "@mui/material"; // Material UI for tabs if you prefer
-import Itinerary from "./Itinerary";
-import HotelDetails from "./HotelDetails";
-import TransportationDetails from "./TransportationDetails";
-import InclusionsExclusions from "./InclusionsExclusions";
-import FAQs from "./faq";
-import BookingPolicy from "./BookingDetails";
-import Reviews from "./Reviews";
-import { bookingPolicy } from "@/app/trip-details/content.dto";
-import { IncluExclu } from "./InclusionsExclusions";
-import { IItinerary } from "./helpers";
+import React, { useRef, useState } from 'react';
+import { Tabs, Tab, Box } from '@mui/material';
+import Itinerary from './Itinerary';
+import InclusionsExclusions from './InclusionsExclusions';
+import FAQs from './faq';
+import BookingPolicy from './BookingDetails';
+import { bookingPolicy } from '@/app/trip-details/content.dto';
+import { IncluExclu } from './InclusionsExclusions';
+import { IItinerary } from './helpers';
 
 export interface TabSectionProps {
   ie: IncluExclu;
   itinerary: IItinerary;
-
 }
 
-const TabSection: React.FC<TabSectionProps> = ({ie, itinerary }) => {
+const TabSection: React.FC<TabSectionProps> = ({ ie, itinerary }) => {
   const [selectedTab, setSelectedTab] = useState(0);
   const itineraryRef = useRef<HTMLDivElement>(null);
   const hotelRef = useRef<HTMLDivElement>(null);
@@ -28,14 +23,9 @@ const TabSection: React.FC<TabSectionProps> = ({ie, itinerary }) => {
   const bookingPolicyRef = useRef<HTMLDivElement>(null);
   const reviewsRef = useRef<HTMLDivElement>(null);
 
-  console.log(itinerary);
-
-  const handleScroll = (
-    ref: React.RefObject<HTMLDivElement>,
-    index: number
-  ) => {
+  const handleScroll = (ref: React.RefObject<HTMLDivElement>, index: number) => {
     if (ref.current) {
-      ref.current.scrollIntoView({ behavior: "smooth" });
+      ref.current.scrollIntoView({ behavior: 'smooth' });
       setSelectedTab(index);
     }
   };
@@ -46,12 +36,12 @@ const TabSection: React.FC<TabSectionProps> = ({ie, itinerary }) => {
         {
           <Tabs value={false}>
             {[
-              { label: "Itinerary Details", ref: itineraryRef },
+              { label: 'Itinerary Details', ref: itineraryRef },
               // { label: "Hotel Details", ref: hotelRef },
               // { label: "Transportation Details", ref: transportationRef },
-              { label: "Inclusions & Exclusions", ref: inclusionsRef },
+              { label: 'Inclusions & Exclusions', ref: inclusionsRef },
               { label: "General FAQ's", ref: faqsRef },
-              { label: "Booking Policy", ref: bookingPolicyRef },
+              { label: 'Booking Policy', ref: bookingPolicyRef },
               // { label: "Reviews", ref: reviewsRef },
             ].map((tab, index) => (
               <Tab
@@ -60,17 +50,15 @@ const TabSection: React.FC<TabSectionProps> = ({ie, itinerary }) => {
                 label={tab.label}
                 onClick={() => handleScroll(tab.ref, index)}
                 sx={{
-                  marginRight: "10px",
-                  borderRadius: "8px", // Make selected tab rounded
-                  backgroundColor:
-                    selectedTab === index ? "#FF8C00" : "transparent", // Darker carrot-orange for selected tab
-                  color: selectedTab === index ? "#FFFFFF" : "#FF8B02", // Text color for selected vs unselected
-                  transition: "background-color 0.3s, color 0.3s", // Smooth transition for background and text color
-                  padding: "12px 24px", // Padding for a button-like appearance
-                  "&:hover": {
-                    backgroundColor:
-                      selectedTab === index ? "#FF8C00" : "#FFD700", // Change on hover
-                    color: selectedTab === index ? "#FFFFFF" : "#FF8B02", // Ensure hover text color remains consistent
+                  marginRight: '10px',
+                  borderRadius: '8px', // Make selected tab rounded
+                  backgroundColor: selectedTab === index ? '#FF8C00' : 'transparent', // Darker carrot-orange for selected tab
+                  color: selectedTab === index ? '#FFFFFF' : '#FF8B02', // Text color for selected vs unselected
+                  transition: 'background-color 0.3s, color 0.3s', // Smooth transition for background and text color
+                  padding: '12px 24px', // Padding for a button-like appearance
+                  '&:hover': {
+                    backgroundColor: selectedTab === index ? '#FF8C00' : '#FFD700', // Change on hover
+                    color: selectedTab === index ? '#FFFFFF' : '#FF8B02', // Ensure hover text color remains consistent
                   },
                 }}
               />
@@ -97,9 +85,7 @@ const TabSection: React.FC<TabSectionProps> = ({ie, itinerary }) => {
           <BookingPolicy
             cancellationPolicies={bookingPolicy.cancellationPolicies}
             actOfGodDescription={bookingPolicy.actOfGodDescription}
-            personalReasonsDescription={
-              bookingPolicy.personalReasonsDescription
-            }
+            personalReasonsDescription={bookingPolicy.personalReasonsDescription}
           />
         </div>
         {/* <div ref={reviewsRef}><Reviews /></div> */}

@@ -1,12 +1,10 @@
-// components/InclusionsExclusions.tsx
 import React from 'react';
-// import { inclusions, exclusions } from "@/app/trip-details/content.dto";
-import { Accordion, AccordionSummary, AccordionDetails, Typography, Box, Grid2 } from '@mui/material';
+import { Accordion, AccordionSummary, AccordionDetails } from '@mui/material';
 import ExpandMoreIcon from '@mui/icons-material/ExpandMore';
 
 export interface IncluExclu {
-    inclusions: [string];
-    exclusions: [string];
+  inclusions: [string];
+  exclusions: [string];
 }
 
 const InclusionsExclusions = (ie: IncluExclu) => {
@@ -20,8 +18,6 @@ const InclusionsExclusions = (ie: IncluExclu) => {
     es.push(<li key={i}>{ie.exclusions[i]}</li>);
   }
 
-  //  console.log(is);
-
   return (
     <div>
       <Accordion className="my-4" defaultExpanded>
@@ -29,10 +25,8 @@ const InclusionsExclusions = (ie: IncluExclu) => {
           <h2 className="text-3xl font-bold">Inclusions</h2>
         </AccordionSummary>
         <AccordionDetails>
-          <ul className="list-disc ml-5">
-            {/* Replace with your inclusions data */}
-            {is}
-          </ul>
+          {is.length == 0 && <p className="text-gray-500 italic">No inclusions specified</p>}
+          <ul className="list-disc ml-5">{is}</ul>
         </AccordionDetails>
       </Accordion>
       <Accordion className="my-4 mb-4" defaultExpanded>
@@ -40,10 +34,8 @@ const InclusionsExclusions = (ie: IncluExclu) => {
           <h2 className="text-3xl font-bold">Exclusions</h2>
         </AccordionSummary>
         <AccordionDetails>
-          <ul className="list-disc ml-5">
-            {/* Replace with your exclusions data */}
-            {es}
-          </ul>
+          {es.length == 0 && <p className="text-gray-500 italic">No inclusions specified</p>}
+          <ul className="list-disc ml-5">{es}</ul>
         </AccordionDetails>
       </Accordion>
     </div>

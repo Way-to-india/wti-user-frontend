@@ -56,9 +56,8 @@ export const BookingPolicy: React.FC<BookingPolicyProps> = ({
     termsAndConditions.length > 0 ? termsAndConditions : defaultTermsAndConditions;
 
   return (
-    <div className="space-y-6">
+    <div className="space-y-2">
       <h2 className="text-2xl font-bold text-gray-900">Booking Policy</h2>
-
       {/* Important Notice Banner */}
       <div className="bg-gradient-to-r from-orange-50 to-orange-100  rounded-lg p-4">
         <div className="flex items-start gap-3">

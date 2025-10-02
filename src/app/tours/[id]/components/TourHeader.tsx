@@ -21,9 +21,6 @@ const TourHeader: React.FC<TourHeaderProps> = ({ tourDetails }) => {
         </button>
       </div>
       <div className="flex flex-col sm:flex-row items-start sm:items-center gap-3 mb-6">
-        <span className="px-3 sm:px-4 py-1 bg-orange-50 text-orange-500 rounded-full text-sm border border-orange-200">
-          {tourDetails?.theme?.name || 'Tour Category'}
-        </span>
         <div className="flex items-center gap-2">
           <Rating value={tourDetails?.rating || 4.5} />
           <span className="text-sm text-gray-500">{tourDetails?.rating || 4.5} Ratings</span>
