@@ -25,7 +25,7 @@ const TourTabs: React.FC<TourTabsProps> = ({
   const tabsConfig = [
     { name: 'Overview', key: 'overview' },
     { name: 'Itinerary Details', key: 'itinerary' },
-    { name: 'Price Guide', key: 'price-guide' },
+    // { name: 'Price Guide', key: 'price-guide' },
     { name: 'Inclusions & Exclusions', key: 'inclusions' },
     { name: 'Travel Tips For This Tour', key: 'travel-tips' },
   ];
@@ -43,8 +43,8 @@ const TourTabs: React.FC<TourTabsProps> = ({
             onOpenChangeModal={onOpenChangeModal}
           />
         );
-      case 'price-guide':
-        return <PriceGuideDetail priceGuide={tourDetails?.price_guide || []} />;
+      // case 'price-guide':
+      //   return <PriceGuideDetail priceGuide={tourDetails?.price_guide || []} />;
       case 'inclusions':
         return (
           <InclusionsExclusions

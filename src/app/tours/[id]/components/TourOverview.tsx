@@ -69,7 +69,7 @@ const TourOverview: React.FC<TourOverviewProps> = ({ tourDetails }) => {
               <Home className="w-4 h-4 text-orange-500" />
             </div>
             <div>
-              <p className="text-xs text-gray-500">Cities Covering</p>
+              <p className="text-xs text-gray-500">Destination Covered</p>
               <p className="font-medium text-sm text-orange-500 hover:underline">
                 {tourDetails?.cities?.length || '1'}
               </p>
