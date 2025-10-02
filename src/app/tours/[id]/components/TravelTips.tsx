@@ -2,9 +2,10 @@ import React from 'react';
 
 interface TravelTipsSectionProps {
   travelTips: string[];
+  name: string;
 }
 
-const TravelTipsSection: React.FC<TravelTipsSectionProps> = ({ travelTips }) => {
+const TravelTipsSection: React.FC<TravelTipsSectionProps> = ({ travelTips, name }) => {
   if (!travelTips || travelTips.length === 0) {
     return (
       <div className="bg-white rounded-lg shadow-sm p-6">
@@ -45,9 +46,7 @@ const TravelTipsSection: React.FC<TravelTipsSectionProps> = ({ travelTips }) => 
   return (
     <div className="bg-white rounded-lg shadow-sm">
       <div className="p-6">
-        <h2 className="text-2xl font-semibold text-gray-800 mb-6">
-          Travel Tips For 12 Jyotirlinga Tour Package
-        </h2>
+        <h2 className="text-2xl font-semibold text-gray-800 mb-6">{name}</h2>
 
         <div className="space-y-4">
           {groupedTips.map((group, groupIndex) => (

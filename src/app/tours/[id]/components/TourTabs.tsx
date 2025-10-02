@@ -56,7 +56,7 @@ const TourTabs: React.FC<TourTabsProps> = ({
           />
         );
       case 'travel-tips':
-        return <TravelTipsSection travelTips={tourDetails?.travel_tips || []} />;
+        return <TravelTipsSection name={tourDetails.title} travelTips={tourDetails?.travel_tips || []} />;
       default:
         return null;
     }
