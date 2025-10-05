@@ -5,6 +5,7 @@ import ItineraryContent from './ItineraryContent';
 import TravelTipsSection from './TravelTips';
 import OverViewTab from './OverViewTab';
 import PriceGuideDetail from './PriceGuide';
+import TourReviews from './TourReviews';
 interface TourTabsProps {
   activeTab: string;
   setActiveTab: (tab: string) => void;
@@ -28,6 +29,7 @@ const TourTabs: React.FC<TourTabsProps> = ({
     // { name: 'Price Guide', key: 'price-guide' },
     { name: 'Inclusions & Exclusions', key: 'inclusions' },
     { name: 'Travel Tips For This Tour', key: 'travel-tips' },
+    { name: 'Reviews', key: 'reviews' },
   ];
 
   const renderTabContent = () => {
@@ -66,6 +68,8 @@ const TourTabs: React.FC<TourTabsProps> = ({
         return (
           <TravelTipsSection name={tourDetails.title} travelTips={tourDetails?.travel_tips || []} />
         );
+      case 'reviews':
+        return <TourReviews tourId={tourDetails.id} reviews={tourDetails?.reviews || []} />;
       default:
         return null;
     }
