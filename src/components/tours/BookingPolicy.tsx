@@ -1,5 +1,5 @@
 import React from 'react';
-import { FiAlertCircle, FiCheckCircle, FiXCircle, FiClock, FiDollarSign } from 'react-icons/fi';
+import { FiAlertCircle, FiCheckCircle, FiXCircle, FiClock } from 'react-icons/fi';
 
 interface CancellationPolicy {
   type: string;
@@ -7,11 +7,13 @@ interface CancellationPolicy {
 }
 
 interface BookingPolicyProps {
+  title: string;
   cancellationPolicies: CancellationPolicy[];
   termsAndConditions: string[];
 }
 
 export const BookingPolicy: React.FC<BookingPolicyProps> = ({
+  title,
   cancellationPolicies,
   termsAndConditions,
 }) => {
@@ -54,6 +56,17 @@ export const BookingPolicy: React.FC<BookingPolicyProps> = ({
     cancellationPolicies.length > 0 ? cancellationPolicies : defaultCancellationPolicies;
   const displayTermsAndConditions =
     termsAndConditions.length > 0 ? termsAndConditions : defaultTermsAndConditions;
+
+  const handleWhatsAppRedirect = () => {
+    const whatsappNumber = '918527255995';
+    const message = `Hello! I'm interested in learning more about the tour: ${
+      title || 'your tour'
+    }.`;
+    const encodedMessage = encodeURIComponent(message);
+    const whatsappUrl = `https://api.whatsapp.com/send?phone=${whatsappNumber}&text=${encodedMessage}`;
+
+    window.open(whatsappUrl, '_blank');
+  };
 
   return (
     <div className="space-y-2">
@@ -147,8 +160,11 @@ export const BookingPolicy: React.FC<BookingPolicyProps> = ({
               Our support team is available 24/7 to assist you with any questions or concerns.
             </p>
           </div>
-          <button className="px-6 py-3 bg-orange-500 text-white font-medium rounded-lg hover:bg-orange-600 transition-colors whitespace-nowrap">
-            Contact Support
+          <button
+            className="px-6 py-3 bg-orange-500 text-white font-medium rounded-lg hover:bg-orange-600 transition-colors whitespace-nowrap"
+            onClick={handleWhatsAppRedirect}
+          >
+            Whatsapp Support
           </button>
         </div>
       </div>

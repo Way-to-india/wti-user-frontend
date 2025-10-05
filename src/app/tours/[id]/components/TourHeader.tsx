@@ -13,7 +13,10 @@ const TourHeader: React.FC<TourHeaderProps> = ({ tourDetails }) => {
   return (
     <>
       <div className="flex justify-between items-start mb-3">
-        <h1 className="text-xl sm:text-2xl lg:text-3xl font-bold pr-2" style={{ color: theme.colors.heavyMetal }}>
+        <h1
+          className="text-xl sm:text-2xl lg:text-3xl font-bold pr-2"
+          style={{ color: theme.colors.heavyMetal }}
+        >
           {tourDetails?.title || 'Tour Title'}
         </h1>
         <button className="p-2 rounded-full bg-orange-500 text-white flex-shrink-0">

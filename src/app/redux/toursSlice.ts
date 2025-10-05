@@ -55,11 +55,11 @@ export const fetchTours = createAsyncThunk<
   async ({ page, themeId, cityId, duration, priceRange }, { rejectWithValue, dispatch }) => {
     try {
       // Update filter state first
-      dispatch(setSelectedTheme(themeId ?? null));
-      dispatch(setSelectedCity(cityId ?? null));
-      dispatch(setSelectedDuration(duration ?? null));
-      if (priceRange) dispatch(setSelectedPriceRange(priceRange));
-      dispatch(setCurrentPage(page));
+      // dispatch(setSelectedTheme(themeId ?? null));
+      // dispatch(setSelectedCity(cityId ?? null));
+      // dispatch(setSelectedDuration(duration ?? null));
+      // if (priceRange) dispatch(setSelectedPriceRange(priceRange));
+      // dispatch(setCurrentPage(page));
 
       const filters: any = {};
       if (themeId) filters.themeId = themeId;

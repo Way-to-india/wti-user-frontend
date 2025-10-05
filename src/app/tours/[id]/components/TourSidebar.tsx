@@ -4,12 +4,27 @@ import { useTheme } from '@/context/ThemeContext';
 
 interface TourSidebarProps {
   tourDetails: any;
-  onEnquireClick: () => void;
+  onEnquireClick?: () => void;
 }
 
-const TourSidebar: React.FC<TourSidebarProps> = ({ tourDetails, onEnquireClick }) => {
+const TourSidebar: React.FC<TourSidebarProps> = ({ tourDetails }) => {
   const theme = useTheme();
   const router = useRouter();
+
+  const whatsappNumber = '918527255995';
+
+  const handleWhatsAppRedirect = () => {
+    const message = `Hello! I'm interested in learning more about the tour: ${
+      tourDetails?.title || 'your tour'
+    }.`;
+
+    // Create WhatsApp URL with proper encoding
+    // Use api.whatsapp.com for better compatibility
+    const encodedMessage = encodeURIComponent(message);
+    const whatsappUrl = `https://api.whatsapp.com/send?phone=${whatsappNumber}&text=${encodedMessage}`;
+
+    window.open(whatsappUrl, '_blank');
+  };
 
   const handleBookNow = () => {
     if (tourDetails?.id) {
@@ -20,49 +35,20 @@ const TourSidebar: React.FC<TourSidebarProps> = ({ tourDetails, onEnquireClick }
   return (
     <>
       <div className="bg-white rounded-lg p-4 border shadow-sm mb-4">
-        <h3
-          className="text-sm font-medium p-4 -mt-4 -mx-4 mb-4 border-b"
-          style={{
-            color: theme.colors.heavyMetal,
-            fontFamily: theme.typography.fontFamily.bold,
-          }}
-        >
-          TRIP PRICE
-        </h3>
-        <div className="flex flex-col sm:flex-row lg:flex-col items-start sm:items-baseline lg:items-start mb-1">
-          <span className="text-xl sm:text-2xl font-bold" style={{ color: theme.colors.carrotOrange }}>
-            ₹{tourDetails?.price ? parseInt(tourDetails.price).toLocaleString() : '0'}
-          </span>
-          <span className="sm:ml-2 lg:ml-0 text-xs" style={{ color: theme.colors.heavyMetal + '80' }}>
-            per person
-          </span>
-        </div>
-        <p className="text-xs mb-4" style={{ color: theme.colors.heavyMetal + '80' }}>
-          *Excluding applicable taxes
-        </p>
+        {/* Enquire Now */}
         <button
-          className="w-full py-2.5 rounded-lg font-medium transition-colors mb-3 text-sm hover:opacity-90"
-          style={{
-            backgroundColor: theme.colors.carrotOrange,
-            color: theme.colors.milkWhite,
-            fontFamily: theme.typography.fontFamily.bold,
-          }}
-          onClick={handleBookNow}
-        >
-          Book Now
-        </button>
-        <button
-          className="w-full border py-2.5 rounded-lg font-medium transition-colors text-sm hover:bg-opacity-10"
+          className="w-full border py-2.5 rounded-lg font-medium transition-colors text-sm hover:bg-orange-50"
           style={{
             borderColor: theme.colors.carrotOrange,
             color: theme.colors.carrotOrange,
             fontFamily: theme.typography.fontFamily.bold,
           }}
-          onClick={onEnquireClick}
+          onClick={handleWhatsAppRedirect}
         >
           Enquire Now
         </button>
       </div>
+
       <div className="bg-white rounded-lg p-4 border shadow-sm">
         <h3
           className="text-sm font-medium p-4 -mt-4 -mx-4 mb-4 border-b"
@@ -76,13 +62,16 @@ const TourSidebar: React.FC<TourSidebarProps> = ({ tourDetails, onEnquireClick }
         <p className="text-xs mb-4" style={{ color: theme.colors.heavyMetal + '80' }}>
           Don't worry, our team is there to help you out
         </p>
+
+        {/* Contact Us */}
         <button
-          className="w-full border py-2.5 rounded-lg font-medium transition-colors text-sm hover:bg-opacity-10"
+          className="w-full border py-2.5 rounded-lg font-medium transition-colors text-sm hover:bg-orange-50"
           style={{
             borderColor: theme.colors.carrotOrange,
             color: theme.colors.carrotOrange,
             fontFamily: theme.typography.fontFamily.bold,
           }}
+          onClick={handleWhatsAppRedirect}
         >
           Contact Us
         </button>

@@ -31,22 +31,22 @@ export interface SearchState {
   cities: SearchCity[];
   themes: SearchTheme[];
   locations: string[];
-  
+
   // Loading states
   citiesLoading: boolean;
   themesLoading: boolean;
   locationsLoading: boolean;
-  
+
   // Error states
   citiesError: string | null;
   themesError: string | null;
   locationsError: string | null;
-  
+
   // Cache timestamps
   citiesCachedAt: number | null;
   themesCachedAt: number | null;
   locationsCachedAt: number | null;
-  
+
   // Search history and analytics
   searchHistory: SearchHistoryItem[];
   popularSearches: PopularSearch[];
@@ -107,50 +107,50 @@ function searchReducer(state: SearchState, action: SearchAction): SearchState {
     case 'SET_CITIES_LOADING':
       return { ...state, citiesLoading: action.payload };
     case 'SET_CITIES':
-      return { 
-        ...state, 
-        cities: action.payload.cities, 
+      return {
+        ...state,
+        cities: action.payload.cities,
         citiesCachedAt: action.payload.timestamp,
         citiesError: null,
-        citiesLoading: false
+        citiesLoading: false,
       };
     case 'SET_CITIES_ERROR':
-      return { 
-        ...state, 
+      return {
+        ...state,
         citiesError: action.payload,
-        citiesLoading: false
+        citiesLoading: false,
       };
     case 'SET_THEMES_LOADING':
       return { ...state, themesLoading: action.payload };
     case 'SET_THEMES':
-      return { 
-        ...state, 
-        themes: action.payload.themes, 
+      return {
+        ...state,
+        themes: action.payload.themes,
         themesCachedAt: action.payload.timestamp,
         themesError: null,
-        themesLoading: false
+        themesLoading: false,
       };
     case 'SET_THEMES_ERROR':
-      return { 
-        ...state, 
+      return {
+        ...state,
         themesError: action.payload,
-        themesLoading: false
+        themesLoading: false,
       };
     case 'SET_LOCATIONS_LOADING':
       return { ...state, locationsLoading: action.payload };
     case 'SET_LOCATIONS':
-      return { 
-        ...state, 
-        locations: action.payload.locations, 
+      return {
+        ...state,
+        locations: action.payload.locations,
         locationsCachedAt: action.payload.timestamp,
         locationsError: null,
-        locationsLoading: false
+        locationsLoading: false,
       };
     case 'SET_LOCATIONS_ERROR':
-      return { 
-        ...state, 
+      return {
+        ...state,
         locationsError: action.payload,
-        locationsLoading: false
+        locationsLoading: false,
       };
     case 'ADD_SEARCH_HISTORY':
       const newHistory = [action.payload, ...state.searchHistory].slice(0, 50); // Keep last 50 searches
@@ -163,12 +163,16 @@ function searchReducer(state: SearchState, action: SearchAction): SearchState {
 }
 
 // Utility function to normalize search parameters
-export const normalizeSearchParams = (searchParams: URLSearchParams, type: 'hotels' | 'tours' | 'transport') => {
+export const normalizeSearchParams = (
+  searchParams: URLSearchParams,
+  type: 'hotels' | 'tours' | 'transport'
+) => {
   const normalized: Record<string, string> = {};
-  
+
   // Common normalization
   if (type === 'hotels') {
-    normalized.cityId = searchParams.get('cityId') || searchParams.get('city') || searchParams.get('location') || '';
+    normalized.cityId =
+      searchParams.get('cityId') || searchParams.get('city') || searchParams.get('location') || '';
     normalized.checkIn = searchParams.get('checkIn') || '';
     normalized.checkOut = searchParams.get('checkOut') || '';
     normalized.guests = searchParams.get('guests') || searchParams.get('numberOfGuests') || '1';
@@ -180,17 +184,30 @@ export const normalizeSearchParams = (searchParams: URLSearchParams, type: 'hote
     normalized.themeId = searchParams.get('themeId') || searchParams.get('theme') || '';
     normalized.startDate = searchParams.get('startDate') || searchParams.get('checkIn') || '';
     normalized.endDate = searchParams.get('endDate') || searchParams.get('checkOut') || '';
-    normalized.guests = searchParams.get('guests') || searchParams.get('travelers') || searchParams.get('numberOfTravelers') || '1';
+    normalized.guests =
+      searchParams.get('guests') ||
+      searchParams.get('travelers') ||
+      searchParams.get('numberOfTravelers') ||
+      '1';
     normalized.duration = searchParams.get('duration') || searchParams.get('durationDays') || '';
   } else if (type === 'transport') {
-    normalized.startCityId = searchParams.get('startCityId') || searchParams.get('fromCity') || searchParams.get('city') || '';
+    normalized.startCityId =
+      searchParams.get('startCityId') ||
+      searchParams.get('fromCity') ||
+      searchParams.get('city') ||
+      '';
     normalized.toCityId = searchParams.get('toCityId') || searchParams.get('toCity') || '';
-    normalized.departureDate = searchParams.get('departureDate') || searchParams.get('startDate') || '';
+    normalized.departureDate =
+      searchParams.get('departureDate') || searchParams.get('startDate') || '';
     normalized.returnDate = searchParams.get('returnDate') || searchParams.get('endDate') || '';
-    normalized.passengers = searchParams.get('passengers') || searchParams.get('guests') || searchParams.get('numberOfPassengers') || '1';
+    normalized.passengers =
+      searchParams.get('passengers') ||
+      searchParams.get('guests') ||
+      searchParams.get('numberOfPassengers') ||
+      '1';
     normalized.tripType = searchParams.get('tripType') || 'one-way';
   }
-  
+
   return normalized;
 };
 
@@ -205,7 +222,10 @@ interface SearchContextType {
   getCachedThemes: () => SearchTheme[];
   getCachedLocations: () => string[];
   clearCache: () => void;
-  normalizeSearchParams: (searchParams: URLSearchParams, type: 'hotels' | 'tours' | 'transport') => Record<string, string>;
+  normalizeSearchParams: (
+    searchParams: URLSearchParams,
+    type: 'hotels' | 'tours' | 'transport'
+  ) => Record<string, string>;
 }
 
 const SearchContext = createContext<SearchContextType | undefined>(undefined);
@@ -226,7 +246,7 @@ export const SearchProvider: React.FC<{ children: React.ReactNode }> = ({ childr
     console.log('Current cities cache:', state.cities);
     console.log('Cities cached at:', state.citiesCachedAt);
     console.log('Cache valid:', isCacheValid(state.citiesCachedAt));
-    
+
     // Check if cache is valid
     if (isCacheValid(state.citiesCachedAt) && state.cities.length > 0) {
       console.log('Using cached cities data');
@@ -235,24 +255,24 @@ export const SearchProvider: React.FC<{ children: React.ReactNode }> = ({ childr
 
     console.log('Fetching fresh cities data from API...');
     dispatch({ type: 'SET_CITIES_LOADING', payload: true });
-    
+
     try {
       const response = await getCities();
       console.log('Cities API response:', response);
-      
+
       if (response.success && response.data) {
         const formattedCities: SearchCity[] = response.data.map((city: any) => ({
           id: city.id,
           name: city.name,
           label: city.name,
-          stateId: city.stateId
+          stateId: city.stateId,
         }));
-        
+
         console.log('Formatted cities:', formattedCities);
-        
-        dispatch({ 
-          type: 'SET_CITIES', 
-          payload: { cities: formattedCities, timestamp: Date.now() } 
+
+        dispatch({
+          type: 'SET_CITIES',
+          payload: { cities: formattedCities, timestamp: Date.now() },
         });
       } else {
         console.error('Cities API failed:', response);
@@ -260,9 +280,9 @@ export const SearchProvider: React.FC<{ children: React.ReactNode }> = ({ childr
       }
     } catch (error) {
       console.error('Cities fetch error:', error);
-      dispatch({ 
-        type: 'SET_CITIES_ERROR', 
-        payload: error instanceof Error ? error.message : 'Unknown error' 
+      dispatch({
+        type: 'SET_CITIES_ERROR',
+        payload: error instanceof Error ? error.message : 'Unknown error',
       });
     }
   }, [state.citiesCachedAt, state.cities.length]);
@@ -273,7 +293,7 @@ export const SearchProvider: React.FC<{ children: React.ReactNode }> = ({ childr
     console.log('Current themes cache:', state.themes);
     console.log('Themes cached at:', state.themesCachedAt);
     console.log('Cache valid:', isCacheValid(state.themesCachedAt));
-    
+
     // Check if cache is valid
     if (isCacheValid(state.themesCachedAt) && state.themes.length > 0) {
       console.log('Using cached themes data');
@@ -282,24 +302,24 @@ export const SearchProvider: React.FC<{ children: React.ReactNode }> = ({ childr
 
     console.log('Fetching fresh themes data from API...');
     dispatch({ type: 'SET_THEMES_LOADING', payload: true });
-    
+
     try {
       const response = await getThemes();
       console.log('Themes API response:', response);
-      
+
       if (response.success && response.data) {
         const formattedThemes: SearchTheme[] = response.data.map((theme: any) => ({
           id: theme.id,
           name: theme.name,
           label: theme.label || theme.name,
-          description: theme.description
+          description: theme.description,
         }));
-        
+
         console.log('Formatted themes:', formattedThemes);
-        
-        dispatch({ 
-          type: 'SET_THEMES', 
-          payload: { themes: formattedThemes, timestamp: Date.now() } 
+
+        dispatch({
+          type: 'SET_THEMES',
+          payload: { themes: formattedThemes, timestamp: Date.now() },
         });
       } else {
         console.error('Themes API failed:', response);
@@ -307,9 +327,9 @@ export const SearchProvider: React.FC<{ children: React.ReactNode }> = ({ childr
       }
     } catch (error) {
       console.error('Themes fetch error:', error);
-      dispatch({ 
-        type: 'SET_THEMES_ERROR', 
-        payload: error instanceof Error ? error.message : 'Unknown error' 
+      dispatch({
+        type: 'SET_THEMES_ERROR',
+        payload: error instanceof Error ? error.message : 'Unknown error',
       });
     }
   }, [state.themesCachedAt, state.themes.length]);
@@ -322,21 +342,21 @@ export const SearchProvider: React.FC<{ children: React.ReactNode }> = ({ childr
     }
 
     dispatch({ type: 'SET_LOCATIONS_LOADING', payload: true });
-    
+
     try {
       const response = await getLocations();
       if (response.success && response.data) {
-        dispatch({ 
-          type: 'SET_LOCATIONS', 
-          payload: { locations: response.data, timestamp: Date.now() } 
+        dispatch({
+          type: 'SET_LOCATIONS',
+          payload: { locations: response.data, timestamp: Date.now() },
         });
       } else {
         dispatch({ type: 'SET_LOCATIONS_ERROR', payload: 'Failed to fetch locations' });
       }
     } catch (error) {
-      dispatch({ 
-        type: 'SET_LOCATIONS_ERROR', 
-        payload: error instanceof Error ? error.message : 'Unknown error' 
+      dispatch({
+        type: 'SET_LOCATIONS_ERROR',
+        payload: error instanceof Error ? error.message : 'Unknown error',
       });
     }
   }, [state.locationsCachedAt, state.locations.length]);
@@ -346,9 +366,9 @@ export const SearchProvider: React.FC<{ children: React.ReactNode }> = ({ childr
     const historyItem: SearchHistoryItem = {
       ...item,
       id: `${Date.now()}-${Math.random()}`,
-      timestamp: Date.now()
+      timestamp: Date.now(),
     };
-    
+
     dispatch({ type: 'ADD_SEARCH_HISTORY', payload: historyItem });
   }, []);
 
@@ -384,11 +404,7 @@ export const SearchProvider: React.FC<{ children: React.ReactNode }> = ({ childr
     normalizeSearchParams,
   };
 
-  return (
-    <SearchContext.Provider value={contextValue}>
-      {children}
-    </SearchContext.Provider>
-  );
+  return <SearchContext.Provider value={contextValue}>{children}</SearchContext.Provider>;
 };
 
 // Custom hook to use search context

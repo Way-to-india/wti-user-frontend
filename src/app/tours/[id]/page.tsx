@@ -6,7 +6,6 @@ import HotelChangeModalContent from '@/components/TripDetails/HotelChangeModalCo
 import ImageModal from '@/components/TripDetails/ImageModal';
 import TransportChangeModalContent from '@/components/TripDetails/TransportChangeModalContent';
 import NavBar from '@/components/layout/navbar/NavBar';
-
 import EnquireNowModal from '@/components/tours/EnquireNowModal';
 import Modal from '@/lib/modals/modals';
 import { CircularProgress } from '@mui/material';
@@ -14,6 +13,7 @@ import React, { useEffect, useState } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 
 import TourBreadcrumb from './components/TourBreadcrumb';
+
 import TourHeader from './components/TourHeader';
 import TourImageGallery from './components/TourImageGallery';
 import TourOverview from './components/TourOverview';
@@ -46,21 +46,18 @@ const TourDetails: React.FC<TourDetailsProps> = ({ params }) => {
   };
 
   useEffect(() => {
+    if (params.id) {
+      dispatch(fetchTourById(params.id));
+    }
+  }, [params.id, dispatch]);
+
+  // Set initial selected day when tour data is loaded
+  useEffect(() => {
     if (tourDetails?.itinerary && tourDetails.itinerary.length > 0) {
       const minDay = Math.min(...tourDetails.itinerary.map(item => item.day));
       setSelectedDay(minDay);
     }
   }, [tourDetails]);
-
-  useEffect(() => {
-    const abortController = new AbortController();
-    if (params.id) {
-      dispatch(fetchTourById(params.id));
-    }
-    return () => {
-      abortController.abort();
-    };
-  }, [params.id]);
 
   const openChangeModal = (type: 'hotel' | 'transport') => {
     setChangeModalType(type);
@@ -80,7 +77,7 @@ const TourDetails: React.FC<TourDetailsProps> = ({ params }) => {
     setIsEnquireModalOpen(false);
   };
 
-  if (loading) {
+  if (loading || !tourDetails || tourDetails.id !== params.id) {
     return (
       <div className="flex justify-center items-center min-h-screen">
         <CircularProgress />
@@ -92,14 +89,6 @@ const TourDetails: React.FC<TourDetailsProps> = ({ params }) => {
     return (
       <div className="flex justify-center items-center min-h-screen">
         <div className="text-red-500">{error}</div>
-      </div>
-    );
-  }
-
-  if (!tourDetails) {
-    return (
-      <div className="flex justify-center items-center min-h-screen">
-        <div className="text-gray-500">No tour data found</div>
       </div>
     );
   }
@@ -164,7 +153,7 @@ const TourDetails: React.FC<TourDetailsProps> = ({ params }) => {
             <TourSidebar tourDetails={tourDetails} onEnquireClick={openEnquireModal} />
           </div>
         </div>
-        <BookingPolicy cancellationPolicies={[]} termsAndConditions={[]} />
+        <BookingPolicy title={tourDetails.title}  cancellationPolicies={[]} termsAndConditions={[]} />
       </div>
 
       <div className="h-20 lg:hidden"></div>

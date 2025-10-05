@@ -57,6 +57,7 @@ const TourTabs: React.FC<TourTabsProps> = ({
       case 'policy':
         return (
           <BookingPolicy
+            title={tourDetails.title}
             cancellationPolicies={tourDetails?.cancellationPolicies || []}
             termsAndConditions={tourDetails?.termsAndConditions || []}
           />
