@@ -4,7 +4,6 @@ import { BookingPolicy } from '@/components/tours/BookingPolicy';
 import ItineraryContent from './ItineraryContent';
 import TravelTipsSection from './TravelTips';
 import OverViewTab from './OverViewTab';
-import PriceGuideDetail from './PriceGuide';
 import TourReviews from './TourReviews';
 interface TourTabsProps {
   activeTab: string;
@@ -69,7 +68,7 @@ const TourTabs: React.FC<TourTabsProps> = ({
           <TravelTipsSection name={tourDetails.title} travelTips={tourDetails?.travel_tips || []} />
         );
       case 'reviews':
-        return <TourReviews tourId={tourDetails.id} reviews={tourDetails?.reviews || []} />;
+        return <TourReviews tourId={tourDetails.id}/>;
       default:
         return null;
     }
