@@ -4,6 +4,7 @@ import React, { useEffect, useState } from 'react';
 import { useRouter } from 'next/navigation';
 import Link from 'next/link';
 import { Snackbar, Alert, AlertColor } from '@mui/material';
+import Image from "next/image";
   
 import BookingConfirmationModal from '@/components/booking/BookingConfirmationModal';
 import ErrorModal from '@/components/ErrorModal';
@@ -95,7 +96,7 @@ const TransportInfoCard: React.FC<{ transport: Transport }> = ({ transport }) =>
     <div className="flex gap-4">
       {transport.imageUrls && transport.imageUrls.length > 0 && (
         <div className="w-24 h-24 rounded-lg overflow-hidden flex-shrink-0">
-          <img
+          <Image
             src={transport.imageUrls[0]}
             alt={transport.title}
             className="w-full h-full object-cover"

@@ -37,12 +37,9 @@ const TabSection: React.FC<TabSectionProps> = ({ ie, itinerary }) => {
           <Tabs value={false}>
             {[
               { label: 'Itinerary Details', ref: itineraryRef },
-              // { label: "Hotel Details", ref: hotelRef },
-              // { label: "Transportation Details", ref: transportationRef },
               { label: 'Inclusions & Exclusions', ref: inclusionsRef },
               { label: "General FAQ's", ref: faqsRef },
               { label: 'Booking Policy', ref: bookingPolicyRef },
-              // { label: "Reviews", ref: reviewsRef },
             ].map((tab, index) => (
               <Tab
                 className="font-bold"
@@ -88,7 +85,6 @@ const TabSection: React.FC<TabSectionProps> = ({ ie, itinerary }) => {
             personalReasonsDescription={bookingPolicy.personalReasonsDescription}
           />
         </div>
-        {/* <div ref={reviewsRef}><Reviews /></div> */}
       </div>
     </>
   );

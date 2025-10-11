@@ -13,7 +13,6 @@ import React, { useEffect, useState } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 
 import TourBreadcrumb from './components/TourBreadcrumb';
-
 import TourHeader from './components/TourHeader';
 import TourImageGallery from './components/TourImageGallery';
 import TourOverview from './components/TourOverview';
@@ -21,6 +20,7 @@ import TourTabs from './components/TourTabs';
 import TourSidebar from './components/TourSidebar';
 import MobileBookingBar from './components/MobileBookingBar';
 import { BookingPolicy } from '@/components/tours/BookingPolicy';
+import SimilarTours from './components/SimilarTour';
 
 interface TourDetailsProps {
   params: {
@@ -139,7 +139,7 @@ const TourDetails: React.FC<TourDetailsProps> = ({ params }) => {
         </div>
 
         <div className="grid grid-cols-1 lg:grid-cols-4 gap-4 sm:gap-6">
-          <div className="lg:col-span-3 order-2 lg:order-1">
+          <div className="lg:col-span-3 order-1">
             <TourTabs
               activeTab={activeTab}
               setActiveTab={setActiveTab}
@@ -149,12 +149,20 @@ const TourDetails: React.FC<TourDetailsProps> = ({ params }) => {
               onOpenChangeModal={openChangeModal}
             />
           </div>
-          <div className="lg:col-span-1 order-1 lg:order-2">
+
+          <div className="lg:col-span-1 order-2">
             <TourSidebar tourDetails={tourDetails} onEnquireClick={openEnquireModal} />
           </div>
         </div>
-        <BookingPolicy title={tourDetails.title}  cancellationPolicies={[]} termsAndConditions={[]} />
+
+        <BookingPolicy
+          title={tourDetails.title}
+          cancellationPolicies={[]}
+          termsAndConditions={[]}
+        />
       </div>
+
+      <SimilarTours tourId={params.id} limit={6} />
 
       <div className="h-20 lg:hidden"></div>
 

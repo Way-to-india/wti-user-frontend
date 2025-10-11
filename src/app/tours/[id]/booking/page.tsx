@@ -3,6 +3,7 @@
 import React, { useEffect, useState } from 'react';
 import { useRouter } from 'next/navigation';
 import Link from 'next/link';
+import Image from 'next/image';
 import { Snackbar, Alert, AlertColor } from '@mui/material';
 
 import BookingConfirmationModal from '@/components/booking/BookingConfirmationModal';
@@ -89,7 +90,7 @@ const TourInfoCard: React.FC<{ tour: TourCardProps }> = ({ tour }) => (
     <div className="flex gap-4">
       {tour.imageUrls && tour.imageUrls.length > 0 && (
         <div className="w-24 h-24 rounded-lg overflow-hidden flex-shrink-0">
-          <img src={tour.imageUrls[0]} alt={tour.title} className="w-full h-full object-cover" />
+          <Image src={tour.imageUrls[0]} alt={tour.title} className="w-full h-full object-cover" />
         </div>
       )}
       <div className="flex-1">

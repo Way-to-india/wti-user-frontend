@@ -9,11 +9,11 @@ import { cn } from '@/utils/classNames';
 type SearchTabType = 'hotels' | 'tours' | 'transport';
 
 const SearchSection = () => {
-  const [selectedTab, setSelectedTab] = useState<SearchTabType>('hotels');
+  const [selectedTab, setSelectedTab] = useState<SearchTabType>('tours');
 
   const tabs = [
-    { id: 'hotels' as const, label: 'Hotels', icon: '🏨' },
     { id: 'tours' as const, label: 'Tours/Packages', icon: '🎒' },
+    { id: 'hotels' as const, label: 'Hotels', icon: '🏨' },
     { id: 'transport' as const, label: 'Transportation', icon: '🚗' },
   ];
 

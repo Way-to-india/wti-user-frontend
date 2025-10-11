@@ -1,8 +1,6 @@
 import React from 'react';
 import Image from 'next/image';
-import { FiStar, FiUsers, FiHome, FiMapPin, FiCoffee, FiTruck, FiClock } from 'react-icons/fi';
 import { useTheme } from '@/context/ThemeContext';
-import FAQSection from './FaqTab';
 
 interface ItineraryContentProps {
   selectedDay: number;
@@ -45,7 +43,16 @@ const ItineraryContent: React.FC<ItineraryContentProps> = ({
         Itinerary Details
       </h2>
       <div className="flex flex-col lg:flex-row gap-4 lg:gap-8">
-        <div className="flex lg:flex-col gap-2 min-w-[80px] lg:border-dashed lg:border-gray-300 lg:pr-6 overflow-x-auto lg:overflow-x-visible">
+        <div
+          className={`
+            flex lg:flex-col gap-2 min-w-[80px] lg:border-dashed lg:border-gray-300 lg:pr-6
+            ${
+              availableDays.length > 7
+                ? 'max-h-80 overflow-y-auto scrollbar-thin scrollbar-thumb-orange-400 scrollbar-track-gray-200'
+                : ''
+            }
+          `}
+        >
           <div className="flex lg:flex-col gap-2 min-w-max lg:min-w-0">
             {availableDays.length > 0
               ? availableDays.map((day: number) => (
@@ -85,29 +92,6 @@ const ItineraryContent: React.FC<ItineraryContentProps> = ({
             tourDetails={tourDetails}
             theme={theme}
           />
-
-          <FAQSection tourSpecificFAQs={tourDetails?.faqs || []} />
-
-          {/* {(currentItinerary?.hotel_ids?.length ||
-            selectedDay < (tourDetails?.duration?.days || 0)) && (
-            <HotelInformationCard
-              currentItinerary={currentItinerary}
-              selectedDay={selectedDay}
-              tourDetails={tourDetails}
-              onOpenChangeModal={onOpenChangeModal}
-              theme={theme}
-            />
-          )} */}
-
-          {/* {(currentItinerary?.transportation_ids?.length || selectedDay === 1) && (
-            <TransportationInformationCard
-              currentItinerary={currentItinerary}
-              selectedDay={selectedDay}
-              tourDetails={tourDetails}
-              onOpenChangeModal={onOpenChangeModal}
-              theme={theme}
-            />
-          )} */}
         </div>
       </div>
     </div>

@@ -2,6 +2,7 @@
 
 import React, { useEffect, useState } from 'react';
 import { useRouter } from 'next/navigation';
+import Image from 'next/image';
 import Link from 'next/link';
 import Head from 'next/head';
 import {
@@ -40,7 +41,6 @@ import NavBar from '@/components/layout/navbar/NavBar';
 import { useAuth } from '@/context/AuthContext';
 import { useTheme } from '@/context/ThemeContext';
 
-// Services
 import { getAllUserBookings, getBookingStats } from '@/services/consolidatedBookingService';
 import {
   cancelAnyBooking,
@@ -49,11 +49,9 @@ import {
   getBookingStatusColor,
 } from '@/services/unifiedBookingService';
 
-// Types
 import { HotelBooking, TourBooking, TransportBooking, BookingStatus } from '@/types/booking';
 import { convertFirestoreTimestamp } from '@/utils/dateUtils';
 
-// Types for unified booking interface
 type AllBookings = {
   hotels: HotelBooking[];
   tours: TourBooking[];
@@ -254,7 +252,7 @@ const BookingCard: React.FC<{
         className={`h-32 ${typeInfo.bg} bg-gradient-to-br from-white/20 to-transparent relative overflow-hidden`}
       >
         {booking.imageUrl ? (
-          <img
+          <Image
             src={booking.imageUrl}
             alt={booking.title}
             className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300"

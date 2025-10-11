@@ -15,6 +15,8 @@ const TourOverview: React.FC<TourOverviewProps> = ({ tourDetails }) => {
   const displayedCities = showAllCities ? cities : cities.slice(0, 4);
   const displayedThemes = showAllThemes ? themes : themes.slice(0, 4);
 
+  console.log(tourDetails);
+
   return (
     <>
       <div className="mb-6">
@@ -51,7 +53,7 @@ const TourOverview: React.FC<TourOverviewProps> = ({ tourDetails }) => {
             </div>
             <div>
               <p className="text-xs text-gray-500">Best Time</p>
-              <p className="font-medium text-sm">{tourDetails?.bestTime || 'Year-round'}</p>
+              <p className="font-medium text-sm">{tourDetails?.best_time || 'Not Available'}</p>
             </div>
           </div>
 
@@ -62,7 +64,7 @@ const TourOverview: React.FC<TourOverviewProps> = ({ tourDetails }) => {
             </div>
             <div>
               <p className="text-xs text-gray-500">Ideal For</p>
-              <p className="font-medium text-sm">{tourDetails?.idealFor || 'Friends/Couples'}</p>
+              <p className="font-medium text-sm">{tourDetails?.ideal_for || 'Not Available'}</p>
             </div>
           </div>
 

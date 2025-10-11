@@ -1,4 +1,4 @@
-  @tailwind base;
+@tailwind base;
 @tailwind components;
 @tailwind utilities;
 
@@ -17,7 +17,15 @@
 body {
   color: var(--foreground);
   background: var(--background);
-  font-family: "Open Sans", Arial, Helvetica, sans-serif;
+  font-family: 'Open Sans', Arial, Helvetica, sans-serif;
+}
+
+.no-scrollbar::-webkit-scrollbar {
+  display: none;
+}
+.no-scrollbar {
+  -ms-overflow-style: none;
+  scrollbar-width: none;
 }
 
 @layer utilities {
@@ -37,8 +45,8 @@ body {
 }
 
 .react-datepicker__header {
-  background-color: #FF8B02 !important;
-  border-bottom: 1px solid #E67E02 !important;
+  background-color: #ff8b02 !important;
+  border-bottom: 1px solid #e67e02 !important;
 }
 
 .react-datepicker__current-month,
@@ -49,7 +57,7 @@ body {
 }
 
 .react-datepicker__day--selected {
-  background-color: #FF8B02 !important;
+  background-color: #ff8b02 !important;
   color: white !important;
 }
 
@@ -57,19 +65,32 @@ body {
   background-color: rgba(255, 139, 2, 0.2) !important;
 }
 
+.scrollbar-thin {
+  scrollbar-width: thin;
+}
+.scrollbar-thumb-orange-400::-webkit-scrollbar-thumb {
+  background-color: #fb923c; 
+  border-radius: 9999px;
+}
+.scrollbar-thumb-orange-400::-webkit-scrollbar-thumb:hover {
+  background-color: #fb923c;
+}
+.scrollbar-thumb-orange-400::-webkit-scrollbar-thumb:active {
+  background-color: #fb923c;
+}
+
 @font-face {
-  font-family: "LimeLight";
-  src: url("../app/fonts/Limelight.ttf") format("truetype");
+  font-family: 'LimeLight';
+  src: url('../app/fonts/Limelight.ttf') format('truetype');
   font-weight: normal;
   font-style: normal;
 }
 
 @font-face {
-  font-family: "Lexend";
+  font-family: 'Lexend';
   /* Name of the font */
-  src: url("../app/fonts/Lexend-Regular.woff2") format("woff2"),
-    /* WOFF2 for modern browsers */ url("../app/fonts/Lexend-Regular.woff")
-      format("woff");
+  src: url('../app/fonts/Lexend-Regular.woff2') format('woff2'),
+    /* WOFF2 for modern browsers */ url('../app/fonts/Lexend-Regular.woff') format('woff');
   /* WOFF for older browsers */
   font-weight: 400;
   font-style: normal;
@@ -101,10 +122,10 @@ body {
 }
 
 @keyframes spin {
-	0% {
-		transform: rotate(0deg);
-	}
-	100% {
-		transform: rotate(360deg);
-	}
+  0% {
+    transform: rotate(0deg);
+  }
+  100% {
+    transform: rotate(360deg);
+  }
 }

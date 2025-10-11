@@ -239,6 +239,7 @@ const TourReviews: React.FC<TourReviewsProps> = ({ tourId }) => {
       showModal('success', 'Review Submitted!', 'Thank you for sharing your experience with us.');
       setShowForm(false);
     } catch (err: any) {
+      console.log(err);
       const errorMsg = err.response?.data?.message || 'Failed to submit review. Please try again.';
       showModal('error', 'Submission Failed', errorMsg);
       console.error('Error submitting review:', err);

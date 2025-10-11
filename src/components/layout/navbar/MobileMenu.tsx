@@ -1,4 +1,5 @@
 'use client';
+
 import { useState, useRef, useEffect } from 'react';
 import { List, X, User, House, UsersFour, Bed, Island, Headset } from '@phosphor-icons/react';
 import { useAuth } from '@/context/AuthContext';
@@ -21,6 +22,8 @@ const MobileMenu: React.FC = () => {
   const router = useRouter();
   const pathname = usePathname();
   const menuRef = useRef<HTMLDivElement>(null);
+
+  const normalizedPath = pathname?.endsWith('/') ? pathname.slice(0, -1) : pathname;
 
   useEffect(() => {
     const handleClickOutside = (event: MouseEvent) => {
@@ -46,11 +49,12 @@ const MobileMenu: React.FC = () => {
 
   const closeMenu = () => {
     setIsOpen(false);
-    // Wait for animation before unmount
     setTimeout(() => setIsVisible(false), 300);
   };
 
   const handleNavigation = (path: string) => {
+    if (!path) return;
+    console.log('Navigating to:', path);
     router.push(path);
     closeMenu();
   };
@@ -158,24 +162,31 @@ const MobileMenu: React.FC = () => {
                     Navigation
                   </h3>
                   <div className="space-y-1">
-                    {navItems.map((item, index) => (
-                      <div
-                        key={index}
-                        style={{
-                          transition: 'all 0.3s ease',
-                          transitionDelay: `${index * 60}ms`,
-                          transform: isOpen ? 'translateX(0)' : 'translateX(20px)',
-                          opacity: isOpen ? 1 : 0,
-                        }}
-                      >
-                        <NavItem
-                          {...item}
-                          onClick={handleNavigation}
-                          activePath={pathname || undefined}
-                          isMobile={true}
-                        />
-                      </div>
-                    ))}
+                    {navItems.map((item, index) => {
+                      const isActive =
+                        item.path === '/'
+                          ? normalizedPath === '/'
+                          : normalizedPath?.startsWith(item.path);
+
+                      return (
+                        <div
+                          key={index}
+                          style={{
+                            transition: 'all 0.3s ease',
+                            transitionDelay: `${index * 60}ms`,
+                            transform: isOpen ? 'translateX(0)' : 'translateX(20px)',
+                            opacity: isOpen ? 1 : 0,
+                          }}
+                        >
+                          <NavItem
+                            {...item}
+                            onClick={() => handleNavigation(item.path)}
+                            active={isActive}
+                            isMobile={true}
+                          />
+                        </div>
+                      );
+                    })}
                   </div>
                 </div>
 
