@@ -1,13 +1,13 @@
 'use client';
 
+import 'swiper/css';
+import 'swiper/css/navigation';
+import 'swiper/css/pagination';
 import React, { useEffect, useState } from 'react';
 import { useRouter } from 'next/navigation';
 import Image from 'next/image';
 import { Swiper, SwiperSlide } from 'swiper/react';
 import { Navigation, Pagination, Autoplay } from 'swiper/modules';
-import 'swiper/css';
-import 'swiper/css/navigation';
-import 'swiper/css/pagination';
 import { FaStar, FaMapMarkerAlt, FaClock, FaChevronRight } from 'react-icons/fa';
 import { CircularProgress } from '@mui/material';
 
