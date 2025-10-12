@@ -12,8 +12,12 @@ import {
   fetchThemes,
   fetchTours,
   setCurrentPage,
+  setSelectedCity,
+  setSelectedTheme,
+  setSelectedDuration,
   setSelectedPriceRange,
 } from '../redux/toursSlice';
+import NoToursFound from './TourNotFound';
 
 const MAX_RETRIES = 3;
 const RETRY_DELAY = 2000;
@@ -47,6 +51,14 @@ const ToursPageContent = ({ slug, searchParams: pageSearchParams }: ToursPageCon
   const [isFiltering, setIsFiltering] = useState(false);
   const [retryCount, setRetryCount] = useState(0);
   const [isRetrying, setIsRetrying] = useState(false);
+
+  const [activeFilters, setActiveFilters] = useState({
+    themeId: null as string | null,
+    cityId: null as string | null,
+    duration: null as number | null,
+    minPrice: 3000,
+    maxPrice: 60000,
+  });
 
   const fetchToursWithRetry = async (params: any, retries = 0): Promise<void> => {
     try {
@@ -83,14 +95,14 @@ const ToursPageContent = ({ slug, searchParams: pageSearchParams }: ToursPageCon
         await Promise.all([
           dispatch(fetchThemes())
             .unwrap()
-            .catch(async error => {
+            .catch(async () => {
               console.error('Failed to fetch themes, retrying...');
               await new Promise(resolve => setTimeout(resolve, 1000));
               return dispatch(fetchThemes()).unwrap();
             }),
           dispatch(fetchCities())
             .unwrap()
-            .catch(async error => {
+            .catch(async () => {
               console.error('Failed to fetch cities, retrying...');
               await new Promise(resolve => setTimeout(resolve, 1000));
               return dispatch(fetchCities()).unwrap();
@@ -105,6 +117,14 @@ const ToursPageContent = ({ slug, searchParams: pageSearchParams }: ToursPageCon
           typeof pageSearchParams?.duration === 'string'
             ? parseInt(pageSearchParams.duration)
             : null;
+        const minPriceParam =
+          typeof pageSearchParams?.minPrice === 'string'
+            ? parseInt(pageSearchParams.minPrice)
+            : 3000;
+        const maxPriceParam =
+          typeof pageSearchParams?.maxPrice === 'string'
+            ? parseInt(pageSearchParams.maxPrice)
+            : 60000;
 
         const startDate =
           typeof pageSearchParams?.startDate === 'string' ? pageSearchParams.startDate : null;
@@ -122,12 +142,27 @@ const ToursPageContent = ({ slug, searchParams: pageSearchParams }: ToursPageCon
         const pageParam =
           typeof pageSearchParams?.page === 'string' ? parseInt(pageSearchParams.page) : 1;
 
+        if (themeIdParam) dispatch(setSelectedTheme(themeIdParam));
+        if (cityIdParam) dispatch(setSelectedCity(cityIdParam));
+        if (calculatedDuration) dispatch(setSelectedDuration(calculatedDuration));
+        dispatch(setSelectedPriceRange([minPriceParam, maxPriceParam]));
+
+        setActiveFilters({
+          themeId: themeIdParam,
+          cityId: cityIdParam,
+          duration: calculatedDuration,
+          minPrice: minPriceParam,
+          maxPrice: maxPriceParam,
+        });
+
         await fetchToursWithRetry({
           page: pageParam,
           slug,
           themeId: themeIdParam,
           cityId: cityIdParam,
           duration: calculatedDuration,
+          minPrice: minPriceParam,
+          maxPrice: maxPriceParam,
         });
 
         dispatch(setCurrentPage(pageParam));
@@ -137,12 +172,33 @@ const ToursPageContent = ({ slug, searchParams: pageSearchParams }: ToursPageCon
     };
 
     initializeToursPage();
-  }, [dispatch, slug, pageSearchParams]);
+  }, []);
+
+  const buildQueryString = (filters: any) => {
+    const params = new URLSearchParams();
+    params.set('page', '1');
+
+    if (filters.themeId) params.set('themeId', filters.themeId);
+    if (filters.cityId) params.set('cityId', filters.cityId);
+    if (filters.duration) params.set('duration', filters.duration.toString());
+    if (filters.minPrice) params.set('minPrice', filters.minPrice.toString());
+    if (filters.maxPrice) params.set('maxPrice', filters.maxPrice.toString());
+
+    return params.toString();
+  };
 
   const handlePageChange = async (event: React.ChangeEvent<unknown>, page: number) => {
     try {
       dispatch(setCurrentPage(page));
-      router.push(`${pathname}?page=${page}`, { scroll: false });
+      const params = new URLSearchParams(window.location.search);
+      params.set('page', page.toString());
+      router.push(`${pathname}?${params.toString()}`, { scroll: false });
+
+      await fetchToursWithRetry({
+        page,
+        slug,
+        ...activeFilters,
+      });
     } catch (error) {
       console.error('Page change failed:', error);
     }
@@ -158,17 +214,33 @@ const ToursPageContent = ({ slug, searchParams: pageSearchParams }: ToursPageCon
     const cityId = filters.destinations.length > 0 ? filters.destinations[0] : null;
     const duration = filters.durations.length > 0 ? parseInt(filters.durations[0]) : null;
 
+    const newFilters = {
+      themeId,
+      cityId,
+      duration,
+      minPrice: filters.priceRange[0],
+      maxPrice: filters.priceRange[1],
+    };
+
+    dispatch(setSelectedTheme(themeId));
+    dispatch(setSelectedCity(cityId));
+    dispatch(setSelectedDuration(duration));
+    dispatch(setSelectedPriceRange(filters.priceRange));
+
+    setActiveFilters(newFilters);
     setIsFiltering(true);
+
     try {
+      const queryString = buildQueryString(newFilters);
+      router.push(`${pathname}?${queryString}`, { scroll: false });
+
       await fetchToursWithRetry({
         page: 1,
         slug,
-        themeId,
-        cityId,
-        duration,
-        minPrice: filters.priceRange[0],
-        maxPrice: filters.priceRange[1],
+        ...newFilters,
       });
+
+      dispatch(setCurrentPage(1));
     } catch (error) {
       console.error('Filter change failed:', error);
     } finally {
@@ -187,15 +259,29 @@ const ToursPageContent = ({ slug, searchParams: pageSearchParams }: ToursPageCon
         durationDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24));
       }
 
+      const newFilters = {
+        themeId: searchParams.selectedType || null,
+        cityId: searchParams.location?.id || null,
+        duration: durationDays,
+        minPrice: activeFilters.minPrice,
+        maxPrice: activeFilters.maxPrice,
+      };
+
+      dispatch(setSelectedTheme(newFilters.themeId));
+      dispatch(setSelectedCity(newFilters.cityId));
+      dispatch(setSelectedDuration(newFilters.duration));
+      setActiveFilters(newFilters);
+
+      const queryString = buildQueryString(newFilters);
+      router.push(`${pathname}?${queryString}`, { scroll: false });
+
       await fetchToursWithRetry({
         page: 1,
         slug,
-        themeId: searchParams.selectedType || selectedTheme,
-        cityId: searchParams.location?.id || null,
-        duration: durationDays,
-        minPrice: selectedPriceRange[0],
-        maxPrice: selectedPriceRange[1],
+        ...newFilters,
       });
+
+      dispatch(setCurrentPage(1));
     } catch (error) {
       console.error('Search failed:', error);
     } finally {
@@ -203,25 +289,13 @@ const ToursPageContent = ({ slug, searchParams: pageSearchParams }: ToursPageCon
     }
   };
 
-  const handleLocationChange = async (location: LocationOption | null) => {
-    if (location) {
-      setIsSearching(true);
-      try {
-        await fetchToursWithRetry({
-          page: 1,
-          slug,
-          themeId: selectedTheme,
-          cityId: location.id,
-          duration: selectedDuration,
-          minPrice: selectedPriceRange[0],
-          maxPrice: selectedPriceRange[1],
-        });
-      } catch (error) {
-        console.error('Location change failed:', error);
-      } finally {
-        setIsSearching(false);
-      }
-    }
+  const handleLocationChange = (location: LocationOption | null) => {
+    if (location) dispatch(setSelectedCity(location.id));
+    else dispatch(setSelectedCity(null));
+  };
+
+  const handleTypeChange = (typeId: string) => {
+    dispatch(setSelectedTheme(typeId));
   };
 
   const filterOptions = {
@@ -268,19 +342,23 @@ const ToursPageContent = ({ slug, searchParams: pageSearchParams }: ToursPageCon
 
   const toursGrid = (
     <Grid container spacing={3}>
-      {tours.map(tour => (
-        <Grid item xs={12} sm={6} lg={4} key={tour.id}>
-          <DynamicCard
-            id={tour.id}
-            type="tour"
-            imageUrls={tour.imageUrls || []}
-            title={tour.title}
-            description={tour.description}
-            price={tour.price}
-            rating={tour.rating}
-          />
-        </Grid>
-      ))}
+      {tours.length > 0 ? (
+        tours.map(tour => (
+          <Grid item xs={12} sm={6} lg={4} key={tour.id}>
+            <DynamicCard
+              id={tour.id}
+              type="tour"
+              imageUrls={tour.imageUrls || []}
+              title={tour.title}
+              description={tour.description}
+              price={tour.price}
+              rating={tour.rating}
+            />
+          </Grid>
+        ))
+      ) : (
+        <NoToursFound message={'No tours found matching your search.'} />
+      )}
     </Grid>
   );
 
@@ -295,6 +373,7 @@ const ToursPageContent = ({ slug, searchParams: pageSearchParams }: ToursPageCon
           selectedLocation={selectedLocationObj}
           onSearch={handleSearch}
           onLocationChange={handleLocationChange}
+          onTypeChange={handleTypeChange}
           typesOptions={themeOptions}
           selectedType={selectedTheme || ''}
           typeLabel="Tour Theme"

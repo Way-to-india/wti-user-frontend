@@ -76,19 +76,17 @@ const DynamicSearchTab: React.FC<SearchTabProps> = ({
 }) => {
   const theme = useTheme();
 
-  // Guest counts
+  
   const [adults, setAdults] = useState(1);
   const [seniorAdults, setSeniorAdults] = useState(0);
   const [children, setChildren] = useState(0);
   const [anchorEl, setAnchorEl] = useState<HTMLButtonElement | null>(null);
 
-  // State for locations and types
   const [location, setLocation] = useState<LocationOption | null>(selectedLocation);
   const [fromLocation, setFromLocation] = useState<LocationOption | null>(selectedFromLocation);
   const [toLocation, setToLocation] = useState<LocationOption | null>(selectedToLocation);
   const [typeValue, setTypeValue] = useState<string>(selectedType);
 
-  // Date range
   const [dateRange, setDateRange] = useState<DateRange>(
     initialDateRange || {
       start: parseDate(new Date().toISOString().split('T')[0]),
@@ -146,7 +144,6 @@ const DynamicSearchTab: React.FC<SearchTabProps> = ({
     if (!range?.start || !range?.end) return null;
 
     try {
-      // Handle different date formats
       let startDate: Date;
       let endDate: Date;
 
@@ -193,7 +190,7 @@ const DynamicSearchTab: React.FC<SearchTabProps> = ({
       searchParams.toLocation = toLocation;
     }
 
-    console.log('Search params:', searchParams); // Debug log
+    console.log('Search params:', searchParams); 
     onSearch(searchParams);
   };
 

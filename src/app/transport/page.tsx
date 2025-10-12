@@ -42,14 +42,13 @@ const Transport = () => {
   const [marginTop, setMarginTop] = useState('0');
 
   useEffect(() => {
-    
     const handleResize = () => {
       if (typeof window !== 'undefined') {
         setMarginTop(window.innerWidth >= 1024 ? '8px' : '0');
       }
     };
 
-    handleResize(); 
+    handleResize();
     window.addEventListener('resize', handleResize);
     return () => window.removeEventListener('resize', handleResize);
   }, []);
@@ -290,34 +289,6 @@ const Transport = () => {
                       height={224}
                       className="w-full h-44 sm:h-52 lg:h-56 object-cover"
                       loading={idx < 4 ? 'eager' : 'lazy'}
-                      quality={85}
-                      sizes="(max-width: 640px) 256px, (max-width: 1024px) 288px, 320px"
-                    />
-                  </div>
-                </article>
-              ))}
-            </div>
-          </div>
-
-          <div
-            className="relative overflow-hidden"
-            role="region"
-            aria-label="More transport options"
-          >
-            <div className="flex animate-scroll-reverse hover:pause">
-              {[...duplicatedImages].reverse().map((transport, idx) => (
-                <article
-                  key={`reverse-${idx}`}
-                  className="flex-shrink-0 w-64 sm:w-72 lg:w-80 mx-2 sm:mx-3"
-                >
-                  <div className="rounded-xl sm:rounded-2xl overflow-hidden shadow-lg">
-                    <Image
-                      src={transport.src}
-                      alt={transport.alt}
-                      width={320}
-                      height={224}
-                      className="w-full h-44 sm:h-52 lg:h-56 object-cover"
-                      loading="lazy"
                       quality={85}
                       sizes="(max-width: 640px) 256px, (max-width: 1024px) 288px, 320px"
                     />
