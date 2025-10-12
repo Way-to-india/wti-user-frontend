@@ -140,19 +140,8 @@ const ToursPageContent = ({ slug, searchParams: pageSearchParams }: ToursPageCon
   }, [dispatch, slug, pageSearchParams]);
 
   const handlePageChange = async (event: React.ChangeEvent<unknown>, page: number) => {
-    dispatch(setCurrentPage(page));
-
     try {
-      await fetchToursWithRetry({
-        page,
-        slug,
-        themeId: selectedTheme,
-        cityId: selectedCity,
-        duration: selectedDuration,
-        minPrice: selectedPriceRange[0],
-        maxPrice: selectedPriceRange[1],
-      });
-
+      dispatch(setCurrentPage(page));
       router.push(`${pathname}?page=${page}`, { scroll: false });
     } catch (error) {
       console.error('Page change failed:', error);
