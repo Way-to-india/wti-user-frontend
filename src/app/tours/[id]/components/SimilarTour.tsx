@@ -97,7 +97,6 @@ const SimilarTours: React.FC<SimilarToursProps> = ({ tourId, limit = 6 }) => {
   return (
     <section className="py-12 bg-white">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-        {/* Section Header */}
         <div className="flex items-center justify-between mb-8">
           <div>
             <h2 className="text-3xl font-bold text-gray-900">Similar Tours</h2>
@@ -105,14 +104,12 @@ const SimilarTours: React.FC<SimilarToursProps> = ({ tourId, limit = 6 }) => {
           </div>
         </div>
 
-        {/* Desktop Grid View */}
         <div className="hidden lg:grid lg:grid-cols-3 gap-6">
           {similarTours.map(tour => (
             <TourCard key={tour.id} tour={tour} onTourClick={handleTourClick} />
           ))}
         </div>
 
-        {/* Mobile Carousel View */}
         <div className="lg:hidden">
           <Swiper
             modules={[Navigation, Pagination, Autoplay]}
@@ -159,7 +156,6 @@ const TourCard: React.FC<TourCardProps> = ({ tour, onTourClick }) => {
       onClick={() => onTourClick(tour.id)}
       className="group bg-white rounded-xl shadow-md hover:shadow-2xl transition-all duration-300 cursor-pointer overflow-hidden border border-gray-100"
     >
-      {/* Image Section */}
       <div className="relative h-52 overflow-hidden">
         <Image
           src={tour.imageUrls[0] || '/assets/images/placeholder.jpg'}
@@ -169,33 +165,26 @@ const TourCard: React.FC<TourCardProps> = ({ tour, onTourClick }) => {
           sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"
         />
 
-        {/* Rating Badge */}
         <div className="absolute top-3 right-3 bg-white/95 backdrop-blur-sm rounded-lg px-3 py-1.5 flex items-center gap-1.5 shadow-md">
           <FaStar className="text-yellow-500 text-sm" />
           <span className="text-sm font-semibold text-gray-900">{tour.rating.toFixed(1)}</span>
         </div>
 
-        {/* Theme Badge */}
         {tour.themes && tour.themes.length > 0 && (
           <div className="absolute top-3 left-3 bg-orange-500/95 backdrop-blur-sm rounded-lg px-3 py-1.5 shadow-md">
             <span className="text-xs font-semibold text-white">{tour.themes[0].name}</span>
           </div>
         )}
 
-        {/* Gradient Overlay */}
         <div className="absolute inset-0 bg-gradient-to-t from-black/40 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
       </div>
 
-      {/* Content Section */}
       <div className="p-5">
-        {/* Title */}
         <h3 className="text-lg font-bold text-gray-900 mb-3 line-clamp-2 group-hover:text-orange-500 transition-colors duration-200">
           {tour.title}
         </h3>
 
-        {/* Info Grid */}
         <div className="space-y-2.5 mb-4">
-          {/* Duration */}
           <div className="flex items-center gap-2 text-sm text-gray-600">
             <FaClock className="text-orange-500 flex-shrink-0" />
             <span>
@@ -203,7 +192,6 @@ const TourCard: React.FC<TourCardProps> = ({ tour, onTourClick }) => {
             </span>
           </div>
 
-          {/* Starting Location */}
           {tour.startCity && (
             <div className="flex items-center gap-2 text-sm text-gray-600">
               <FaMapMarkerAlt className="text-orange-500 flex-shrink-0" />
@@ -211,7 +199,6 @@ const TourCard: React.FC<TourCardProps> = ({ tour, onTourClick }) => {
             </div>
           )}
 
-          {/* Destinations */}
           {tour.cities && tour.cities.length > 0 && (
             <div className="flex items-start gap-2 text-sm text-gray-600">
               <FaMapMarkerAlt className="text-orange-500 flex-shrink-0 mt-0.5" />
@@ -226,7 +213,6 @@ const TourCard: React.FC<TourCardProps> = ({ tour, onTourClick }) => {
           )}
         </div>
 
-        {/* Footer with Price and CTA */}
         <div className="flex items-center justify-between pt-4 border-t border-gray-100">
           <div>
             {tour.price > 0 ? (

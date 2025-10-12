@@ -5,10 +5,14 @@ import { handleApiCall } from '@/utils/apiHandler';
 export interface TourEnquiry {
   tourId: string;
   tourName: string;
+  name: string;
   email: string;
   phoneNumber: string;
   numberOfPeople: number;
-  message: string;
+  travelDate?: string;
+  departureCity?: string;
+  specialRequests?: string;
+  recaptchaToken: string;
 }
 
 export const submitTourEnquiry = async (enquiryData: TourEnquiry) => {
