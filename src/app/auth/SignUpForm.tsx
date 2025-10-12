@@ -1,14 +1,10 @@
 'use client';
-import axios from 'axios';
 import Image from 'next/image';
 import { useRouter } from 'next/navigation';
 import React, { useState, useEffect } from 'react';
 import { ArrowCircleLeft } from '@phosphor-icons/react';
-import loginBackground from '@/assets/images/loginImage.png';
 import { auth, googleProvider, appleProvider, signInWithPopup } from '../../lib/firebase';
 import { useDispatch } from 'react-redux';
-import { setUser, logout } from '@/app/redux/authSlice';
-import { log } from 'console';
 
 interface SignupFormProps {
   onSubmit: () => void;
@@ -254,9 +250,9 @@ const SignupForm: React.FC<SignupFormProps> = ({
           </div>
         </div>
 
-        <div className="relative w-full md:w-1/2 h-64 md:h-screen">
+        {/* <div className="relative w-full md:w-1/2 h-64 md:h-screen">
           <Image src={loginBackground} alt="Login Background" fill className="rounded-3xl" />
-        </div>
+        </div> */}
       </div>
     </div>
   );
