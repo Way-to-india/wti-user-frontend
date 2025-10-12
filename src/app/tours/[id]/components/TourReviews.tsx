@@ -15,7 +15,7 @@ import {
 import Image from 'next/image';
 import { useAuth } from '@/context/AuthContext';
 import { useRouter } from 'next/navigation';
-import axios from 'axios';
+import axiosInstance from '@/api/axios';
 
 interface Review {
   id: string;
@@ -154,15 +154,14 @@ const TourReviews: React.FC<TourReviewsProps> = ({ tourId }) => {
     message: '',
   });
 
-  const { token, user } = useAuth();
+  const { user } = useAuth();
   const router = useRouter();
-  const API_URL = `${process.env.NEXT_PUBLIC_BASE_URL}/api/user/review`;
 
   const fetchReviews = useCallback(async () => {
     try {
       setLoading(true);
       setError(null);
-      const { data } = await axios.get(`${API_URL}/tours/${tourId}/reviews`);
+      const { data } = await axiosInstance.get(`/api/user/review/tours/${tourId}/reviews`);
       if (data.success) {
         setReviews(data.data || []);
         console.log('Current user:', user?.uid);
@@ -175,7 +174,7 @@ const TourReviews: React.FC<TourReviewsProps> = ({ tourId }) => {
     } finally {
       setLoading(false);
     }
-  }, [API_URL, tourId, user?.uid]);
+  }, [tourId, user?.uid]);
 
   useEffect(() => {
     fetchReviews();
@@ -200,7 +199,7 @@ const TourReviews: React.FC<TourReviewsProps> = ({ tourId }) => {
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
 
-    if (!token) {
+    if (!user) {
       router.push('/auth/login');
       return;
     }
@@ -227,11 +226,11 @@ const TourReviews: React.FC<TourReviewsProps> = ({ tourId }) => {
       setSubmitting(true);
       setError(null);
 
-      await axios.post(
-        `${API_URL}/tours/${tourId}/reviews`,
-        { rating, title: trimmedTitle, comment: trimmedComment },
-        { headers: { Authorization: `Bearer ${token}` } }
-      );
+      await axiosInstance.post(`/api/user/review/tours/${tourId}/reviews`, {
+        rating,
+        title: trimmedTitle,
+        comment: trimmedComment,
+      });
 
       setForm({ title: '', comment: '' });
       setRating(0);
@@ -250,7 +249,7 @@ const TourReviews: React.FC<TourReviewsProps> = ({ tourId }) => {
 
   const handleHelpful = async (id: string) => {
     try {
-      const { data } = await axios.post(`${API_URL}/reviews/${id}/helpful`);
+      const { data } = await axiosInstance.post(`/api/user/review/reviews/${id}/helpful`);
       if (data.success) {
         setReviews(prev => prev.map(r => (r.id === id ? { ...r, helpful: r.helpful + 1 } : r)));
       }
@@ -261,7 +260,7 @@ const TourReviews: React.FC<TourReviewsProps> = ({ tourId }) => {
 
   const handleDelete = useCallback(
     (id: string) => {
-      if (!token) {
+      if (!user) {
         router.push('/auth/login');
         return;
       }
@@ -273,9 +272,7 @@ const TourReviews: React.FC<TourReviewsProps> = ({ tourId }) => {
         async () => {
           try {
             setDeleting(id);
-            await axios.delete(`${API_URL}/reviews/${id}`, {
-              headers: { Authorization: `Bearer ${token}` },
-            });
+            await axiosInstance.delete(`/api/user/review/reviews/${id}`);
             setReviews(prev => prev.filter(r => r.id !== id));
             showModal('success', 'Review Deleted', 'Your review has been successfully deleted.');
           } catch (err: any) {
@@ -289,7 +286,7 @@ const TourReviews: React.FC<TourReviewsProps> = ({ tourId }) => {
         }
       );
     },
-    [token, router, API_URL, showModal]
+    [user, router, showModal]
   );
 
   const average =
@@ -370,7 +367,7 @@ const TourReviews: React.FC<TourReviewsProps> = ({ tourId }) => {
 
         <button
           onClick={() => {
-            if (!token) {
+            if (!user) {
               router.push('/auth/login');
               return;
             }
