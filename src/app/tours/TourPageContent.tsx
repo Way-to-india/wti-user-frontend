@@ -2,7 +2,7 @@
 import { Grid } from '@mui/material';
 import React, { useEffect, useState } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
-import { useRouter, usePathname } from 'next/navigation'; 
+import { useRouter, usePathname } from 'next/navigation';
 import DynamicCard from '../../components/common/DynamicCard';
 import DynamicListingPage from '../../components/common/DynamicListingPage';
 import DynamicSearchTab, { LocationOption } from '../../components/common/DynamicSearchTab';
@@ -18,17 +18,15 @@ import {
 const MAX_RETRIES = 3;
 const RETRY_DELAY = 2000;
 
-// ✅ CHANGE 2: Add Props type for slug and searchParams
 type ToursPageContentProps = {
   slug: string;
   searchParams?: { [key: string]: string | string[] | undefined };
 };
 
-// ✅ CHANGE 3: Update component signature to accept props
 const ToursPageContent = ({ slug, searchParams: pageSearchParams }: ToursPageContentProps) => {
   const dispatch = useDispatch<AppDispatch>();
-  const router = useRouter(); // ✅ CHANGE 4: Add router
-  const pathname = usePathname(); // ✅ CHANGE 5: Add pathname
+  const router = useRouter();
+  const pathname = usePathname();
 
   const {
     tours,
@@ -79,7 +77,6 @@ const ToursPageContent = ({ slug, searchParams: pageSearchParams }: ToursPageCon
     }
   };
 
-  // ✅ CHANGE 6: Update useEffect to use pageSearchParams and slug
   useEffect(() => {
     const initializeToursPage = async () => {
       try {
@@ -100,24 +97,20 @@ const ToursPageContent = ({ slug, searchParams: pageSearchParams }: ToursPageCon
             }),
         ]);
 
-        const themeIdParam = typeof pageSearchParams?.themeId === 'string'
-          ? pageSearchParams.themeId
-          : null;
-        const cityIdParam = typeof pageSearchParams?.cityId === 'string'
-          ? pageSearchParams.cityId
-          : null;
-        const durationParam = typeof pageSearchParams?.duration === 'string'
-          ? parseInt(pageSearchParams.duration)
-          : null;
+        const themeIdParam =
+          typeof pageSearchParams?.themeId === 'string' ? pageSearchParams.themeId : null;
+        const cityIdParam =
+          typeof pageSearchParams?.cityId === 'string' ? pageSearchParams.cityId : null;
+        const durationParam =
+          typeof pageSearchParams?.duration === 'string'
+            ? parseInt(pageSearchParams.duration)
+            : null;
 
-        const startDate = typeof pageSearchParams?.startDate === 'string'
-          ? pageSearchParams.startDate
-          : null;
-        const endDate = typeof pageSearchParams?.endDate === 'string'
-          ? pageSearchParams.endDate
-          : null;
+        const startDate =
+          typeof pageSearchParams?.startDate === 'string' ? pageSearchParams.startDate : null;
+        const endDate =
+          typeof pageSearchParams?.endDate === 'string' ? pageSearchParams.endDate : null;
 
-        // Calculate duration from dates if provided
         let calculatedDuration = durationParam;
         if (startDate && endDate && !durationParam) {
           const start = new Date(startDate);
@@ -126,44 +119,46 @@ const ToursPageContent = ({ slug, searchParams: pageSearchParams }: ToursPageCon
           calculatedDuration = Math.ceil(diffTime / (1000 * 60 * 60 * 24));
         }
 
-        // ✅ CHANGE 8: Pass slug to fetchTours
+        const pageParam =
+          typeof pageSearchParams?.page === 'string' ? parseInt(pageSearchParams.page) : 1;
+
         await fetchToursWithRetry({
-          page: 1,
-          slug, // Add slug here
+          page: pageParam,
+          slug,
           themeId: themeIdParam,
           cityId: cityIdParam,
           duration: calculatedDuration,
         });
+
+        dispatch(setCurrentPage(pageParam));
       } catch (error) {
         console.error('Failed to initialize tours page after retries:', error);
       }
     };
 
     initializeToursPage();
-  }, [dispatch, slug, pageSearchParams]); // ✅ CHANGE 9: Add slug and pageSearchParams to dependencies
+  }, [dispatch, slug, pageSearchParams]);
 
-  // ✅ CHANGE 10: Update handlePageChange to include slug and update URL
   const handlePageChange = async (event: React.ChangeEvent<unknown>, page: number) => {
     dispatch(setCurrentPage(page));
 
     try {
       await fetchToursWithRetry({
         page,
-        slug, // Add slug
+        slug,
         themeId: selectedTheme,
         cityId: selectedCity,
         duration: selectedDuration,
-        priceRange: selectedPriceRange,
+        minPrice: selectedPriceRange[0],
+        maxPrice: selectedPriceRange[1],
       });
-      
-      // ✅ CHANGE 11: Update URL with page number
+
       router.push(`${pathname}?page=${page}`, { scroll: false });
     } catch (error) {
       console.error('Page change failed:', error);
     }
   };
 
-  // ✅ CHANGE 12: Update handleFilterChange to include slug
   const handleFilterChange = async (filters: {
     themes: string[];
     destinations: string[];
@@ -173,17 +168,17 @@ const ToursPageContent = ({ slug, searchParams: pageSearchParams }: ToursPageCon
     const themeId = filters.themes.length > 0 ? filters.themes[0] : null;
     const cityId = filters.destinations.length > 0 ? filters.destinations[0] : null;
     const duration = filters.durations.length > 0 ? parseInt(filters.durations[0]) : null;
-    const priceRange: [number, number] = filters.priceRange;
 
     setIsFiltering(true);
     try {
       await fetchToursWithRetry({
         page: 1,
-        slug, // Add slug
+        slug,
         themeId,
         cityId,
         duration,
-        priceRange,
+        minPrice: filters.priceRange[0],
+        maxPrice: filters.priceRange[1],
       });
     } catch (error) {
       console.error('Filter change failed:', error);
@@ -192,17 +187,25 @@ const ToursPageContent = ({ slug, searchParams: pageSearchParams }: ToursPageCon
     }
   };
 
-  // ✅ CHANGE 13: Update handleSearch to include slug
   const handleSearch = async (searchParams: any) => {
     setIsSearching(true);
     try {
+      let durationDays = null;
+      if (searchParams.dateRange?.start && searchParams.dateRange?.end) {
+        const start = new Date(searchParams.dateRange.start.toString());
+        const end = new Date(searchParams.dateRange.end.toString());
+        const diffTime = Math.abs(end.getTime() - start.getTime());
+        durationDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24));
+      }
+
       await fetchToursWithRetry({
         page: 1,
-        slug, // Add slug
-        themeId: selectedTheme,
+        slug,
+        themeId: searchParams.selectedType || selectedTheme,
         cityId: searchParams.location?.id || null,
-        duration: searchParams.durationDays,
-        priceRange: selectedPriceRange,
+        duration: durationDays,
+        minPrice: selectedPriceRange[0],
+        maxPrice: selectedPriceRange[1],
       });
     } catch (error) {
       console.error('Search failed:', error);
@@ -211,18 +214,18 @@ const ToursPageContent = ({ slug, searchParams: pageSearchParams }: ToursPageCon
     }
   };
 
-  // ✅ CHANGE 14: Update handleLocationChange to include slug
   const handleLocationChange = async (location: LocationOption | null) => {
     if (location) {
       setIsSearching(true);
       try {
         await fetchToursWithRetry({
           page: 1,
-          slug, // Add slug
+          slug,
           themeId: selectedTheme,
           cityId: location.id,
           duration: selectedDuration,
-          priceRange: selectedPriceRange,
+          minPrice: selectedPriceRange[0],
+          maxPrice: selectedPriceRange[1],
         });
       } catch (error) {
         console.error('Location change failed:', error);
@@ -258,14 +261,20 @@ const ToursPageContent = ({ slug, searchParams: pageSearchParams }: ToursPageCon
     priceRange: selectedPriceRange,
   };
 
-  // ✅ CHANGE 15: Update breadcrumbs to include dynamic tour name
   const breadcrumbs = [
     { href: '/', text: 'Home' },
     { href: '/tours', text: 'Tours' },
-   ...(slug ? [{ 
-      href: `/tours/${slug}`, 
-      text: slug.split('-').map(w => w.charAt(0).toUpperCase() + w.slice(1)).join(' ') 
-    }] : []),
+    ...(slug
+      ? [
+          {
+            href: `/tours/${slug}`,
+            text: slug
+              .split('-')
+              .map(w => w.charAt(0).toUpperCase() + w.slice(1))
+              .join(' '),
+          },
+        ]
+      : []),
   ];
 
   const toursGrid = (

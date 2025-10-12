@@ -16,7 +16,6 @@ import {
   Typography,
   Popper,
 } from '@mui/material';
-import Image from 'next/image';
 import { parseDate } from '@internationalized/date';
 import { DateRangePicker } from '@nextui-org/date-picker';
 import { useTheme } from '@/context/ThemeContext';
@@ -27,9 +26,6 @@ import PeopleIcon from '@mui/icons-material/People';
 import AddIcon from '@mui/icons-material/Add';
 import RemoveIcon from '@mui/icons-material/Remove';
 import CategoryIcon from '@mui/icons-material/Category';
-
-// Import common icons
-import GuestsIcon from '@/assets/icons/people_3.png';
 
 export interface LocationOption {
   id: string;
@@ -112,6 +108,7 @@ const DynamicSearchTab: React.FC<SearchTabProps> = ({
   const handleDateRangeChange = (value: any) => {
     if (value) {
       setDateRange(value);
+      onDateChange?.(value);
     }
   };
 
@@ -145,15 +142,49 @@ const DynamicSearchTab: React.FC<SearchTabProps> = ({
     },
   ];
 
+  const calculateDurationDays = (range: DateRange): number | null => {
+    if (!range?.start || !range?.end) return null;
+
+    try {
+      // Handle different date formats
+      let startDate: Date;
+      let endDate: Date;
+
+      if (typeof range.start.toDate === 'function') {
+        startDate = range.start.toDate('UTC');
+        endDate = range.end.toDate('UTC');
+      } else if (range.start.year && range.start.month && range.start.day) {
+        startDate = new Date(range.start.year, range.start.month - 1, range.start.day);
+        endDate = new Date(range.end.year, range.end.month - 1, range.end.day);
+      } else {
+        startDate = new Date(range.start.toString());
+        endDate = new Date(range.end.toString());
+      }
+
+      const diffTime = Math.abs(endDate.getTime() - startDate.getTime());
+      const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24));
+
+      return diffDays > 0 ? diffDays : null;
+    } catch (error) {
+      console.error('Error calculating duration:', error);
+      return null;
+    }
+  };
+
   const handleSearchSubmit = (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
+
+    const durationDays = calculateDurationDays(dateRange);
+
     const searchParams: any = {
       type,
       dateRange,
+      durationDays,
       adults,
       seniorAdults,
       children,
     };
+
     if (type === 'tour' || type === 'hotel') {
       searchParams.location = location;
       if (typeValue) searchParams.selectedType = typeValue;
@@ -161,6 +192,8 @@ const DynamicSearchTab: React.FC<SearchTabProps> = ({
       searchParams.fromLocation = fromLocation;
       searchParams.toLocation = toLocation;
     }
+
+    console.log('Search params:', searchParams); // Debug log
     onSearch(searchParams);
   };
 
