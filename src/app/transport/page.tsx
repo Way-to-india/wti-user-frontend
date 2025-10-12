@@ -1,6 +1,6 @@
 'use client';
 
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import Image from 'next/image';
 import { ChevronDown, ArrowLeftRight } from 'lucide-react';
 import NavBar from '@/components/layout/navbar/NavBar';
@@ -39,6 +39,20 @@ const Transport = () => {
   const [returnDate, setReturnDate] = useState('');
   const [pickupTime, setPickupTime] = useState('10:00');
   const [timeFormat, setTimeFormat] = useState('AM');
+  const [marginTop, setMarginTop] = useState('0');
+
+  useEffect(() => {
+    
+    const handleResize = () => {
+      if (typeof window !== 'undefined') {
+        setMarginTop(window.innerWidth >= 1024 ? '8px' : '0');
+      }
+    };
+
+    handleResize(); 
+    window.addEventListener('resize', handleResize);
+    return () => window.removeEventListener('resize', handleResize);
+  }, []);
 
   const duplicatedImages = [
     ...transportImages,
@@ -67,7 +81,7 @@ const Transport = () => {
 
   return (
     <div className="min-h-screen bg-white">
-      <NavBar/>
+      <NavBar />
 
       <section className="relative h-[400px] md:h-[500px]" aria-label="Transport search">
         <div className="absolute inset-0">
@@ -86,11 +100,10 @@ const Transport = () => {
 
         <div className="relative z-10 flex items-center justify-center h-full px-3 sm:px-4 md:px-6">
           <div className="w-full max-w-6xl">
-    
             <div className="bg-white rounded-lg shadow-2xl p-3 sm:p-4 md:p-6">
               <div role="search">
                 <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-5 gap-4 lg:gap-0 lg:divide-x lg:divide-gray-200">
-          
+                  {/* From input */}
                   <div className="relative lg:px-4">
                     <label htmlFor="from" className="block text-gray-600 text-xs mb-1">
                       From
@@ -104,12 +117,12 @@ const Transport = () => {
                       aria-label="Enter departure city"
                       autoComplete="off"
                     />
-            
+
                     <button
                       onClick={handleSwap}
                       className="absolute right-0 sm:right-2 lg:-right-4 top-8 sm:top-1/2 lg:top-1/2 transform lg:-translate-y-1/2 bg-white border-2 border-orange-500 rounded-full p-2 hover:bg-orange-50 transition-colors z-10"
                       aria-label="Swap from and to locations"
-                      style={{ marginTop: window.innerWidth >= 1024 ? '8px' : '0' }}
+                      style={{ marginTop }}
                     >
                       <ArrowLeftRight
                         className="w-4 h-4 sm:w-5 sm:h-5"
@@ -118,7 +131,7 @@ const Transport = () => {
                     </button>
                   </div>
 
-          
+                  {/* To input */}
                   <div className="lg:px-4">
                     <label htmlFor="to" className="block text-gray-600 text-xs mb-1">
                       To
@@ -134,7 +147,7 @@ const Transport = () => {
                     />
                   </div>
 
-          
+                  {/* Departure */}
                   <div className="lg:px-4">
                     <div className="flex items-center gap-1 mb-1">
                       <label htmlFor="departure" className="text-gray-600 text-xs">
@@ -152,12 +165,12 @@ const Transport = () => {
                         aria-label="Departure date"
                         autoComplete="off"
                       />
-                      <span className="text-base sm:text-lg text-gray-600">Oct'25</span>
+                      <span className="text-base sm:text-lg text-gray-600">Oct&apos;25</span>
                     </div>
                     <p className="text-gray-500 text-xs sm:text-sm mt-1">Sunday</p>
                   </div>
 
-          
+                  {/* Return */}
                   <div className="lg:px-4">
                     <div className="flex items-center gap-1 mb-1">
                       <label htmlFor="return" className="text-gray-600 text-xs">
@@ -177,7 +190,7 @@ const Transport = () => {
                             aria-label="Return date"
                             autoComplete="off"
                           />
-                          <span className="text-base sm:text-lg text-gray-600">Oct'25</span>
+                          <span className="text-base sm:text-lg text-gray-600">Oct&apos;25</span>
                         </div>
                         <p className="text-gray-500 text-xs sm:text-sm mt-1">Monday</p>
                       </>
@@ -193,7 +206,7 @@ const Transport = () => {
                     )}
                   </div>
 
-          
+                  {/* Pickup time */}
                   <div className="lg:px-4">
                     <div className="flex items-center gap-1 mb-1">
                       <label htmlFor="pickup" className="text-gray-600 text-xs">
@@ -224,7 +237,7 @@ const Transport = () => {
                   </div>
                 </div>
 
-        
+                {/* Buttons */}
                 <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between mt-6 pt-4 border-t border-gray-200 gap-4">
                   <button
                     type="button"
@@ -251,6 +264,7 @@ const Transport = () => {
         </div>
       </section>
 
+      {/* Carousel Section */}
       <section
         className="bg-white py-8 sm:py-12 lg:py-16 px-3 sm:px-4"
         aria-labelledby="transport-heading"
@@ -259,7 +273,7 @@ const Transport = () => {
           <div className="mb-8 sm:mb-10 lg:mb-12">
             <p className="text-gray-600 text-xs sm:text-sm font-medium mb-2">EXPLORE</p>
           </div>
-  
+
           <div
             className="relative overflow-hidden mb-6 sm:mb-8"
             role="region"
@@ -285,7 +299,6 @@ const Transport = () => {
             </div>
           </div>
 
-  
           <div
             className="relative overflow-hidden"
             role="region"
