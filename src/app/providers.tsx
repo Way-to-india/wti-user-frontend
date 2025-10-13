@@ -1,11 +1,13 @@
 'use client';
 
 import React from 'react';
-import { AuthProvider } from "../context/AuthContext";
-import { Provider } from "react-redux";
-import { store } from "../app/redux/store";
-import { ThemeProvider } from "@/context/ThemeContext";
-import { SearchProvider } from "@/context/SearchContext";
+import { AuthProvider } from '../context/AuthContext';
+import { Provider } from 'react-redux';
+import { store } from '../app/redux/store';
+import { ThemeProvider } from '@/context/ThemeContext';
+import { SearchProvider } from '@/context/SearchContext';
+import { Toaster } from 'sonner';
+import '@/styles/globals.css';
 
 export function Providers({ children }: { children: React.ReactNode }) {
   return (
@@ -14,6 +16,7 @@ export function Providers({ children }: { children: React.ReactNode }) {
         <SearchProvider>
           <AuthProvider>
             {children}
+            <Toaster position="top-right" richColors />
           </AuthProvider>
         </SearchProvider>
       </ThemeProvider>

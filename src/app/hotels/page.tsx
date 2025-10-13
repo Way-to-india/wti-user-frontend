@@ -11,7 +11,7 @@ import { useAuth } from '@/context/AuthContext';
 interface City {
   name: string;
   country: string;
-}
+} 
 
 interface HotelImage {
   src: string;
@@ -197,14 +197,19 @@ const Hotels: React.FC = () => {
 
       if (response.data.success) {
         toast.success('Query submitted successfully! We will get back to you soon.');
-
-        // Optional: Reset form or redirect
-        // resetForm();
       } else {
         toast.error(response.data.message || 'Failed to submit query');
       }
     } catch (error: any) {
       console.error('Error submitting query:', error);
+
+       if (error.response?.status === 401) {
+         // Axios interceptor will handle token expired and redirect
+         return;
+       }
+
+       // Catch all other errors
+       toast.error(error.response?.data?.message || 'Failed to submit query. Please try again.');
 
       if (error.response?.data?.message) {
         toast.error(error.response.data.message);
