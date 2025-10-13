@@ -2,7 +2,7 @@
 
 import React, { useState, useEffect } from 'react';
 import Image from 'next/image';
-import { ChevronDown, ArrowLeftRight } from 'lucide-react';
+import { ChevronDown, ArrowLeftRight, Calendar } from 'lucide-react';
 import NavBar from '@/components/layout/navbar/NavBar';
 
 const transportImages = [
@@ -32,33 +32,25 @@ const transportImages = [
   },
 ];
 
-const Transport = () => {
+interface DateFormatted {
+  day: number;
+  month: string;
+  year: string;
+  dayName: string;
+}
+
+const Transport: React.FC = () => {
   const [from, setFrom] = useState('Mumbai');
   const [to, setTo] = useState('Pune');
-  const [departureDate, setDepartureDate] = useState('12');
+  const [departureDate, setDepartureDate] = useState(() => {
+    const today = new Date();
+    return today.toISOString().split('T')[0];
+  });
   const [returnDate, setReturnDate] = useState('');
   const [pickupTime, setPickupTime] = useState('10:00');
   const [timeFormat, setTimeFormat] = useState('AM');
-  const [marginTop, setMarginTop] = useState('0');
 
-  useEffect(() => {
-    const handleResize = () => {
-      if (typeof window !== 'undefined') {
-        setMarginTop(window.innerWidth >= 1024 ? '8px' : '0');
-      }
-    };
-
-    handleResize();
-    window.addEventListener('resize', handleResize);
-    return () => window.removeEventListener('resize', handleResize);
-  }, []);
-
-  const duplicatedImages = [
-    ...transportImages,
-    ...transportImages,
-    ...transportImages,
-    ...transportImages,
-  ];
+  const duplicatedImages = [...transportImages, ...transportImages, ...transportImages];
 
   const handleSwap = () => {
     const temp = from;
@@ -66,23 +58,35 @@ const Transport = () => {
     setTo(temp);
   };
 
+  const formatDate = (dateString: string): DateFormatted => {
+    if (!dateString) return { day: 0, month: '', year: '', dayName: '' };
+    const date = new Date(dateString + 'T00:00:00');
+    const day = date.getDate();
+    const month = date.toLocaleDateString('en-US', { month: 'short' });
+    const year = date.getFullYear().toString().slice(-2);
+    const dayName = date.toLocaleDateString('en-US', { weekday: 'long' });
+    return { day, month, year, dayName };
+  };
+
+  const departureFormatted = formatDate(departureDate);
+  const returnFormatted = formatDate(returnDate);
+
   const handleSearch = () => {
-    const searchData = {
+    console.log({
       from,
       to,
       departureDate,
-      returnDate: returnDate || null,
+      returnDate,
       pickupTime: `${pickupTime} ${timeFormat}`,
       timestamp: new Date().toISOString(),
-    };
-    console.log('Transport Search Data:', searchData);
+    });
   };
 
   return (
     <div className="min-h-screen bg-white">
       <NavBar />
 
-      <section className="relative h-[400px] md:h-[500px]" aria-label="Transport search">
+      <section className="relative h-[400px] md:h-[500px]">
         <div className="absolute inset-0">
           <Image
             src="https://images.unsplash.com/photo-1544620347-c4fd4a3d5957?w=1600&q=80"
@@ -92,9 +96,8 @@ const Transport = () => {
             quality={85}
             className="object-cover"
             style={{ objectPosition: 'center' }}
-            sizes="100vw"
           />
-          <div className="absolute inset-0 bg-black bg-opacity-50" aria-hidden="true"></div>
+          <div className="absolute inset-0 bg-black bg-opacity-50"></div>
         </div>
 
         <div className="relative z-10 flex items-center justify-center h-full px-3 sm:px-4 md:px-6">
@@ -102,132 +105,125 @@ const Transport = () => {
             <div className="bg-white rounded-lg shadow-2xl p-3 sm:p-4 md:p-6">
               <div role="search">
                 <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-5 gap-4 lg:gap-0 lg:divide-x lg:divide-gray-200">
-                  {/* From input */}
+                  {/* From */}
                   <div className="relative lg:px-4">
-                    <label htmlFor="from" className="block text-gray-600 text-xs mb-1">
-                      From
-                    </label>
-                    <input
-                      id="from"
-                      type="text"
-                      value={from}
-                      onChange={e => setFrom(e.target.value)}
-                      className="text-2xl sm:text-3xl lg:text-4xl font-bold text-gray-900 w-full border-none outline-none p-0 pr-8"
-                      aria-label="Enter departure city"
-                      autoComplete="off"
-                    />
-
-                    <button
-                      onClick={handleSwap}
-                      className="absolute right-0 sm:right-2 lg:-right-4 top-8 sm:top-1/2 lg:top-1/2 transform lg:-translate-y-1/2 bg-white border-2 border-orange-500 rounded-full p-2 hover:bg-orange-50 transition-colors z-10"
-                      aria-label="Swap from and to locations"
-                      style={{ marginTop }}
-                    >
-                      <ArrowLeftRight
-                        className="w-4 h-4 sm:w-5 sm:h-5"
-                        style={{ color: 'rgb(255, 139, 2)' }}
+                    <label className="block text-gray-600 text-xs mb-1">From</label>
+                    <div className="flex items-center gap-2">
+                      <input
+                        type="text"
+                        value={from}
+                        onChange={e => setFrom(e.target.value)}
+                        className="text-2xl sm:text-3xl lg:text-4xl font-bold text-gray-900 w-full border-none outline-none p-0"
+                        autoComplete="off"
                       />
-                    </button>
+                      <button
+                        onClick={handleSwap}
+                        className="bg-white border-2 border-orange-500 rounded-full p-2 hover:bg-orange-50 transition-colors"
+                        aria-label="Swap locations"
+                      >
+                        <ArrowLeftRight className="w-4 h-4 sm:w-5 sm:h-5 text-orange-500" />
+                      </button>
+                    </div>
                   </div>
 
-                  {/* To input */}
+                  {/* To */}
                   <div className="lg:px-4">
-                    <label htmlFor="to" className="block text-gray-600 text-xs mb-1">
-                      To
-                    </label>
+                    <label className="block text-gray-600 text-xs mb-1">To</label>
                     <input
-                      id="to"
                       type="text"
                       value={to}
                       onChange={e => setTo(e.target.value)}
                       className="text-2xl sm:text-3xl lg:text-4xl font-bold text-gray-900 w-full border-none outline-none p-0"
-                      aria-label="Enter destination city"
                       autoComplete="off"
                     />
                   </div>
 
                   {/* Departure */}
-                  <div className="lg:px-4">
+                  <div className="lg:px-4 relative">
                     <div className="flex items-center gap-1 mb-1">
-                      <label htmlFor="departure" className="text-gray-600 text-xs">
-                        Departure
-                      </label>
-                      <ChevronDown className="w-3 h-3 text-blue-500" aria-hidden="true" />
+                      <label className="text-gray-600 text-xs">Departure</label>
+                      <Calendar className="w-3 h-3 text-blue-500" />
                     </div>
-                    <div className="flex items-baseline gap-1">
+                    <div className="relative">
                       <input
-                        id="departure"
-                        type="text"
+                        type="date"
                         value={departureDate}
                         onChange={e => setDepartureDate(e.target.value)}
-                        className="text-2xl sm:text-3xl lg:text-4xl font-bold text-gray-900 w-10 sm:w-12 border-none outline-none p-0"
-                        aria-label="Departure date"
-                        autoComplete="off"
+                        min={new Date().toISOString().split('T')[0]}
+                        className="w-full h-full cursor-pointer border-0 bg-transparent text-transparent caret-transparent focus:outline-none absolute inset-0 z-20"
                       />
-                      <span className="text-base sm:text-lg text-gray-600">Oct&apos;25</span>
+                      <div className="pointer-events-none">
+                        <div className="flex items-baseline gap-1">
+                          <span className="text-2xl sm:text-3xl lg:text-4xl font-bold text-gray-900">
+                            {departureFormatted.day}
+                          </span>
+                          <span className="text-base sm:text-lg text-gray-600">
+                            {departureFormatted.month}'{departureFormatted.year}
+                          </span>
+                        </div>
+                        <p className="text-gray-500 text-xs sm:text-sm mt-1">
+                          {departureFormatted.dayName}
+                        </p>
+                      </div>
                     </div>
-                    <p className="text-gray-500 text-xs sm:text-sm mt-1">Sunday</p>
                   </div>
 
                   {/* Return */}
-                  <div className="lg:px-4">
+                  <div className="lg:px-4 relative">
                     <div className="flex items-center gap-1 mb-1">
-                      <label htmlFor="return" className="text-gray-600 text-xs">
-                        Return
-                      </label>
-                      <ChevronDown className="w-3 h-3 text-blue-500" aria-hidden="true" />
+                      <label className="text-gray-600 text-xs">Return</label>
+                      <Calendar className="w-3 h-3 text-blue-500" />
                     </div>
-                    {returnDate ? (
-                      <>
-                        <div className="flex items-baseline gap-1">
-                          <input
-                            id="return"
-                            type="text"
-                            value={returnDate}
-                            onChange={e => setReturnDate(e.target.value)}
-                            className="text-2xl sm:text-3xl lg:text-4xl font-bold text-gray-900 w-10 sm:w-12 border-none outline-none p-0"
-                            aria-label="Return date"
-                            autoComplete="off"
-                          />
-                          <span className="text-base sm:text-lg text-gray-600">Oct&apos;25</span>
-                        </div>
-                        <p className="text-gray-500 text-xs sm:text-sm mt-1">Monday</p>
-                      </>
-                    ) : (
-                      <button
-                        onClick={() => setReturnDate('13')}
-                        className="text-gray-500 text-xs sm:text-sm mt-2 hover:text-gray-700 text-left"
-                      >
-                        Tap to add a return date
-                        <br />
-                        for bigger discounts
-                      </button>
-                    )}
+                    <div className="relative">
+                      <input
+                        type="date"
+                        value={returnDate}
+                        onChange={e => setReturnDate(e.target.value)}
+                        min={departureDate}
+                        className="w-full h-full cursor-pointer border-0 bg-transparent text-transparent caret-transparent focus:outline-none absolute inset-0 z-20"
+                      />
+                      <div className="pointer-events-none">
+                        {returnDate ? (
+                          <>
+                            <div className="flex items-baseline gap-1">
+                              <span className="text-2xl sm:text-3xl lg:text-4xl font-bold text-gray-900">
+                                {returnFormatted.day}
+                              </span>
+                              <span className="text-base sm:text-lg text-gray-600">
+                                {returnFormatted.month}'{returnFormatted.year}
+                              </span>
+                            </div>
+                            <p className="text-gray-500 text-xs sm:text-sm mt-1">
+                              {returnFormatted.dayName}
+                            </p>
+                          </>
+                        ) : (
+                          <p className="text-gray-500 text-xs sm:text-sm mt-1">
+                            Tap to add a return date
+                          </p>
+                        )}
+                      </div>
+                    </div>
                   </div>
 
-                  {/* Pickup time */}
+                  {/* Pickup Time */}
                   <div className="lg:px-4">
                     <div className="flex items-center gap-1 mb-1">
-                      <label htmlFor="pickup" className="text-gray-600 text-xs">
-                        Pickup-Time
-                      </label>
-                      <ChevronDown className="w-3 h-3 text-blue-500" aria-hidden="true" />
+                      <label className="text-gray-600 text-xs">Pickup-Time</label>
+                      <ChevronDown className="w-3 h-3 text-blue-500" />
                     </div>
                     <div className="flex items-baseline gap-1 sm:gap-2">
                       <input
-                        id="pickup"
                         type="text"
                         value={pickupTime}
                         onChange={e => setPickupTime(e.target.value)}
                         className="text-2xl sm:text-3xl lg:text-4xl font-bold text-gray-900 w-20 sm:w-24 border-none outline-none p-0"
-                        aria-label="Pickup time"
                         autoComplete="off"
                       />
                       <select
                         value={timeFormat}
                         onChange={e => setTimeFormat(e.target.value)}
                         className="text-base sm:text-lg text-gray-600 border-none outline-none cursor-pointer"
-                        aria-label="AM or PM"
                       >
                         <option value="AM">AM</option>
                         <option value="PM">PM</option>
@@ -238,10 +234,7 @@ const Transport = () => {
 
                 {/* Buttons */}
                 <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between mt-6 pt-4 border-t border-gray-200 gap-4">
-                  <button
-                    type="button"
-                    className="flex items-center gap-2 text-blue-500 hover:text-blue-600 font-semibold transition-colors text-sm sm:text-base"
-                  >
+                  <button className="flex items-center gap-2 text-blue-500 hover:text-blue-600 font-semibold transition-colors text-sm sm:text-base">
                     <span className="text-xl sm:text-2xl">+</span> Add Stops
                     <span className="bg-pink-500 text-white text-xs px-2 py-0.5 rounded ml-1">
                       new
@@ -252,9 +245,8 @@ const Transport = () => {
                     type="button"
                     onClick={handleSearch}
                     className="w-full sm:w-auto px-12 sm:px-16 lg:px-20 py-3 bg-blue-500 hover:bg-blue-600 text-white font-bold text-base lg:text-lg rounded-full shadow-lg transition-all"
-                    aria-label="Search transport"
                   >
-                    SEARCH
+                    SEND QUERY 
                   </button>
                 </div>
               </div>
@@ -264,20 +256,13 @@ const Transport = () => {
       </section>
 
       {/* Carousel Section */}
-      <section
-        className="bg-white py-8 sm:py-12 lg:py-16 px-3 sm:px-4"
-        aria-labelledby="transport-heading"
-      >
+      <section className="bg-white py-8 sm:py-12 lg:py-16 px-3 sm:px-4">
         <div className="max-w-7xl mx-auto">
           <div className="mb-8 sm:mb-10 lg:mb-12">
             <p className="text-gray-600 text-xs sm:text-sm font-medium mb-2">EXPLORE</p>
           </div>
 
-          <div
-            className="relative overflow-hidden mb-6 sm:mb-8"
-            role="region"
-            aria-label="Transport options carousel"
-          >
+          <div className="relative overflow-hidden mb-6 sm:mb-8">
             <div className="flex animate-scroll hover:pause">
               {duplicatedImages.map((transport, idx) => (
                 <article key={idx} className="flex-shrink-0 w-64 sm:w-72 lg:w-80 mx-2 sm:mx-3">
@@ -310,21 +295,8 @@ const Transport = () => {
           }
         }
 
-        @keyframes scroll-reverse {
-          0% {
-            transform: translateX(-25%);
-          }
-          100% {
-            transform: translateX(0);
-          }
-        }
-
         .animate-scroll {
           animation: scroll 50s linear infinite;
-        }
-
-        .animate-scroll-reverse {
-          animation: scroll-reverse 50s linear infinite;
         }
 
         .hover\\:pause:hover {
@@ -334,24 +306,6 @@ const Transport = () => {
         input[type='text']:focus,
         select:focus {
           outline: none;
-        }
-
-        @media (max-width: 1024px) {
-          .animate-scroll {
-            animation: scroll 40s linear infinite;
-          }
-          .animate-scroll-reverse {
-            animation: scroll-reverse 40s linear infinite;
-          }
-        }
-
-        @media (max-width: 640px) {
-          .animate-scroll {
-            animation: scroll 30s linear infinite;
-          }
-          .animate-scroll-reverse {
-            animation: scroll-reverse 30s linear infinite;
-          }
         }
       `}</style>
     </div>
