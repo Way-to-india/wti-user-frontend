@@ -32,6 +32,11 @@ const nextConfig = {
         hostname: 'dbagut2mvh0lo.cloudfront.net',
         pathname: '/**',
       },
+      {
+        protocol: 'https',
+        hostname: 'lh3.googleusercontent.com',
+        pathname: '/**',
+      },
     ],
   },
 

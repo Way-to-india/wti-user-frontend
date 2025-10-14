@@ -1,9 +1,13 @@
 'use client';
 
-import React, { useState, useEffect } from 'react';
+import React, { useState, useRef, useEffect } from 'react';
 import Image from 'next/image';
-import { ChevronDown, ArrowLeftRight, Calendar } from 'lucide-react';
+import { ChevronDown, ArrowLeftRight, Calendar, Loader2 } from 'lucide-react';
 import NavBar from '@/components/layout/navbar/NavBar';
+import axiosInstance from '@/api/axios';
+import { toast } from 'sonner';
+import { useAuth } from '@/context/AuthContext';
+import { useRouter } from 'next/navigation';
 
 const transportImages = [
   {
@@ -49,6 +53,10 @@ const Transport: React.FC = () => {
   const [returnDate, setReturnDate] = useState('');
   const [pickupTime, setPickupTime] = useState('10:00');
   const [timeFormat, setTimeFormat] = useState('AM');
+  const [stops, setStops] = useState<string[]>([]);
+  const [isSubmitting, setIsSubmitting] = useState(false);
+  const { token } = useAuth();
+  const router = useRouter();
 
   const duplicatedImages = [...transportImages, ...transportImages, ...transportImages];
 
@@ -71,15 +79,83 @@ const Transport: React.FC = () => {
   const departureFormatted = formatDate(departureDate);
   const returnFormatted = formatDate(returnDate);
 
-  const handleSearch = () => {
-    console.log({
-      from,
-      to,
-      departureDate,
-      returnDate,
-      pickupTime: `${pickupTime} ${timeFormat}`,
-      timestamp: new Date().toISOString(),
-    });
+  const handleSearch = async (): Promise<void> => {
+    try {
+      if (!token) {
+        router.push('/auth/login');
+        return;
+      }
+
+      setIsSubmitting(true);
+
+      // Client-side validation
+      if (!from || !to || !departureDate || !pickupTime) {
+        toast.error('Please fill in all required fields');
+        return;
+      }
+
+      const departure = new Date(departureDate);
+      const today = new Date();
+      today.setHours(0, 0, 0, 0);
+
+      if (departure < today) {
+        toast.error('Departure date cannot be in the past');
+        return;
+      }
+
+      // Validate return date if provided
+      if (returnDate) {
+        const returnDateObj = new Date(returnDate);
+        if (returnDateObj <= departure) {
+          toast.error('Return date must be after departure date');
+          return;
+        }
+      }
+
+      const fullPickupTime = `${pickupTime} ${timeFormat}`;
+
+      const queryData = {
+        transportId: "xyz", 
+        startDate: departureDate,
+        endDate: returnDate || null,
+        numberOfPassengers: 1, 
+        pickupLocation: from,
+        dropoffLocation: to,
+        passengerNames: ["xyz"], 
+        contactEmail: "xyz@gmail.com", 
+        contactPhone: "6266652703", 
+      };
+
+      const response = await axiosInstance.post('/api/user/transport-booking', queryData);
+
+      if (response.data.success) {
+        toast.success('Query submitted successfully! We will get back to you soon.');
+      } else {
+        toast.error(response.data.message || 'Failed to submit query');
+      }
+    } catch (error: any) {
+      console.error('Error submitting query:', error);
+
+      if (error.response?.status === 401) {
+        // Axios interceptor will handle token expired and redirect
+        return;
+      }
+
+      // Catch all other errors
+      toast.error(error.response?.data?.message || 'Failed to submit query. Please try again.');
+
+      if (error.response?.data?.message) {
+        toast.error(error.response.data.message);
+      } else if (error.response?.status === 401) {
+        toast.error('Please login to submit a query');
+      } else if (error.response?.status === 400) {
+        toast.error(error.response.data.message || 'Invalid query data');
+      } else {
+        toast.error('Failed to submit query. Please try again.');
+      }
+    } finally {
+      setIsSubmitting(false);
+    }
   };
 
   return (
@@ -244,9 +320,17 @@ const Transport: React.FC = () => {
                   <button
                     type="button"
                     onClick={handleSearch}
-                    className="w-full sm:w-auto px-12 sm:px-16 lg:px-20 py-3 bg-blue-500 hover:bg-blue-600 text-white font-bold text-base lg:text-lg rounded-full shadow-lg transition-all"
+                    disabled={isSubmitting}
+                    className="w-full sm:w-auto px-12 sm:px-16 lg:px-20 py-3 bg-blue-500 hover:bg-blue-600 disabled:bg-blue-400 disabled:cursor-not-allowed text-white font-bold text-base lg:text-lg rounded-full shadow-lg transition-all flex items-center justify-center gap-2"
                   >
-                    SEND QUERY 
+                    {isSubmitting ? (
+                      <>
+                        <Loader2 className="w-4 h-4 animate-spin" />
+                        Submitting...
+                      </>
+                    ) : (
+                      'SEND QUERY'
+                    )}
                   </button>
                 </div>
               </div>

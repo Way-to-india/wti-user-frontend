@@ -7,11 +7,12 @@ import NavBar from '@/components/layout/navbar/NavBar';
 import axiosInstance from '@/api/axios';
 import { toast } from 'sonner';
 import { useAuth } from '@/context/AuthContext';
+import { useRouter } from 'next/navigation';
 
 interface City {
   name: string;
   country: string;
-} 
+}
 
 interface HotelImage {
   src: string;
@@ -88,7 +89,8 @@ const Hotels: React.FC = () => {
   const [showLocationDropdown, setShowLocationDropdown] = useState<boolean>(false);
   const [locationSearch, setLocationSearch] = useState<string>('');
   const [isSubmitting, setIsSubmitting] = useState<boolean>(false);
-  const {token} = useAuth();
+  const { token } = useAuth();
+  const router = useRouter();
 
   const getDefaultCheckIn = () => {
     const today = new Date();
@@ -160,6 +162,11 @@ const Hotels: React.FC = () => {
 
   const handleSearch = async (): Promise<void> => {
     try {
+      if (!token) {
+        router.push('/auth/login');
+        return;
+      }
+
       setIsSubmitting(true);
 
       // Client-side validation
@@ -203,13 +210,13 @@ const Hotels: React.FC = () => {
     } catch (error: any) {
       console.error('Error submitting query:', error);
 
-       if (error.response?.status === 401) {
-         // Axios interceptor will handle token expired and redirect
-         return;
-       }
+      if (error.response?.status === 401) {
+        // Axios interceptor will handle token expired and redirect
+        return;
+      }
 
-       // Catch all other errors
-       toast.error(error.response?.data?.message || 'Failed to submit query. Please try again.');
+      // Catch all other errors
+      toast.error(error.response?.data?.message || 'Failed to submit query. Please try again.');
 
       if (error.response?.data?.message) {
         toast.error(error.response.data.message);
