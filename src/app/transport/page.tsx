@@ -136,6 +136,16 @@ const Transport: React.FC = () => {
     } catch (error: any) {
       console.error('Error submitting query:', error);
 
+      console.error('Error submitting transport booking:', error);
+
+      // Axios errors
+      if (error.response?.data) {
+        const backendMessage = error.response.data.message || error.response.data.error;
+        toast.error(backendMessage || 'Failed to submit booking');
+      } else {
+        toast.error('Failed to submit booking. Please try again.');
+      }
+
       if (error.response?.status === 401) {
         // Axios interceptor will handle token expired and redirect
         return;
