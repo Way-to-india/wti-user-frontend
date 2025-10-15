@@ -38,25 +38,25 @@ const NewLandingPage = () => {
           <Package />
         </LandingSection>
 
-        <LandingSection id="trending-hotels" className="bg-gray-50">
+        {/* <LandingSection id="trending-hotels" className="bg-gray-50">
           <Trending />
-        </LandingSection>
+        </LandingSection> */}
 
         <LandingSection id="travel-inspiration">
           <Inspiration />
         </LandingSection>
 
-        <LandingSection id="air-charter" className="bg-gray-50">
+        {/* <LandingSection id="air-charter" className="bg-gray-50">
           <AirCharter />
-        </LandingSection>
+        </LandingSection> */}
 
-        <LandingSection id="deals" padding="sm">
+        {/* <LandingSection id="deals" padding="sm">
           <Deals />
-        </LandingSection>
+        </LandingSection> */}
 
-        <LandingSection id="blog">
+        {/* <LandingSection id="blog">
           <BlogSection />
-        </LandingSection>
+        </LandingSection> */}
 
         <Footer />
       </div>

@@ -5,7 +5,7 @@ import NewLandingPage from './general/NewLandingPage';
 
 export default function Home() {
   return (
-    <main>
+    <main>  
       <Suspense fallback={<LandingSkeleton />}>
         <NewLandingPage />
       </Suspense>

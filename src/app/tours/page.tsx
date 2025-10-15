@@ -1,6 +1,4 @@
 import { Metadata } from 'next';
-import { notFound } from 'next/navigation';
-import { getMetaData, getAllTourSlugs } from '@/lib/tourMetaData';
 import ToursPageContent from './TourPageContent';
 
 type Props = {
@@ -8,86 +6,56 @@ type Props = {
   searchParams: { [key: string]: string | string[] | undefined };
 };
 
-export async function generateStaticParams() {
-  const slugs = getAllTourSlugs();
+export const metadata: Metadata = {
+  title: 'All India Tour Packages 2025 | Way to India',
+  description:
+    'Explore our comprehensive collection of India tour packages. Discover Taj Mahal tours, Rajasthan heritage tours, Kerala backwaters, Golden Triangle, and more. Best prices and expert guides.',
+  keywords:
+    'india tours, tour packages india, india travel packages, taj mahal tour, rajasthan tour, kerala tour, golden triangle tour, india vacation packages, heritage tours',
 
-  return slugs.map(slug => ({
-    slug: slug,
-  }));
-}
+  alternates: {
+    canonical: 'https://waytoindia.com/tours',
+  },
 
-// Generate metadata for SEO (Server-side)
-export async function generateMetadata({ params }: Props): Promise<Metadata> {
-  const metaInfo = getMetaData(params.slug);
-  const baseUrl = 'https://waytoindia.com'; // Replace with your actual domain
+  openGraph: {
+    title: 'All India Tour Packages 2024 | Way to India',
+    description:
+      'Explore our comprehensive collection of India tour packages with expert guides and best prices.',
+    type: 'website',
+    locale: 'en_US',
+    url: 'https://waytoindia.com/tours',
+    siteName: 'Way to India',
+    images: [
+      {
+        url: 'https://waytoindia.com/images/tours-listing-og.jpg',
+        width: 1200,
+        height: 630,
+        alt: 'India Tour Packages',
+      },
+    ],
+  },
 
-  return {
-    title: metaInfo.title,
-    description: metaInfo.description,
-    keywords: metaInfo.keywords,
+  twitter: {
+    card: 'summary_large_image',
+    title: 'All India Tour Packages 2024 | Way to India',
+    description: 'Explore our comprehensive collection of India tour packages',
+    images: ['https://waytoindia.com/images/tours-listing-twitter.jpg'],
+    creator: '@waytoindia',
+  },
 
-    // Canonical URL (Very important for SEO)
-    alternates: {
-      canonical: `${baseUrl}${metaInfo.canonicalPath}`,
-    },
-
-    // Open Graph for Facebook, LinkedIn
-    openGraph: {
-      title: metaInfo.title,
-      description: metaInfo.description,
-      type: 'website',
-      locale: 'en_US',
-      url: `${baseUrl}${metaInfo.canonicalPath}`,
-      siteName: 'Waytoindia.com',
-      images: [
-        {
-          url: `${baseUrl}/images/tours/${params.slug}-og.jpg`, // Add tour images
-          width: 1200,
-          height: 630,
-          alt: metaInfo.title,
-        },
-      ],
-    },
-
-    // Twitter Card
-    twitter: {
-      card: 'summary_large_image',
-      title: metaInfo.title,
-      description: metaInfo.description,
-      images: [`${baseUrl}/images/tours/${params.slug}-twitter.jpg`],
-      creator: '@waytoindia', // Your Twitter handle
-    },
-
-    // Robots meta tag
-    robots: {
+  robots: {
+    index: true,
+    follow: true,
+    googleBot: {
       index: true,
       follow: true,
-      googleBot: {
-        index: true,
-        follow: true,
-        'max-video-preview': -1,
-        'max-image-preview': 'large',
-        'max-snippet': -1,
-      },
+      'max-video-preview': -1,
+      'max-image-preview': 'large',
+      'max-snippet': -1,
     },
-
-    // Verification (Add your verification codes)
-    verification: {
-      google: 'your-google-verification-code',
-      // yandex: 'your-yandex-verification-code',
-      // bing: 'your-bing-verification-code',
-    },
-  };
-}
+  },
+};
 
 export default function TourPage({ params, searchParams }: Props) {
-  // Validate slug exists
-  const metaInfo = getMetaData(params.slug);
-
-  // Return 404 if tour not found (optional)
-  // if (!tourMetaData[params.slug]) {
-  //   notFound();
-  // }
-
   return <ToursPageContent slug={params.slug} searchParams={searchParams} />;
 }

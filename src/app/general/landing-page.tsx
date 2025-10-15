@@ -27,11 +27,11 @@ const LandingPage = () => {
         <NavBar />
         <HeroPage />
         <Package />
-        <Trending />
+        {/* <Trending /> */}
         <Inspiration />
-        <AirCharter />
-        <Deals />
-        <BlogSection />
+        {/* <AirCharter /> */}
+        {/* <Deals /> */}
+        {/* <BlogSection /> */}
         <Footer />
       </div>
     </div>
