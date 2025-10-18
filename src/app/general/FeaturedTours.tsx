@@ -22,7 +22,7 @@ const FeaturedTours: React.FC = () => {
   const [direction, setDirection] = useState<'left' | 'right'>('right');
   const [isLoading, setIsLoading] = useState(true);
   const router = useRouter();
-  const ITEMS_PER_PAGE = 3;
+  const ITEMS_PER_PAGE = 6;
 
   useEffect(() => {
     fetchTours();
