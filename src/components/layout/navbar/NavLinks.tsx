@@ -6,7 +6,7 @@ import {
   UsersFour,
   Bed,
   Island,
-  Headset,  
+  Headset,
   MapTrifold,
   CaretDown,
 } from '@phosphor-icons/react';
@@ -17,7 +17,6 @@ const navItems = [
   { icon: House, text: 'Home', path: '/' },
   { icon: UsersFour, text: 'Tours', path: '/tours' },
   { icon: Bed, text: 'Hotels', path: '/hotels' },
-  { icon: Headset, text: 'Contact Us', path: '/contact-us' },
   { icon: Island, text: 'Transportation', path: '/transport' },
 ];
 
@@ -120,6 +119,14 @@ const NavLinks: React.FC = () => {
           </div>
         )}
       </div>
+
+      <NavItem
+        icon={Headset}
+        text="Contact Us"
+        path="/contact-us"
+        onClick={() => router.push('/contact-us')}
+        active={normalizedPath === '/contact-us'}
+      />
     </div>
   );
 };
