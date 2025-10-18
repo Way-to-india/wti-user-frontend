@@ -60,7 +60,6 @@ const MobileMenu: React.FC = () => {
   };
 
   const handleLogout = () => {
-    logoutUser();
     closeMenu();
     router.push('/auth/signup');
   };
@@ -131,7 +130,7 @@ const MobileMenu: React.FC = () => {
                   <div className="p-6 border-b border-gray-100">
                     <div className="flex items-center gap-4">
                       <div className="w-14 h-14 rounded-full overflow-hidden border-2 border-orange-200 bg-orange-50">
-                        {user.profileImagePath ? (
+                        {/* {user.profileImagePath ? (
                           <Image
                             src={user.profileImagePath}
                             alt="Profile"
@@ -139,19 +138,19 @@ const MobileMenu: React.FC = () => {
                             height={56}
                             className="w-full h-full object-cover"
                           />
-                        ) : (
+                        ) : ( */}
                           <div className="w-full h-full flex items-center justify-center">
                             <User size={24} className="text-orange-500" />
                           </div>
-                        )}
+                        {/* )} */}
                       </div>
                       <div className="flex-1 min-w-0">
                         <h3 className="font-bold text-gray-900 text-lg truncate">
-                          {user.name || 'User'}
+                          {user.firstName || 'User'}
                         </h3>
-                        {user.email && (
+                        {/* {user. && (
                           <p className="text-sm text-gray-500 truncate">{user.email}</p>
-                        )}
+                        )} */}
                       </div>
                     </div>
                   </div>
