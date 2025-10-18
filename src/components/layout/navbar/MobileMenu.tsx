@@ -139,9 +139,9 @@ const MobileMenu: React.FC = () => {
                             className="w-full h-full object-cover"
                           />
                         ) : ( */}
-                          <div className="w-full h-full flex items-center justify-center">
-                            <User size={24} className="text-orange-500" />
-                          </div>
+                        <div className="w-full h-full flex items-center justify-center">
+                          <User size={24} className="text-orange-500" />
+                        </div>
                         {/* )} */}
                       </div>
                       <div className="flex-1 min-w-0">

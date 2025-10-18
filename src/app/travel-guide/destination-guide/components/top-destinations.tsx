@@ -19,7 +19,7 @@ export function TopDestinations({ states }: TopDestinationsProps) {
   );
 
   const handleCityClick = (citySlug: string, stateSlug: string) => {
-    router.push(`/travel-guide/${stateSlug}/${citySlug}`);
+    router.push(`/travel-guide/destination-guide/${stateSlug}/${citySlug}`);
   };
 
   React.useEffect(() => {
