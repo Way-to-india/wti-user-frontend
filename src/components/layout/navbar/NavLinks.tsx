@@ -6,7 +6,7 @@ import {
   UsersFour,
   Bed,
   Island,
-  Headset,
+  Headset,  
   MapTrifold,
   CaretDown,
 } from '@phosphor-icons/react';
@@ -17,8 +17,8 @@ const navItems = [
   { icon: House, text: 'Home', path: '/' },
   { icon: UsersFour, text: 'Tours', path: '/tours' },
   { icon: Bed, text: 'Hotels', path: '/hotels' },
-  { icon: Island, text: 'Transportation', path: '/transport' },
   { icon: Headset, text: 'Contact Us', path: '/contact-us' },
+  { icon: Island, text: 'Transportation', path: '/transport' },
 ];
 
 const travelGuideItems = [
