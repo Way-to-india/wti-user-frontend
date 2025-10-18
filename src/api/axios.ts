@@ -1,108 +1,81 @@
-import axios, { InternalAxiosRequestConfig, AxiosResponse, AxiosError } from 'axios';
-import { auth } from '@/lib/firebase';
-import { onAuthStateChanged, User as FirebaseUser } from 'firebase/auth';
+import axios, { AxiosInstance, AxiosError, InternalAxiosRequestConfig } from 'axios';
 
-let currentUser: FirebaseUser | null = null;
-let authReady: boolean = false;
-
-onAuthStateChanged(auth, (user: FirebaseUser | null) => {
-  currentUser = user;
-  authReady = true;
-  if (user) {
-    user
-      .getIdToken()
-      .then((token: string) => {
-        if (typeof window !== 'undefined') {
-          localStorage.setItem('token', token);
-        }
-      })
-      .catch(console.error);
-  } else {
-    if (typeof window !== 'undefined') {
-      localStorage.removeItem('token');
-    }
-  }
-});
-
-const waitForAuthState = (): Promise<FirebaseUser | null> => {
-  return new Promise(resolve => {
-    if (authReady) {
-      resolve(currentUser);
-    } else {
-      const unsubscribe = onAuthStateChanged(auth, (user: FirebaseUser | null) => {
-        unsubscribe();
-        resolve(user);
-      });
-    }
-  });
-};
-
-const axiosInstance = axios.create({
-  baseURL: process.env.NEXT_PUBLIC_BASE_URL || 'http://localhost:5000',
-  timeout: 10000,
+// Create axios instance
+const apiClient: AxiosInstance = axios.create({
+  baseURL: process.env.NEXT_PUBLIC_BASE_URL,
+  timeout: 30000,
   headers: {
     'Content-Type': 'application/json',
   },
 });
 
-axiosInstance.interceptors.request.use(
-  (config: InternalAxiosRequestConfig): InternalAxiosRequestConfig => {
-    if (typeof window !== 'undefined') {
-      const token = localStorage.getItem('token');
-      if (token) {
-        config.headers.Authorization = `Bearer ${token}`;
-      }
+// Request interceptor - Add auth token to requests
+apiClient.interceptors.request.use(
+  (config: InternalAxiosRequestConfig) => {
+    const token = localStorage.getItem('authToken');
+    console.log("token is coming",token);
+    if (token && config.headers) {
+      config.headers.Authorization = `Bearer ${token}`;
     }
+
     return config;
   },
-  (error: AxiosError) => Promise.reject(error)
+  (error: AxiosError) => {
+    return Promise.reject(error);
+  }
 );
 
-axiosInstance.interceptors.response.use(
-  (response: AxiosResponse) => response,
-  async (error: AxiosError) => {
-    if (error.response?.status === 401) {
-      try {
-        const user = await waitForAuthState();
+// Response interceptor - Handle common errors
+apiClient.interceptors.response.use(
+  response => {
+    return response;
+  },
+  (error: AxiosError) => {
+    // if (error.response) {
+    //   const status = error.response.status;
 
-        if (user) {
-          try {
-            const newToken: string = await user.getIdToken(true);
-            if (typeof window !== 'undefined') {
-              localStorage.setItem('token', newToken);
-            }
+      // Handle 401 Unauthorized - Token expired or invalid
+    //   if (status === 401) {
+    //     localStorage.removeItem('authToken');
+    //     localStorage.removeItem('userData');
 
-            // Retry the original request with new token
-            if (error.config) {
-              error.config.headers.Authorization = `Bearer ${newToken}`;
-              return axiosInstance.request(error.config);
-            }
-          } catch (refreshError) {
-            console.error('Token refresh failed:', refreshError);
-            // Token refresh failed, redirect to login
-            if (typeof window !== 'undefined') {
-              localStorage.removeItem('token');
-              window.location.href = '/auth/login';
-            }
-          }
-        } else {
-          // No user signed in, redirect to login
-          if (typeof window !== 'undefined') {
-            localStorage.removeItem('token');
-            window.location.href = '/auth/login';
-          }
-        }
-      } catch (authError) {
-        console.error('Auth state check failed:', authError);
-        if (typeof window !== 'undefined') {
-          localStorage.removeItem('token');
-          window.location.href = '/auth/login';
-        }
-      }
-    }
+    //     // Only redirect if not already on auth page
+    //     if (typeof window !== 'undefined' && !window.location.pathname.includes('/auth')) {
+    //       window.location.href = '/auth?step=login';
+    //     }
+    //   }
+
+    //   // Handle 403 Forbidden
+    //   if (status === 403) {
+    //     console.error('Access forbidden');
+    //   }
+
+    //   // Handle 500 Internal Server Error
+    //   if (status === 500) {
+    //     console.error('Server error occurred');
+    //   }
+    // } else if (error.request) {
+    //   // Network error
+    //   console.error('Network error - please check your connection');
+    // }
 
     return Promise.reject(error);
   }
 );
 
-export default axiosInstance;
+// API endpoints
+export const endpoints = {
+  auth: {
+    sendSignupOTP: '/api/user/signup/send-otp',
+    verifySignupOTP: '/api/user/signup/verify-otp',
+    sendLoginOTP: '/api/user/login/send-otp',
+    verifyLoginOTP: '/api/user/login/verify-otp',
+    resendOTP: '/api/user/resend-otp',
+  },
+  user: {
+    profile: '/api/user/user-routes/profile',
+    update: '/api/user/user-routes/update',
+  },
+};
+
+export default apiClient;

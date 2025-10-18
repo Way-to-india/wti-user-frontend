@@ -13,7 +13,7 @@ const AuthButtons: React.FC = () => {
   return (
     <button
       className="hidden lg:block bg-orange-500 hover:bg-orange-600 text-white px-4 py-2 rounded-full transition-colors duration-200 font-medium text-sm"
-      onClick={() => router.push("/auth/signup")}
+      onClick={() => router.push("/auth")}
       style={{
         fontFamily: theme.typography.fontFamily.regular,
       }}

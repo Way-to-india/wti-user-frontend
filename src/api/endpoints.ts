@@ -1,7 +1,7 @@
 const API_BASE = '/api';
 const endpoints = {
   auth: {
-    login: `${API_BASE}/auth/login`,
+    login: `${API_BASE}/user/auth/login`,
     signup: `${API_BASE}/auth/signup`,
     refreshToken: `${API_BASE}/auth/refresh-token`,
   },

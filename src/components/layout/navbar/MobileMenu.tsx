@@ -18,7 +18,7 @@ const navItems = [
 const MobileMenu: React.FC = () => {
   const [isOpen, setIsOpen] = useState(false);
   const [isVisible, setIsVisible] = useState(false);
-  const { user, token, logoutUser } = useAuth();
+  const { user, token } = useAuth();
   const router = useRouter();
   const pathname = usePathname();
   const menuRef = useRef<HTMLDivElement>(null);
@@ -234,7 +234,7 @@ const MobileMenu: React.FC = () => {
                     </div>
                   ) : (
                     <button
-                      onClick={() => handleNavigation('/auth/signup')}
+                      onClick={() => handleNavigation('/auth')}
                       className="w-full bg-gradient-to-r from-orange-500 to-orange-600 text-white py-4 px-6 rounded-xl hover:from-orange-600 hover:to-orange-700 transition-all duration-200 font-bold text-lg shadow-lg hover:shadow-xl transform hover:scale-[1.02]"
                     >
                       Sign Up / Login

@@ -1,0 +1,58 @@
+'use client';
+
+import React, { useEffect, useState } from 'react';
+import NavBar from '@/components/layout/navbar/NavBar';
+import { Overview } from './components/overview';
+import { TopDestinations } from './components/top-destinations';
+import { travelGuideAPI, State } from '@/lib/api/travel-guide.api';
+
+export default function TravelGuidePage() {
+  const [states, setStates] = useState<State[]>([]);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState<string | null>(null);
+
+  useEffect(() => {
+    const fetchStates = async () => {
+      try {
+        setLoading(true);
+        const data = await travelGuideAPI.getAllStatesWithCities();
+        console.log(data);
+        setStates(data);
+      } catch (err) {
+        console.log(err);
+        setError(err instanceof Error ? err.message : 'Failed to load destinations');
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    fetchStates();
+  }, []);
+
+  return (
+    <section className="bg-gradient-to-b from-orange-50/30 to-white min-h-screen">
+      <NavBar />
+      <div className="text-sm text-gray-600 lg:mb-8 mb-4 md:mt-6 mt-3 lg:mx-[7%] mx-[4%]">
+        <span className="hover:text-orange-500 transition-colors cursor-pointer">Home</span>
+        <span className="mx-2">→</span>
+        <span className="text-orange-500 font-semibold">Travel Guide</span>
+      </div>
+
+      <div className="flex flex-col gap-12 mb-8 lg:mx-[7%] mx-[4%] font-sans">
+        <Overview />
+
+        {loading ? (
+          <div className="flex justify-center items-center py-20">
+            <div className="animate-spin rounded-full h-16 w-16 border-t-4 border-orange-500"></div>
+          </div>
+        ) : error ? (
+          <div className="bg-red-50 border border-red-200 rounded-lg p-6 text-center">
+            <p className="text-red-600 font-medium">{error}</p>
+          </div>
+        ) : (
+          <TopDestinations states={states} />
+        )}
+      </div>
+    </section>
+  );
+}

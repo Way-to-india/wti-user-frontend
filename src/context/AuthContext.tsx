@@ -1,77 +1,84 @@
-// context/AuthContext.tsx
-"use client";
+'use client';
+import React, { createContext, useContext, useState, useEffect } from 'react';
+import { useRouter } from 'next/navigation';
 
-import React, { createContext, useContext, useEffect, useState } from "react";
-import { useDispatch } from "react-redux";
-import { setUser, logout } from "@/app/redux/authSlice";
+interface User {
+  id: string;
+  firstName: string;
+  lastName: string;
+  phone: string;
+  role?: string;
+  isPhoneVerified: boolean;
+}
 
 interface AuthContextType {
+  user: User | null;
   token: string | null;
-  user: any;
-  login: (token: string, user: any) => void;
-  logoutUser: () => void;
-  updateUser: (updatedUser: any) => void;
+  isAuthenticated: boolean;
+  isLoading: boolean;
+  login: (token: string, userData: User) => void;
+  logout: () => void;
 }
 
 const AuthContext = createContext<AuthContextType | undefined>(undefined);
 
-export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
+export function AuthProvider({ children }: { children: React.ReactNode }) {
+  const [user, setUser] = useState<User | null>(null);
   const [token, setToken] = useState<string | null>(null);
-  const [user, setUserState] = useState<any>(null);
-  const dispatch = useDispatch();
+  const [isLoading, setIsLoading] = useState(true);
+  const router = useRouter();
 
-  // On mount: restore from localStorage
   useEffect(() => {
-    const storedToken = localStorage.getItem("token");
-    const storedUser = localStorage.getItem("user");    
-
-    console.log("Stored Token: ", storedToken); 
-    console.log("Stored User: ", storedUser);
+    // Check for existing auth on mount
+    const storedToken = localStorage.getItem('authToken');
+    const storedUser = localStorage.getItem('userData');
 
     if (storedToken && storedUser) {
-      setToken(storedToken);
-      const parsedUser = JSON.parse(storedUser);
-      setUserState(parsedUser);
-      dispatch(setUser(parsedUser)); // updates Redux
+      try {
+        const parsedUser = JSON.parse(storedUser);
+        setToken(storedToken);
+        setUser(parsedUser);
+      } catch (error) {
+        console.error('Error parsing stored user data:', error);
+        localStorage.removeItem('authToken');
+        localStorage.removeItem('userData');
+      }
     }
-  }, [dispatch]);
 
-  const login = (newToken: string, newUser: any) => {
+    setIsLoading(false);
+  }, []);
+
+  const login = (newToken: string, userData: User) => {
     setToken(newToken);
-    setUserState(newUser);
-    localStorage.setItem("token", newToken);
-    localStorage.setItem("user", JSON.stringify(newUser));
-
-    dispatch(setUser(newUser)); // update Redux
+    setUser(userData);
+    localStorage.setItem('authToken', newToken);
+    localStorage.setItem('userData', JSON.stringify(userData));
   };
 
-  const updateUser = (updatedUser: any) => {
-    setUserState(updatedUser);
-    localStorage.setItem("user", JSON.stringify(updatedUser));
-    dispatch(setUser(updatedUser)); // update Redux
-  };
-
-  const logoutUser = () => {
+  const logout = () => {
     setToken(null);
-    setUserState(null);
-    localStorage.removeItem("token");
-    localStorage.removeItem("user");
-
-    dispatch(logout()); // clear Redux
+    setUser(null);
+    localStorage.removeItem('authToken');
+    localStorage.removeItem('userData');
+    router.push('/auth?step=login');
   };
 
-  return (
-    <AuthContext.Provider value={{ token, user, login, logoutUser, updateUser }}>
-      {children}
-    </AuthContext.Provider>
-  );
-};
+  const value = {
+    user,
+    token,
+    isAuthenticated: !!token && !!user,
+    isLoading,
+    login,
+    logout,
+  };
 
-// Custom hook for using auth context
-export const useAuth = () => {
-  const context = useContext(AuthContext);  
-  if (!context) {
-    throw new Error("useAuth must be used within an AuthProvider");
+  return <AuthContext.Provider value={value}>{children}</AuthContext.Provider>;
+}
+
+export function useAuth() {
+  const context = useContext(AuthContext);
+  if (context === undefined) {
+    throw new Error('useAuth must be used within an AuthProvider');
   }
   return context;
-};
+}
