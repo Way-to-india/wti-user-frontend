@@ -25,7 +25,7 @@ export function CityOverview({ cityData }: CityOverviewProps) {
         </div>
 
         <h1 className="font-bold text-gray-900 lg:text-6xl md:text-5xl text-3xl tracking-tight">
-          Introducing {cityData.city}
+          {cityData.city} Travel Guide
         </h1>
 
         {cityData.bestTimeToVisit && (
