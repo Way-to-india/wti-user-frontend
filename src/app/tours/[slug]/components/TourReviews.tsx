@@ -164,7 +164,7 @@ const TourReviews: React.FC<TourReviewsProps> = ({ tourId }) => {
       const { data } = await axiosInstance.get(`/api/user/review/tours/${tourId}/reviews`);
       if (data.success) {
         setReviews(data.data || []);
-        console.log('Current user:', user?.uid);
+        console.log('Current user:', user?.id);
         console.log('Reviews:', data.data);
       }
     } catch (err: any) {
@@ -174,7 +174,7 @@ const TourReviews: React.FC<TourReviewsProps> = ({ tourId }) => {
     } finally {
       setLoading(false);
     }
-  }, [tourId, user?.uid]);
+  }, [tourId, user?.id]);
 
   useEffect(() => {
     fetchReviews();
@@ -305,12 +305,12 @@ const TourReviews: React.FC<TourReviewsProps> = ({ tourId }) => {
 
   const canDelete = useCallback(
     (reviewUserId: string) => {
-      if (!user?.uid) return false;
-      const canDeleteReview = user.uid === reviewUserId;
-      console.log('Can delete?', { userUid: user.uid, reviewUserId, canDeleteReview });
+      if (!user?.id) return false;
+      const canDeleteReview = user.id === reviewUserId;
+      console.log('Can delete?', { userid: user.id, reviewUserId, canDeleteReview });
       return canDeleteReview;
     },
-    [user?.uid]
+    [user?.id]
   );
 
   if (loading) {
