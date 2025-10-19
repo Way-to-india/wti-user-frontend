@@ -1,6 +1,7 @@
 'use client';
 import { useState, useEffect, Suspense } from 'react';
 import { useRouter, useSearchParams } from 'next/navigation';
+import Image from 'next/image';
 import SignupForm from '@/components/auth/SignForm';
 import LoginForm from '@/components/auth/LoginForm';
 import GoogleSignInButton from '@/components/auth/GoogleLogin';
@@ -13,6 +14,8 @@ function AuthContent() {
   const [mode, setMode] = useState<'login' | 'signup'>('signup');
   const [isRedirecting, setIsRedirecting] = useState(false);
   const [googleError, setGoogleError] = useState<string | null>(null);
+  const LoginImage = 'https://dbagut2mvh0lo.cloudfront.net/auth/login.jpg';
+  const signUpPage = 'https://dbagut2mvh0lo.cloudfront.net/auth/signup_1.jpg';
 
   useEffect(() => {
     const step = searchParams?.get('step');
@@ -93,32 +96,15 @@ function AuthContent() {
           </div>
         </div>
 
-        <div className="hidden lg:flex w-full lg:w-1/2 bg-gradient-to-br from-orange-400 to-orange-600 items-center justify-center p-12">
-          <div className="text-white text-center space-y-6">
-            <div className="space-y-4">
-              <h1 className="text-5xl font-bold">Welcome to Our Platform</h1>
-              <p className="text-xl text-orange-100">
-                {mode === 'signup'
-                  ? 'Join thousands of users who trust us for secure authentication'
-                  : "We're glad to see you back! Login to continue your journey"}
-              </p>
-            </div>
-
-            <div className="mt-12 grid grid-cols-3 gap-8 max-w-2xl mx-auto">
-              <div className="text-center">
-                <div className="text-4xl mb-2">🔒</div>
-                <p className="text-sm text-orange-100">Secure OTP Authentication</p>
-              </div>
-              <div className="text-center">
-                <div className="text-4xl mb-2">⚡</div>
-                <p className="text-sm text-orange-100">Lightning Fast</p>
-              </div>
-              <div className="text-center">
-                <div className="text-4xl mb-2">📱</div>
-                <p className="text-sm text-orange-100">WhatsApp Verified</p>
-              </div>
-            </div>
-          </div>
+        <div className="hidden lg:flex w-full lg:w-1/2 relative overflow-hidden">
+          <Image
+            src={mode === 'signup' ? signUpPage : LoginImage}
+            alt={mode === 'signup' ? 'Sign up illustration' : 'Login illustration'}
+            fill
+            className="object-cover"
+            priority
+            sizes="50vw"
+          />
         </div>
       </div>
     </div>
