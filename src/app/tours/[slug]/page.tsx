@@ -9,7 +9,7 @@ type Props = {
 
 async function getTourFAQSchema(slug: string) {
   try {
-    const apiUrl = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:5000';
+    const apiUrl = process.env.NEXT_PUBLIC_BASE_URL || 'http://localhost:5000';
     const res = await fetch(`${apiUrl}/api/faq/${slug}/schema`, {
       cache: 'force-cache',
       next: { revalidate: 86400 },
