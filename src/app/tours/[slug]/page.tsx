@@ -7,6 +7,21 @@ type Props = {
   params: { slug: string };
 };
 
+async function getTourFAQSchema(slug: string) {
+  try {
+    const apiUrl = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:5000';
+    const res = await fetch(`${apiUrl}/api/faq/${slug}/schema`, {
+      cache: 'force-cache',
+      next: { revalidate: 86400 },
+    });
+    const data = await res.json();
+    return data?.payload || null;
+  } catch (error) {
+    console.error(`Error fetching FAQ schema for ${slug}:`, error);
+    return null;
+  }
+}
+
 export async function generateStaticParams() {
   const slugs = getAllTourSlugs();
   return slugs.map(slug => ({
@@ -68,12 +83,28 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
   };
 }
 
-export default function TourDetailPage({ params }: Props) {
+export default async function TourDetailPage({ params }: Props) {
   const metaInfo = getMetaData(params.slug);
 
   if (!metaInfo) {
     notFound();
   }
 
-  return <TourDetails params={{ id: params.slug }} />;
+  const faqData = await getTourFAQSchema(params.slug);
+
+  return (
+    <>
+      {faqData?.faqSchema && (
+        <script
+          id="faq-schema"
+          type="application/ld+json"
+          dangerouslySetInnerHTML={{
+            __html: JSON.stringify(faqData.faqSchema),
+          }}
+        />
+      )}
+
+      <TourDetails params={{ id: params.slug }} />
+    </>
+  );
 }

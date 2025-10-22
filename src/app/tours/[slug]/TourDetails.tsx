@@ -21,6 +21,7 @@ import TourSidebar from './components/TourSidebar';
 import MobileBookingBar from './components/MobileBookingBar';
 import { BookingPolicy } from '@/components/tours/BookingPolicy';
 import SimilarTours from './components/SimilarTour';
+import FAQSchemaScript from './components/FAQSchemaScript';
 
 interface TourDetailsProps {
   params: {
@@ -95,6 +96,11 @@ const TourDetails: React.FC<TourDetailsProps> = ({ params }) => {
 
   return (
     <div className="min-h-screen bg-gray-50">
+
+      {tourDetails?.faqSchema && (
+        <FAQSchemaScript faqSchema={tourDetails.faqSchema} />
+      )}
+      
       <NavBar />
 
       <ImageModal

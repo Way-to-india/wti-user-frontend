@@ -6,6 +6,7 @@ import TravelTipsSection from './TravelTips';
 import OverViewTab from './OverViewTab';
 import TourReviews from './TourReviews';
 import WhatsAppContactPage from './WhatsappContactPage';
+import TourFAQ from './TourFAQ';
 
 interface TourTabsProps {
   activeTab: string;
@@ -28,6 +29,7 @@ const TourTabs: React.FC<TourTabsProps> = ({
     { name: 'Overview', key: 'overview' },
     { name: 'Itinerary Details', key: 'itinerary' },
     { name: 'Inclusions & Exclusions', key: 'inclusions' },
+    { name: 'FAQ', key: 'faq', badge: tourDetails?.faq?.faqs?.length },
     { name: 'Travel Tips For This Tour', key: 'travel-tips' },
     { name: 'Reviews', key: 'reviews' },
   ];
@@ -50,6 +52,13 @@ const TourTabs: React.FC<TourTabsProps> = ({
           <InclusionsExclusions
             inclusions={tourDetails?.inclusions || []}
             exclusions={tourDetails?.exclusions || []}
+          />
+        );
+      case 'faq':
+        return (
+          <TourFAQ
+            faqs={tourDetails?.faq?.faqs || []}
+            tourTitle={tourDetails?.title}
           />
         );
       case 'policy':
@@ -83,15 +92,14 @@ const TourTabs: React.FC<TourTabsProps> = ({
             <button
               key={tab.key}
               onClick={() => setActiveTab(tab.key)}
-              className={`px-4 sm:px-3 lg:px-3 py-3 sm:py-2 sm:text-sm lg:text-md font-semibold rounded-xl whitespace-nowrap transition-colors inline-flex items-center gap-2 shadow-sm ${
-                tab.key === 'whatsapp'
-                  ? activeTab === tab.key
-                    ? 'bg-green-500 text-white'
-                    : 'bg-green-500 text-white hover:bg-green-600'
-                  : activeTab === tab.key
+              className={`px-4 sm:px-3 lg:px-3 py-3 sm:py-2 sm:text-sm lg:text-md font-semibold rounded-xl whitespace-nowrap transition-colors inline-flex items-center gap-2 shadow-sm ${tab.key === 'whatsapp'
+                ? activeTab === tab.key
+                  ? 'bg-green-500 text-white'
+                  : 'bg-green-500 text-white hover:bg-green-600'
+                : activeTab === tab.key
                   ? 'bg-orange-500 text-white'
                   : 'text-gray-600 hover:text-orange-500 hover:bg-orange-50'
-              }`}
+                }`}
             >
               {tab.key === 'whatsapp' && (
                 <svg className="w-5 h-5 sm:w-4 sm:h-4" fill="currentColor" viewBox="0 0 24 24">

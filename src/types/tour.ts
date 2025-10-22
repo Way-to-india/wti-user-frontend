@@ -5,6 +5,7 @@ export interface TourCardProps {
   description?: string;
   price: number;
   rating?: number;
+  faqSchema?: any;
   inclusions?: Inclusion[];
   exclusions?: string[];
   duration?: Duration;
@@ -18,7 +19,7 @@ export interface TourCardProps {
   bestTime?: string;
   idealFor?: string;
   citiesCovering?: string[];
-  faqs?: FAQ[];
+  faqs?: any[];
   cancellationPolicies?: CancellationPolicy[];
   termsAndConditions?: string[];
   isActive?: boolean;
@@ -59,7 +60,7 @@ export interface Accommodation {
   rating?: number;
   capacity?: string;
   roomSize?: string;
-  starRating?: string; 
+  starRating?: string;
   roomType?: string;
   amenities?: string[];
 }
@@ -74,11 +75,6 @@ export interface Transportation {
   pickupLocation?: string;
   pickupTime?: string;
   features?: string[];
-}
-
-export interface FAQ {
-  question: string;
-  answer: string;
 }
 
 export interface CancellationPolicy {
