@@ -21,10 +21,10 @@ const navItems = [
 ];
 
 const travelGuideItems = [
-  { text: 'Destination Guide', path: '/travel-guide/destination-guide' },
-  { text: 'Places of Tourist Interest', path: '/travel-guide/places-of-interest' },
-  { text: 'Travel Tips', path: '/travel-guide/travel-tips' },
-  { text: 'Travel Toolkit', path: '/travel-guide/travel-toolkit' },
+  { text: 'Destination Guide', path: '/travel-guide' },
+  { text: 'Places of Tourist Interest', path: '/places-of-interest' },
+  { text: 'Travel Tips', path: '/travel-tips' },
+  { text: 'Travel Toolkit', path: '/travel-toolkit' },
 ];
 
 const NavLinks: React.FC = () => {
@@ -105,11 +105,10 @@ const NavLinks: React.FC = () => {
                     router.push(item.path);
                     setDropdownOpen(false);
                   }}
-                  className={`w-full px-4 py-2.5 text-left text-sm transition-colors ${
-                    isActive
-                      ? 'bg-orange-50 text-orange-600 font-medium'
-                      : 'text-gray-700 hover:bg-gray-50'
-                  }`}
+                  className={`w-full px-4 py-2.5 text-left text-sm transition-colors ${isActive
+                    ? 'bg-orange-50 text-orange-600 font-medium'
+                    : 'text-gray-700 hover:bg-gray-50'
+                    }`}
                   style={{ fontFamily: theme.typography.fontFamily.regular }}
                 >
                   {item.text}
@@ -127,6 +126,7 @@ const NavLinks: React.FC = () => {
         onClick={() => router.push('/contact-us')}
         active={normalizedPath === '/contact-us'}
       />
+
     </div>
   );
 };

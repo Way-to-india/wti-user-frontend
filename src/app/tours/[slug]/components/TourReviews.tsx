@@ -11,11 +11,19 @@ import {
   X,
   CheckCircle,
   AlertCircle,
+  Upload,
+  Image as ImageIcon,
 } from 'lucide-react';
 import Image from 'next/image';
 import { useAuth } from '@/context/AuthContext';
 import { useRouter } from 'next/navigation';
 import axiosInstance from '@/api/axios';
+
+interface ReviewImage {
+  key: string;
+  url: string;
+  thumbnail?: string;
+}
 
 interface Review {
   id: string;
@@ -27,6 +35,7 @@ interface Review {
   comment: string;
   date: string;
   helpful: number;
+  images?: ReviewImage[];
 }
 
 interface TourReviewsProps {
@@ -124,11 +133,10 @@ const StarRating: React.FC<{
       {[1, 2, 3, 4, 5].map(star => (
         <Star
           key={star}
-          className={`${size} ${
-            star <= (interactive ? hover || rating : rating)
-              ? 'fill-yellow-400 text-yellow-400'
-              : 'text-gray-300'
-          } ${interactive ? 'cursor-pointer transition-all duration-200 hover:scale-110' : ''}`}
+          className={`${size} ${star <= (interactive ? hover || rating : rating)
+            ? 'fill-yellow-400 text-yellow-400'
+            : 'text-gray-300'
+            } ${interactive ? 'cursor-pointer transition-all duration-200 hover:scale-110' : ''}`}
           onClick={() => interactive && onChange?.(star)}
           onMouseEnter={() => interactive && setHover(star)}
           onMouseLeave={() => interactive && setHover(0)}
@@ -138,11 +146,93 @@ const StarRating: React.FC<{
   );
 };
 
+const ImagePreview: React.FC<{
+  file: File;
+  onRemove: () => void;
+}> = ({ file, onRemove }) => {
+  const [preview, setPreview] = useState<string>('');
+
+  useEffect(() => {
+    const objectUrl = URL.createObjectURL(file);
+    setPreview(objectUrl);
+    return () => URL.revokeObjectURL(objectUrl);
+  }, [file]);
+
+  return (
+    <div className="relative group">
+      <Image
+        src={preview}
+        alt="Preview"
+        className="w-24 h-24 object-cover rounded-lg border-2 border-gray-200"
+        width={96}
+        height={96}
+      />
+      <button
+        onClick={onRemove}
+        className="absolute -top-2 -right-2 bg-red-500 text-white rounded-full p-1 opacity-0 group-hover:opacity-100 transition-opacity"
+        type="button"
+      >
+        <X className="w-4 h-4" />
+      </button>
+      <div className="absolute inset-0 bg-black/0 group-hover:bg-black/10 rounded-lg transition-colors" />
+    </div>
+  );
+};
+
+const ImageGallery: React.FC<{ images: ReviewImage[] }> = ({ images }) => {
+  const [selectedImage, setSelectedImage] = useState<string | null>(null);
+
+  if (!images || images.length === 0) return null;
+
+  return (
+    <>
+      <div className="flex gap-2 mt-3 flex-wrap">
+        {images.map((img, idx) => (
+          <div
+            key={idx}
+            className="relative w-20 h-20 rounded-lg overflow-hidden cursor-pointer hover:opacity-80 transition-opacity border border-gray-200"
+            onClick={() => setSelectedImage(img.url)}
+          >
+            <Image
+              src={img.thumbnail || img.url}
+              alt={`Review image ${idx + 1}`}
+              fill
+              className="object-cover"
+            />
+          </div>
+        ))}
+      </div>
+
+      {selectedImage && (
+        <div
+          className="fixed inset-0 z-50 bg-black/90 flex items-center justify-center p-4"
+          onClick={() => setSelectedImage(null)}
+        >
+          <button
+            className="absolute top-4 right-4 text-white hover:text-gray-300"
+            onClick={() => setSelectedImage(null)}
+          >
+            <X className="w-8 h-8" />
+          </button>
+          <Image
+            src={selectedImage}
+            alt="Full size"
+            className="max-w-full max-h-full object-contain"
+            width={1000}
+            height={1000}
+          />
+        </div>
+      )}
+    </>
+  );
+};
+
 const TourReviews: React.FC<TourReviewsProps> = ({ tourId }) => {
   const [reviews, setReviews] = useState<Review[]>([]);
   const [showForm, setShowForm] = useState(false);
   const [rating, setRating] = useState(0);
   const [form, setForm] = useState({ title: '', comment: '' });
+  const [selectedFiles, setSelectedFiles] = useState<File[]>([]);
   const [loading, setLoading] = useState(false);
   const [submitting, setSubmitting] = useState(false);
   const [error, setError] = useState<string | null>(null);
@@ -162,10 +252,8 @@ const TourReviews: React.FC<TourReviewsProps> = ({ tourId }) => {
       setLoading(true);
       setError(null);
       const { data } = await axiosInstance.get(`/api/user/review/tours/${tourId}/reviews`);
-      if (data.success) {
-        setReviews(data.data || []);
-        console.log('Current user:', user?.id);
-        console.log('Reviews:', data.data);
+      if (data.status) {
+        setReviews(data.payload || []);
       }
     } catch (err: any) {
       const errorMsg = err.response?.data?.message || 'Failed to load reviews';
@@ -174,7 +262,7 @@ const TourReviews: React.FC<TourReviewsProps> = ({ tourId }) => {
     } finally {
       setLoading(false);
     }
-  }, [tourId, user?.id]);
+  }, [tourId]);
 
   useEffect(() => {
     fetchReviews();
@@ -195,6 +283,39 @@ const TourReviews: React.FC<TourReviewsProps> = ({ tourId }) => {
   const closeModal = useCallback(() => {
     setModal(prev => ({ ...prev, isOpen: false }));
   }, []);
+
+  const handleFileSelect = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const files = Array.from(e.target.files || []);
+
+    if (selectedFiles.length + files.length > 5) {
+      setError('Maximum 5 images allowed per review');
+      return;
+    }
+
+    const validFiles = files.filter(file => {
+      const isValidType = ['image/jpeg', 'image/png', 'image/jpg', 'image/webp'].includes(
+        file.type
+      );
+      const isValidSize = file.size <= 10 * 1024 * 1024; // 10MB
+
+      if (!isValidType) {
+        setError(`${file.name} is not a valid image type`);
+        return false;
+      }
+      if (!isValidSize) {
+        setError(`${file.name} exceeds 10MB size limit`);
+        return false;
+      }
+      return true;
+    });
+
+    setSelectedFiles(prev => [...prev, ...validFiles]);
+    e.target.value = '';
+  };
+
+  const removeFile = (index: number) => {
+    setSelectedFiles(prev => prev.filter((_, i) => i !== index));
+  };
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -226,19 +347,28 @@ const TourReviews: React.FC<TourReviewsProps> = ({ tourId }) => {
       setSubmitting(true);
       setError(null);
 
-      await axiosInstance.post(`/api/user/review/tours/${tourId}/reviews`, {
-        rating,
-        title: trimmedTitle,
-        comment: trimmedComment,
+      const formData = new FormData();
+      formData.append('rating', rating.toString());
+      formData.append('title', trimmedTitle);
+      formData.append('comment', trimmedComment);
+
+      selectedFiles.forEach(file => {
+        formData.append('images', file);
+      });
+
+      await axiosInstance.post(`/api/user/review/tours/${tourId}/reviews`, formData, {
+        headers: {
+          'Content-Type': 'multipart/form-data',
+        },
       });
 
       setForm({ title: '', comment: '' });
       setRating(0);
+      setSelectedFiles([]);
       await fetchReviews();
       showModal('success', 'Review Submitted!', 'Thank you for sharing your experience with us.');
       setShowForm(false);
     } catch (err: any) {
-      console.log(err);
       const errorMsg = err.response?.data?.message || 'Failed to submit review. Please try again.';
       showModal('error', 'Submission Failed', errorMsg);
       console.error('Error submitting review:', err);
@@ -306,9 +436,7 @@ const TourReviews: React.FC<TourReviewsProps> = ({ tourId }) => {
   const canDelete = useCallback(
     (reviewUserId: string) => {
       if (!user?.id) return false;
-      const canDeleteReview = user.id === reviewUserId;
-      console.log('Can delete?', { userid: user.id, reviewUserId, canDeleteReview });
-      return canDeleteReview;
+      return user.id === reviewUserId;
     },
     [user?.id]
   );
@@ -421,6 +549,41 @@ const TourReviews: React.FC<TourReviewsProps> = ({ tourId }) => {
               />
             </div>
 
+            <div>
+              <label className="block text-sm font-semibold text-gray-700 mb-2">
+                Add Photos{' '}
+                <span className="text-gray-500 text-xs font-normal">(Optional, max 5)</span>
+              </label>
+
+              <div className="space-y-3">
+                <label className="flex items-center justify-center w-full px-4 py-6 border-2 border-dashed border-gray-300 rounded-xl hover:border-orange-400 hover:bg-orange-50 transition-all cursor-pointer">
+                  <div className="flex flex-col items-center">
+                    <Upload className="w-8 h-8 text-gray-400 mb-2" />
+                    <span className="text-sm text-gray-600 font-medium">
+                      Click to upload images
+                    </span>
+                    <span className="text-xs text-gray-500 mt-1">PNG, JPG, WEBP up to 10MB</span>
+                  </div>
+                  <input
+                    type="file"
+                    multiple
+                    accept="image/jpeg,image/png,image/jpg,image/webp"
+                    onChange={handleFileSelect}
+                    className="hidden"
+                    disabled={selectedFiles.length >= 5}
+                  />
+                </label>
+
+                {selectedFiles.length > 0 && (
+                  <div className="flex gap-2 flex-wrap">
+                    {selectedFiles.map((file, idx) => (
+                      <ImagePreview key={idx} file={file} onRemove={() => removeFile(idx)} />
+                    ))}
+                  </div>
+                )}
+              </div>
+            </div>
+
             <button
               type="submit"
               disabled={rating === 0 || submitting}
@@ -482,7 +645,7 @@ const TourReviews: React.FC<TourReviewsProps> = ({ tourId }) => {
                       </div>
                     </div>
 
-                    {canDelete(r.userId) && (
+                    {/* {canDelete(r.userId) && (
                       <button
                         onClick={() => handleDelete(r.id)}
                         disabled={deleting === r.id}
@@ -496,15 +659,17 @@ const TourReviews: React.FC<TourReviewsProps> = ({ tourId }) => {
                           </>
                         )}
                       </button>
-                    )}
+                    )} */}
                   </div>
 
                   <h5 className="font-semibold text-gray-900 mb-2 text-base">{r.title}</h5>
                   <p className="text-gray-600 text-sm leading-relaxed mb-4">{r.comment}</p>
 
+                  <ImageGallery images={r.images || []} />
+
                   <button
                     onClick={() => handleHelpful(r.id)}
-                    className="flex items-center gap-2 text-sm text-gray-500 hover:text-orange-500 hover:bg-orange-50 px-3 py-1.5 rounded-lg transition-all duration-200"
+                    className="flex items-center gap-2 text-sm text-gray-500 hover:text-orange-500 hover:bg-orange-50 px-3 py-1.5 rounded-lg transition-all duration-200 mt-4"
                   >
                     <ThumbsUp className="w-4 h-4" />
                     <span>Helpful ({r.helpful})</span>

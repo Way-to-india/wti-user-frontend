@@ -108,7 +108,7 @@ export const fetchThemes = createAsyncThunk<ApiResponse<Theme[]>, void, { reject
   'tours/fetchThemes',
   async (_, { rejectWithValue }) => {
     try {
-      const response = await getThemes();
+      const response = await getThemes() as any;
       if (!response.success) {
         return rejectWithValue(response.message || 'Failed to fetch themes');
       }

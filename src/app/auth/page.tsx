@@ -10,12 +10,19 @@ import { useAuth } from '@/context/AuthContext';
 function AuthContent() {
   const router = useRouter();
   const searchParams = useSearchParams();
-  const { login } = useAuth();
+  const { login, user, isAuthenticated, isLoading } = useAuth();
   const [mode, setMode] = useState<'login' | 'signup'>('signup');
   const [isRedirecting, setIsRedirecting] = useState(false);
   const [googleError, setGoogleError] = useState<string | null>(null);
   const LoginImage = 'https://dbagut2mvh0lo.cloudfront.net/auth/login.jpg';
   const signUpPage = 'https://dbagut2mvh0lo.cloudfront.net/auth/signup_1.jpg';
+
+  // Redirect if user is already authenticated
+  useEffect(() => {
+    if (!isLoading && isAuthenticated) {
+      router.push('/');
+    }
+  }, [isAuthenticated, isLoading, router]);
 
   useEffect(() => {
     const step = searchParams?.get('step');
@@ -46,7 +53,22 @@ function AuthContent() {
     setGoogleError(error);
   };
 
-  if (isRedirecting) {
+  // Show loading while checking authentication
+  if (isLoading) {
+    return (
+      <div className="flex min-h-screen items-center justify-center bg-gradient-to-br from-orange-50 to-white">
+        <div className="text-center space-y-4">
+          <div className="flex justify-center">
+            <div className="animate-spin rounded-full h-16 w-16 border-t-4 border-b-4 border-orange-500"></div>
+          </div>
+          <p className="text-gray-600">Loading...</p>
+        </div>
+      </div>
+    );
+  }
+
+  // Show redirecting message
+  if (isRedirecting || isAuthenticated) {
     return (
       <div className="flex min-h-screen items-center justify-center bg-gradient-to-br from-orange-50 to-white">
         <div className="text-center space-y-4">
@@ -54,7 +76,6 @@ function AuthContent() {
             <div className="animate-spin rounded-full h-16 w-16 border-t-4 border-b-4 border-orange-500"></div>
           </div>
           <h2 className="text-2xl font-bold text-gray-800">Welcome! 🎉</h2>
-          <p className="text-gray-600">Redirecting you to your dashboard...</p>
         </div>
       </div>
     );

@@ -54,13 +54,12 @@ const SimilarTours: React.FC<SimilarToursProps> = ({ tourId, limit = 6 }) => {
         const response = await fetch(
           `${process.env.NEXT_PUBLIC_BASE_URL}/api/tour/similar-tour/${tourId}?limit=${limit}`
         );
-
         if (!response.ok) {
           throw new Error('Failed to fetch similar tours');
         }
 
         const data = await response.json();
-        setSimilarTours(data.data || []);
+        setSimilarTours(data.payload || []);
       } catch (err) {
         console.error('Error fetching similar tours:', err);
         setError(err instanceof Error ? err.message : 'Something went wrong');

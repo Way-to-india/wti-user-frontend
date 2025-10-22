@@ -66,6 +66,7 @@ const ToursPageContent = ({ slug, searchParams: pageSearchParams }: ToursPageCon
       setRetryCount(0);
       setIsRetrying(false);
     } catch (error: any) {
+      console.log(error);
       console.error(`Fetch attempt ${retries + 1} failed:`, error);
 
       const isTimeoutError =

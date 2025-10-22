@@ -1,25 +1,27 @@
 import React, { useState } from 'react';
 import { useRouter } from 'next/navigation';
-import { Search } from 'lucide-react';
-import { State } from '@/lib/api/travel-guide.api';
+import { Search, MapPin } from 'lucide-react';
+import { State } from '@/lib/api/places-of-interest.api';
 
-interface TopDestinationsProps {
+interface TopPlacesProps {
   states: State[];
 }
 
-export function TopDestinations({ states }: TopDestinationsProps) {
+export function TopPlaces({ states }: TopPlacesProps) {
   const router = useRouter();
   const [searchTerm, setSearchTerm] = useState('');
   const [isSticky, setIsSticky] = useState(false);
 
-  const filteredStates = states.filter(
+  // Add safety check for states
+  const filteredStates = (states || []).filter(
     state =>
       state.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
-      state.cities.some(city => city.name.toLowerCase().includes(searchTerm.toLowerCase()))
+      state.places?.some(place => place.name.toLowerCase().includes(searchTerm.toLowerCase()))
   );
 
-  const handleCityClick = (citySlug: string, stateSlug: string) => {
-    router.push(`/travel-guide/destination-guide/${stateSlug}/${citySlug}`);
+  const handlePlaceClick = (stateId: string, placeId: string, stateName: string) => {
+    const stateSlug = stateName.toLowerCase().replace(/\s+/g, '-');
+    router.push(`/places-of-interest/${stateSlug}/${placeId}`);
   };
 
   React.useEffect(() => {
@@ -31,6 +33,15 @@ export function TopDestinations({ states }: TopDestinationsProps) {
     return () => window.removeEventListener('scroll', handleScroll);
   }, []);
 
+  // Show loading state if no states yet
+  if (!states || states.length === 0) {
+    return (
+      <div className="text-center py-16">
+        <p className="text-gray-500 text-lg">Loading places...</p>
+      </div>
+    );
+  }
+
   return (
     <div className="space-y-8">
       <div
@@ -41,7 +52,7 @@ export function TopDestinations({ states }: TopDestinationsProps) {
         } transition-all duration-300`}
       >
         <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-4">
-          {isSticky && <h2 className="font-bold text-gray-900 text-xl">Explore Destinations</h2>}
+          {isSticky && <h2 className="font-bold text-gray-900 text-xl">Explore Tourist Places</h2>}
 
           <div
             className={`relative ${
@@ -53,8 +64,8 @@ export function TopDestinations({ states }: TopDestinationsProps) {
               type="text"
               value={searchTerm}
               onChange={e => setSearchTerm(e.target.value)}
-              placeholder="Search states or cities..."
-              className="w-full pl-12 pr-4 py-3 border-2 border-gray-200 rounded-xl focus:outline-none focus:border-orange-500 transition-colors"
+              placeholder="Search states or places..."
+              className="w-full pl-12 pr-4 py-3 border-2 border-gray-200 rounded-xl focus:outline-none focus:border-blue-600 transition-colors"
             />
           </div>
         </div>
@@ -63,32 +74,36 @@ export function TopDestinations({ states }: TopDestinationsProps) {
       <div className="space-y-12">
         {filteredStates.map(state => (
           <div key={state.id} className="space-y-4">
-            <h2 className="text-2xl font-bold text-gray-900 border-b-2 border-gray-200 pb-3">
-              Top Destinations in {state.name}
-            </h2>
+            <div className="flex items-center gap-3 border-b-2 border-gray-200 pb-3">
+              <MapPin className="w-6 h-6 text-blue-600" />
+              <h2 className="text-2xl font-bold text-gray-900">
+                Places of Interest in {state.name}
+              </h2>
+              <span className="ml-auto bg-blue-100 text-blue-700 px-3 py-1 rounded-full text-sm font-semibold">
+                {state.placeCount} places
+              </span>
+            </div>
 
             <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-x-8 gap-y-3">
-              {state.cities.map(city => (
+              {state.places?.map(place => (
                 <button
-                  key={city.id}
-                  onClick={() =>
-                    handleCityClick(city.citySlug, state.name.toLowerCase().replace(/\s+/g, '-'))
-                  }
+                  key={place.id}
+                  onClick={() => handlePlaceClick(state.id, place.id, state.name)}
                   className="flex items-start gap-3 text-left group hover:translate-x-1 transition-transform"
                 >
                   <svg
-                    className="w-5 h-5 text-gray-400 mt-0.5 flex-shrink-0"
+                    className="w-5 h-5 text-blue-400 mt-0.5 flex-shrink-0"
                     fill="currentColor"
                     viewBox="0 0 20 20"
                   >
                     <path
                       fillRule="evenodd"
-                      d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z"
+                      d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z"
                       clipRule="evenodd"
                     />
                   </svg>
-                  <span className="text-gray-700 group-hover:text-orange-500 transition-colors">
-                    {city.name}
+                  <span className="text-gray-700 group-hover:text-blue-600 transition-colors font-medium">
+                    {place.name}
                   </span>
                 </button>
               ))}
@@ -100,7 +115,7 @@ export function TopDestinations({ states }: TopDestinationsProps) {
       {filteredStates.length === 0 && (
         <div className="text-center py-16 bg-gray-50 rounded-2xl">
           <Search className="w-16 h-16 text-gray-300 mx-auto mb-4" />
-          <p className="text-gray-500 text-lg">No destinations found matching "{searchTerm}"</p>
+          <p className="text-gray-500 text-lg">No places found matching "{searchTerm}"</p>
         </div>
       )}
     </div>

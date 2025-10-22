@@ -1,4 +1,3 @@
-// utils/apiHandler.ts
 import { ApiResponse } from '@/types/apiResponse';
 
 export const handleApiCall = async <T>(
@@ -9,8 +8,8 @@ export const handleApiCall = async <T>(
     const response = await apiCall();
     console.log('API response:', response?.data);
     return {
-      data: response?.data?.data ?? null,
-      message: response?.data?.message ?? defaultSuccessMessage,
+      data: response?.data?.payload ?? null,
+      message: response?.data?.payload.message ?? defaultSuccessMessage,
       statusCode: response?.status ?? 200,
       success: true,
     };

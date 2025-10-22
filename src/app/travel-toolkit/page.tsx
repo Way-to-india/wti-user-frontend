@@ -9,19 +9,19 @@ const TravelToolkit: React.FC = () => {
   const toolkitItems = [
     {
       title: 'Indian Embassies (List)',
-      path: '/travel-guide/travel-toolkit/indian-embassies',
+      path: '/travel-toolkit/indian-embassies',
     },
     {
       title: 'Currency Converter',
-      path: '/travel-guide/travel-toolkit/currency-converter',
+      path: '/travel-toolkit/currency-converter',
     },
     {
       title: 'STD Codes',
-      path: '/travel-guide/travel-toolkit/std-codes',
+      path: '/travel-toolkit/std-codes',
     },
     {
       title: 'ISD Codes',
-      path: '/travel-guide/travel-toolkit/isd-codes',
+      path: '/travel-toolkit/isd-codes',
     },
   ];
 
