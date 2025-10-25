@@ -12,6 +12,7 @@ import {
   FaTimes,
 } from 'react-icons/fa';
 import apiClient, { endpoints } from '@/api/axios';
+import Image from 'next/image';
 
 interface User {
   id: string;
@@ -161,10 +162,12 @@ const ProfileComponent: React.FC<ProfileComponentProps> = ({ user, onUserUpdate 
               <div className="relative">
                 <div className="w-32 h-32 rounded-full border-4 border-white shadow-lg overflow-hidden bg-gradient-to-br from-orange-400 to-purple-500">
                   {user.profileImagePath ? (
-                    <img
+                    <Image
                       src={user.profileImagePath}
                       alt="Profile"
                       className="w-full h-full object-cover"
+                      width={128}
+                      height={128}
                     />
                   ) : (
                     <div className="w-full h-full flex items-center justify-center text-4xl font-bold text-white">

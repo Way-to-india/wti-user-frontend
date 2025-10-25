@@ -118,7 +118,8 @@ const Package: React.FC = () => {
               <CircularProgress />
             </div>
           ) : (
-            visibleTours.map(tour => <TourCard key={tour.id} tour={tour} />)
+            <div></div> 
+            // visibleTours.map(tour => <TourCard key={tour.id} tour={tour} />)
           )}
         </motion.div>
       </AnimatePresence>
