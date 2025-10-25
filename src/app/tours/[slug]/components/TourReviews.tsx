@@ -218,8 +218,8 @@ const ImageGallery: React.FC<{ images: ReviewImage[] }> = ({ images }) => {
             src={selectedImage}
             alt="Full size"
             className="max-w-full max-h-full object-contain"
-            width={1000}
-            height={1000}
+            width={700}
+            height={700}
           />
         </div>
       )}

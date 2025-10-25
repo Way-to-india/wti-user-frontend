@@ -29,9 +29,9 @@ const TourTabs: React.FC<TourTabsProps> = ({
     { name: 'Overview', key: 'overview' },
     { name: 'Itinerary Details', key: 'itinerary' },
     { name: 'Inclusions & Exclusions', key: 'inclusions' },
-    { name: 'FAQ', key: 'faq', badge: tourDetails?.faq?.faqs?.length },
     { name: 'Travel Tips For This Tour', key: 'travel-tips' },
     { name: 'Reviews', key: 'reviews' },
+    { name: 'FAQ', key: 'faq', badge: tourDetails?.faq?.faqs?.length },
   ];
 
   const renderTabContent = () => {

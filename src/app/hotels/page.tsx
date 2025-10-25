@@ -305,7 +305,7 @@ const Hotels: React.FC = () => {
       <section className="relative h-auto min-h-[500px] md:h-[600px] pt-20 md:pt-24">
         <div className="absolute inset-0">
           <Image
-            src="https://images.unsplash.com/photo-1542314831-068cd1dbfeeb?w=1600&q=80"
+            src="/hotel-banner.jpeg"
             alt="Scenic mountain landscape"
             fill
             className="object-cover"
