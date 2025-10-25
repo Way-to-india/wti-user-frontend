@@ -1,7 +1,7 @@
 import React from 'react';
 
 const WhatsAppContactPage = () => {
-  const phoneNumber = '918527255995';
+  const phoneNumber = '+918527255995';
 
   const handleWhatsAppClick = () => {
     const message = encodeURIComponent('Hi! I would like to inquire about your tour packages.');

@@ -45,7 +45,7 @@ const TourFAQ: React.FC<TourFAQProps> = ({ faqs, tourTitle }) => {
 
   return (
     <div className="bg-white rounded-xl shadow-sm">
-      {/* Header */}
+
       <div className="p-6 border-b border-gray-200">
         <div className="flex items-center gap-3">
           <div className="bg-orange-100 p-3 rounded-lg">
@@ -64,7 +64,7 @@ const TourFAQ: React.FC<TourFAQProps> = ({ faqs, tourTitle }) => {
         </div>
       </div>
 
-      {/* FAQ Items */}
+
       <div className="divide-y divide-gray-200">
         {sortedFaqs.map((faq, index) => (
           <div
@@ -91,7 +91,7 @@ const TourFAQ: React.FC<TourFAQProps> = ({ faqs, tourTitle }) => {
               </div>
             </button>
 
-            {/* Answer - Collapsible */}
+
             <div
               id={`faq-answer-${index}`}
               className={`overflow-hidden transition-all duration-300 ease-in-out ${openIndex === index
@@ -111,7 +111,7 @@ const TourFAQ: React.FC<TourFAQProps> = ({ faqs, tourTitle }) => {
         ))}
       </div>
 
-      {/* Footer */}
+
       <div className="p-6 bg-gray-50 border-t border-gray-200">
         <div className="text-center">
           <p className="text-sm text-gray-600 mb-3">
@@ -119,7 +119,7 @@ const TourFAQ: React.FC<TourFAQProps> = ({ faqs, tourTitle }) => {
           </p>
           <div className="flex flex-col sm:flex-row gap-3 justify-center">
             <a
-              href="tel:+919876543210"
+              href="tel:8527255995"
               className="inline-flex items-center justify-center px-6 py-2.5 bg-orange-600 text-white font-semibold rounded-lg hover:bg-orange-700 transition-colors"
             >
               <svg
@@ -138,7 +138,7 @@ const TourFAQ: React.FC<TourFAQProps> = ({ faqs, tourTitle }) => {
               Call Us
             </a>
             <a
-              href="https://wa.me/919876543210"
+              href="https://wa.me/8527255995"
               target="_blank"
               rel="noopener noreferrer"
               className="inline-flex items-center justify-center px-6 py-2.5 bg-green-600 text-white font-semibold rounded-lg hover:bg-green-700 transition-colors"

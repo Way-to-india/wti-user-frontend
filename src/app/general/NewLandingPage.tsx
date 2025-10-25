@@ -1,16 +1,11 @@
 ﻿'use client';
 
 import HeroPage from '@/app/general/Hero';
-import BlogSection from '@/components/BlogSection';
 import Footer from '@/components/layout/Footer';
 import NavBar from '@/components/layout/navbar/NavBar';
 import { useTheme } from '@/context/ThemeContext';
-import AirCharter from './AirCharterTour';
-import Deals from './Deals';
 import FeaturedTours from './FeaturedTours';
 import Inspiration from './Inspiration';
-import Package from './Package';
-import Trending from './Trending';
 
 const NewLandingPage = () => {
   const theme = useTheme();
@@ -30,33 +25,13 @@ const NewLandingPage = () => {
 
         <HeroPage />
 
-        <LandingSection id="featured-tours">
+        <LandingSection>
           <FeaturedTours />
         </LandingSection>
 
-        <LandingSection id="featured-packages">
-          <Package />
-        </LandingSection>
-
-        {/* <LandingSection id="trending-hotels" className="bg-gray-50">
-          <Trending />
-        </LandingSection> */}
-
-        <LandingSection id="travel-inspiration">
+        <LandingSection>
           <Inspiration />
         </LandingSection>
-
-        {/* <LandingSection id="air-charter" className="bg-gray-50">
-          <AirCharter />
-        </LandingSection> */}
-
-        {/* <LandingSection id="deals" padding="sm">
-          <Deals />
-        </LandingSection> */}
-
-        {/* <LandingSection id="blog">
-          <BlogSection />
-        </LandingSection> */}
 
         <Footer />
       </div>
@@ -64,7 +39,6 @@ const NewLandingPage = () => {
   );
 };
 
-// Reusable section component for landing page sections
 interface LandingSectionProps {
   children: React.ReactNode;
   id?: string;

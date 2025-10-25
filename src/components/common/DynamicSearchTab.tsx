@@ -76,7 +76,7 @@ const DynamicSearchTab: React.FC<SearchTabProps> = ({
 }) => {
   const theme = useTheme();
 
-  
+
   const [adults, setAdults] = useState(1);
   const [seniorAdults, setSeniorAdults] = useState(0);
   const [children, setChildren] = useState(0);
@@ -190,7 +190,7 @@ const DynamicSearchTab: React.FC<SearchTabProps> = ({
       searchParams.toLocation = toLocation;
     }
 
-    console.log('Search params:', searchParams); 
+    console.log('Search params:', searchParams);
     onSearch(searchParams);
   };
 

@@ -5,7 +5,6 @@ import { getCities } from '@/services/cityService';
 import { getThemes } from '@/services/tourService';
 import { getLocations } from '@/services/hotelService';
 
-// Types
 export interface SearchCity {
   id: string;
   name: string;
@@ -26,32 +25,6 @@ export interface SearchLocation {
   label: string;
 }
 
-export interface SearchState {
-  // Data cache
-  cities: SearchCity[];
-  themes: SearchTheme[];
-  locations: string[];
-
-  // Loading states
-  citiesLoading: boolean;
-  themesLoading: boolean;
-  locationsLoading: boolean;
-
-  // Error states
-  citiesError: string | null;
-  themesError: string | null;
-  locationsError: string | null;
-
-  // Cache timestamps
-  citiesCachedAt: number | null;
-  themesCachedAt: number | null;
-  locationsCachedAt: number | null;
-
-  // Search history and analytics
-  searchHistory: SearchHistoryItem[];
-  popularSearches: PopularSearch[];
-}
-
 export interface SearchHistoryItem {
   id: string;
   type: 'hotels' | 'tours' | 'transport';
@@ -66,7 +39,23 @@ export interface PopularSearch {
   type: 'hotels' | 'tours' | 'transport';
 }
 
-// Action types
+export interface SearchState {
+  cities: SearchCity[];
+  themes: SearchTheme[];
+  locations: string[];
+  citiesLoading: boolean;
+  themesLoading: boolean;
+  locationsLoading: boolean;
+  citiesError: string | null;
+  themesError: string | null;
+  locationsError: string | null;
+  citiesCachedAt: number | null;
+  themesCachedAt: number | null;
+  locationsCachedAt: number | null;
+  searchHistory: SearchHistoryItem[];
+  popularSearches: PopularSearch[];
+}
+
 type SearchAction =
   | { type: 'SET_CITIES_LOADING'; payload: boolean }
   | { type: 'SET_CITIES'; payload: { cities: SearchCity[]; timestamp: number } }
@@ -80,7 +69,6 @@ type SearchAction =
   | { type: 'ADD_SEARCH_HISTORY'; payload: SearchHistoryItem }
   | { type: 'UPDATE_POPULAR_SEARCHES'; payload: PopularSearch[] };
 
-// Initial state
 const initialState: SearchState = {
   cities: [],
   themes: [],
@@ -98,10 +86,8 @@ const initialState: SearchState = {
   popularSearches: [],
 };
 
-// Cache duration (5 minutes)
 const CACHE_DURATION = 5 * 60 * 1000;
 
-// Reducer
 function searchReducer(state: SearchState, action: SearchAction): SearchState {
   switch (action.type) {
     case 'SET_CITIES_LOADING':
@@ -153,7 +139,7 @@ function searchReducer(state: SearchState, action: SearchAction): SearchState {
         locationsLoading: false,
       };
     case 'ADD_SEARCH_HISTORY':
-      const newHistory = [action.payload, ...state.searchHistory].slice(0, 50); // Keep last 50 searches
+      const newHistory = [action.payload, ...state.searchHistory].slice(0, 50);
       return { ...state, searchHistory: newHistory };
     case 'UPDATE_POPULAR_SEARCHES':
       return { ...state, popularSearches: action.payload };
@@ -162,14 +148,12 @@ function searchReducer(state: SearchState, action: SearchAction): SearchState {
   }
 }
 
-// Utility function to normalize search parameters
 export const normalizeSearchParams = (
   searchParams: URLSearchParams,
   type: 'hotels' | 'tours' | 'transport'
 ) => {
   const normalized: Record<string, string> = {};
 
-  // Common normalization
   if (type === 'hotels') {
     normalized.cityId =
       searchParams.get('cityId') || searchParams.get('city') || searchParams.get('location') || '';
@@ -211,7 +195,6 @@ export const normalizeSearchParams = (
   return normalized;
 };
 
-// Context
 interface SearchContextType {
   state: SearchState;
   fetchCities: () => Promise<void>;
@@ -230,35 +213,23 @@ interface SearchContextType {
 
 const SearchContext = createContext<SearchContextType | undefined>(undefined);
 
-// Helper function to check if cache is valid
 const isCacheValid = (cachedAt: number | null): boolean => {
   if (!cachedAt) return false;
   return Date.now() - cachedAt < CACHE_DURATION;
 };
 
-// Provider component
 export const SearchProvider: React.FC<{ children: React.ReactNode }> = ({ children }) => {
   const [state, dispatch] = useReducer(searchReducer, initialState);
 
-  // Fetch cities with caching
   const fetchCities = useCallback(async () => {
-    console.log('=== SEARCH CONTEXT: Fetching Cities ===');
-    console.log('Current cities cache:', state.cities);
-    console.log('Cities cached at:', state.citiesCachedAt);
-    console.log('Cache valid:', isCacheValid(state.citiesCachedAt));
-
-    // Check if cache is valid
     if (isCacheValid(state.citiesCachedAt) && state.cities.length > 0) {
-      console.log('Using cached cities data');
       return;
     }
 
-    console.log('Fetching fresh cities data from API...');
     dispatch({ type: 'SET_CITIES_LOADING', payload: true });
 
     try {
       const response = await getCities();
-      console.log('Cities API response:', response);
 
       if (response.success && response.data) {
         const formattedCities: SearchCity[] = response.data.map((city: any) => ({
@@ -267,8 +238,6 @@ export const SearchProvider: React.FC<{ children: React.ReactNode }> = ({ childr
           label: city.name,
           stateId: city.stateId,
         }));
-
-        console.log('Formatted cities:', formattedCities);
 
         dispatch({
           type: 'SET_CITIES',
@@ -287,25 +256,15 @@ export const SearchProvider: React.FC<{ children: React.ReactNode }> = ({ childr
     }
   }, [state.citiesCachedAt, state.cities.length]);
 
-  // Fetch themes with caching
   const fetchThemes = useCallback(async () => {
-    console.log('=== SEARCH CONTEXT: Fetching Themes ===');
-    console.log('Current themes cache:', state.themes);
-    console.log('Themes cached at:', state.themesCachedAt);
-    console.log('Cache valid:', isCacheValid(state.themesCachedAt));
-
-    // Check if cache is valid
     if (isCacheValid(state.themesCachedAt) && state.themes.length > 0) {
-      console.log('Using cached themes data');
       return;
     }
 
-    console.log('Fetching fresh themes data from API...');
     dispatch({ type: 'SET_THEMES_LOADING', payload: true });
 
     try {
       const response = await getThemes();
-      console.log('Themes API response:', response);
 
       if (response.success && response.data) {
         const formattedThemes: SearchTheme[] = response.data.map((theme: any) => ({
@@ -314,8 +273,6 @@ export const SearchProvider: React.FC<{ children: React.ReactNode }> = ({ childr
           label: theme.label || theme.name,
           description: theme.description,
         }));
-
-        console.log('Formatted themes:', formattedThemes);
 
         dispatch({
           type: 'SET_THEMES',
@@ -334,9 +291,7 @@ export const SearchProvider: React.FC<{ children: React.ReactNode }> = ({ childr
     }
   }, [state.themesCachedAt, state.themes.length]);
 
-  // Fetch locations with caching
   const fetchLocations = useCallback(async () => {
-    // Check if cache is valid
     if (isCacheValid(state.locationsCachedAt) && state.locations.length > 0) {
       return;
     }
@@ -361,7 +316,6 @@ export const SearchProvider: React.FC<{ children: React.ReactNode }> = ({ childr
     }
   }, [state.locationsCachedAt, state.locations.length]);
 
-  // Add search to history
   const addSearchHistory = useCallback((item: Omit<SearchHistoryItem, 'id' | 'timestamp'>) => {
     const historyItem: SearchHistoryItem = {
       ...item,
@@ -372,19 +326,16 @@ export const SearchProvider: React.FC<{ children: React.ReactNode }> = ({ childr
     dispatch({ type: 'ADD_SEARCH_HISTORY', payload: historyItem });
   }, []);
 
-  // Get cached data (returns cached data even if expired)
   const getCachedCities = useCallback(() => state.cities, [state.cities]);
   const getCachedThemes = useCallback(() => state.themes, [state.themes]);
   const getCachedLocations = useCallback(() => state.locations, [state.locations]);
 
-  // Clear all cache
   const clearCache = useCallback(() => {
     dispatch({ type: 'SET_CITIES', payload: { cities: [], timestamp: 0 } });
     dispatch({ type: 'SET_THEMES', payload: { themes: [], timestamp: 0 } });
     dispatch({ type: 'SET_LOCATIONS', payload: { locations: [], timestamp: 0 } });
   }, []);
 
-  // Initialize data on mount
   useEffect(() => {
     fetchCities();
     fetchThemes();
@@ -407,7 +358,6 @@ export const SearchProvider: React.FC<{ children: React.ReactNode }> = ({ childr
   return <SearchContext.Provider value={contextValue}>{children}</SearchContext.Provider>;
 };
 
-// Custom hook to use search context
 export const useSearch = (): SearchContextType => {
   const context = useContext(SearchContext);
   if (!context) {

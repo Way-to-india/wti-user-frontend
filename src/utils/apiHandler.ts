@@ -6,7 +6,6 @@ export const handleApiCall = async <T>(
 ): Promise<ApiResponse<T>> => {
   try {
     const response = await apiCall();
-    console.log('API response:', response?.data);
     return {
       data: response?.data?.payload ?? null,
       message: response?.data?.payload.message ?? defaultSuccessMessage,
