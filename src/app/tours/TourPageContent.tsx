@@ -143,9 +143,9 @@ const ToursPageContent = ({ slug, searchParams: pageSearchParams }: ToursPageCon
         const pageParam =
           typeof pageSearchParams?.page === 'string' ? parseInt(pageSearchParams.page) : 1;
 
-        if (themeIdParam) dispatch(setSelectedTheme(themeIdParam));
-        if (cityIdParam) dispatch(setSelectedCity(cityIdParam));
-        if (calculatedDuration) dispatch(setSelectedDuration(calculatedDuration));
+        dispatch(setSelectedTheme(themeIdParam));
+        dispatch(setSelectedCity(cityIdParam));
+        dispatch(setSelectedDuration(calculatedDuration));
         dispatch(setSelectedPriceRange([minPriceParam, maxPriceParam]));
 
         setActiveFilters({
@@ -173,7 +173,7 @@ const ToursPageContent = ({ slug, searchParams: pageSearchParams }: ToursPageCon
     };
 
     initializeToursPage();
-  }, []);
+  }, [slug, pageSearchParams]);
 
   const buildQueryString = (filters: any) => {
     const params = new URLSearchParams();
@@ -330,14 +330,14 @@ const ToursPageContent = ({ slug, searchParams: pageSearchParams }: ToursPageCon
     { href: '/tours', text: 'Tours' },
     ...(slug
       ? [
-          {
-            href: `/tours/${slug}`,
-            text: slug
-              .split('-')
-              .map(w => w.charAt(0).toUpperCase() + w.slice(1))
-              .join(' '),
-          },
-        ]
+        {
+          href: `/tours/${slug}`,
+          text: slug
+            .split('-')
+            .map(w => w.charAt(0).toUpperCase() + w.slice(1))
+            .join(' '),
+        },
+      ]
       : []),
   ];
 
