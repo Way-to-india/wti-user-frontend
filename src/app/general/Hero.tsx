@@ -18,7 +18,7 @@ const HeroPage = () => {
       <div
         className="absolute inset-0 bg-cover bg-center bg-no-repeat"
         style={{
-          backgroundImage: "url('https://images.unsplash.com/photo-1524492412937-b28074a5d7da?w=1920&q=80')",
+          backgroundImage: "url('/hero-image.jpeg')",
         }}
       ></div>
 

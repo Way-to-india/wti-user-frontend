@@ -1,4 +1,3 @@
-// app/tours/[slug]/page.tsx
 import { Metadata } from 'next';
 import { notFound } from 'next/navigation';
 import { getMetaData, getAllTourSlugs } from '@/lib/tourMetaData';
@@ -15,6 +14,8 @@ async function getTourFAQSchema(slug: string) {
     const res = await fetch(`${apiUrl}/api/faq/${slug}/schema`, {
       next: { revalidate: 86400 }, 
     });
+
+    console.log(res); 
 
     if (!res.ok) {
       console.error(`Failed to fetch FAQ schema for ${slug}: ${res.statusText}`);

@@ -1,9 +1,9 @@
 import React from 'react';
 
 const WhatsAppContactPage = () => {
-  const phoneNumber = '+918527255995';
 
   const handleWhatsAppClick = () => {
+    const phoneNumber = '+918527255995';
     const message = encodeURIComponent('Hi! I would like to inquire about your tour packages.');
     const whatsappUrl = `https://wa.me/${phoneNumber}?text=${message}`;
     window.open(whatsappUrl, '_blank');
@@ -12,7 +12,6 @@ const WhatsAppContactPage = () => {
   return (
     <div className="bg-white rounded-lg border border-gray-200 p-6 md:p-8">
       <div className="max-w-xl mx-auto">
-        {/* WhatsApp Icon */}
         <div className="flex justify-center mb-4">
           <div className="bg-green-500 rounded-full p-4 shadow-lg">
             <svg className="w-10 h-10 text-white" fill="currentColor" viewBox="0 0 24 24">
@@ -21,17 +20,17 @@ const WhatsAppContactPage = () => {
           </div>
         </div>
 
-        {/* Heading */}
+
         <h2 className="text-2xl font-bold text-gray-800 text-center mb-3">
           Chat with Us on WhatsApp
         </h2>
 
-        {/* Description */}
+
         <p className="text-gray-600 text-center mb-6">
           Get instant support and personalized assistance for your tour booking
         </p>
 
-        {/* Features */}
+
         <div className="grid grid-cols-3 gap-4 mb-6">
           <div className="text-center">
             <div className="inline-flex items-center justify-center w-12 h-12 bg-green-50 rounded-full mb-2">
@@ -91,7 +90,7 @@ const WhatsAppContactPage = () => {
           </div>
         </div>
 
-        {/* CTA Button */}
+
         <button
           onClick={handleWhatsAppClick}
           className="w-full bg-green-500 hover:bg-green-600 text-white font-semibold py-4 px-6 rounded-lg flex items-center justify-center gap-3 shadow-md hover:shadow-lg transition-all transform hover:scale-[1.02] active:scale-[0.98]"
@@ -102,7 +101,7 @@ const WhatsAppContactPage = () => {
           <span>Start Chat on WhatsApp</span>
         </button>
 
-        {/* Contact Info */}
+
         <div className="mt-6 text-center">
           <p className="text-sm text-gray-500 mb-1">Or call us at</p>
           <a

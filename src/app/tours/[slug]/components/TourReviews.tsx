@@ -252,6 +252,7 @@ const TourReviews: React.FC<TourReviewsProps> = ({ tourId }) => {
       setLoading(true);
       setError(null);
       const { data } = await axiosInstance.get(`/api/user/review/tours/${tourId}/reviews`);
+      console.log(data);
       if (data.status) {
         setReviews(data.payload || []);
       }

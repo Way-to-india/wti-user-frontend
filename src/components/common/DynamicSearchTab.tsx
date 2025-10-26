@@ -26,6 +26,7 @@ import PeopleIcon from '@mui/icons-material/People';
 import AddIcon from '@mui/icons-material/Add';
 import RemoveIcon from '@mui/icons-material/Remove';
 import CategoryIcon from '@mui/icons-material/Category';
+import RestartAltIcon from '@mui/icons-material/RestartAlt';
 
 export interface LocationOption {
   id: string;
@@ -76,6 +77,12 @@ const DynamicSearchTab: React.FC<SearchTabProps> = ({
 }) => {
   const theme = useTheme();
 
+  const getDefaultDateRange = () => ({
+    start: parseDate(new Date().toISOString().split('T')[0]),
+    end: parseDate(
+      new Date(new Date().setDate(new Date().getDate() + 7)).toISOString().split('T')[0]
+    ),
+  });
 
   const [adults, setAdults] = useState(1);
   const [seniorAdults, setSeniorAdults] = useState(0);
@@ -87,14 +94,7 @@ const DynamicSearchTab: React.FC<SearchTabProps> = ({
   const [toLocation, setToLocation] = useState<LocationOption | null>(selectedToLocation);
   const [typeValue, setTypeValue] = useState<string>(selectedType);
 
-  const [dateRange, setDateRange] = useState<DateRange>(
-    initialDateRange || {
-      start: parseDate(new Date().toISOString().split('T')[0]),
-      end: parseDate(
-        new Date(new Date().setDate(new Date().getDate() + 7)).toISOString().split('T')[0]
-      ),
-    }
-  );
+  const [dateRange, setDateRange] = useState<DateRange>(initialDateRange || getDefaultDateRange());
 
   useEffect(() => {
     if (selectedLocation) setLocation(selectedLocation);
@@ -116,6 +116,40 @@ const DynamicSearchTab: React.FC<SearchTabProps> = ({
 
   const handleGuestsClose = () => {
     setAnchorEl(null);
+  };
+
+  const handleReset = () => {
+    setLocation(null);
+    setFromLocation(null);
+    setToLocation(null);
+    setTypeValue('');
+    setDateRange(getDefaultDateRange());
+    setAdults(1);
+    setSeniorAdults(0);
+    setChildren(0);
+    onLocationChange?.(null);
+    onFromLocationChange?.(null);
+    onToLocationChange?.(null);
+    onTypeChange?.('');
+    onDateChange?.(getDefaultDateRange());
+
+    const resetParams: any = {
+      type,
+      dateRange: getDefaultDateRange(),
+      adults: 1,
+      seniorAdults: 0,
+      children: 0,
+    };
+
+    if (type === 'tour' || type === 'hotel') {
+      resetParams.location = null;
+      resetParams.selectedType = '';
+    } else if (type === 'transport') {
+      resetParams.fromLocation = null;
+      resetParams.toLocation = null;
+    }
+
+    onSearch(resetParams);
   };
 
   const open = Boolean(anchorEl);
@@ -140,43 +174,12 @@ const DynamicSearchTab: React.FC<SearchTabProps> = ({
     },
   ];
 
-  const calculateDurationDays = (range: DateRange): number | null => {
-    if (!range?.start || !range?.end) return null;
-
-    try {
-      let startDate: Date;
-      let endDate: Date;
-
-      if (typeof range.start.toDate === 'function') {
-        startDate = range.start.toDate('UTC');
-        endDate = range.end.toDate('UTC');
-      } else if (range.start.year && range.start.month && range.start.day) {
-        startDate = new Date(range.start.year, range.start.month - 1, range.start.day);
-        endDate = new Date(range.end.year, range.end.month - 1, range.end.day);
-      } else {
-        startDate = new Date(range.start.toString());
-        endDate = new Date(range.end.toString());
-      }
-
-      const diffTime = Math.abs(endDate.getTime() - startDate.getTime());
-      const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24));
-
-      return diffDays > 0 ? diffDays : null;
-    } catch (error) {
-      console.error('Error calculating duration:', error);
-      return null;
-    }
-  };
-
   const handleSearchSubmit = (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
-
-    const durationDays = calculateDurationDays(dateRange);
 
     const searchParams: any = {
       type,
       dateRange,
-      durationDays,
       adults,
       seniorAdults,
       children,
@@ -214,7 +217,7 @@ const DynamicSearchTab: React.FC<SearchTabProps> = ({
             p: { xs: 2, md: 2.5 },
           }}
         >
-          {/* Location Field */}
+          
           <Box
             sx={{
               flex: { xs: '1 1 100%', lg: '1 1 auto' },
@@ -313,7 +316,7 @@ const DynamicSearchTab: React.FC<SearchTabProps> = ({
             </Box>
           </Box>
 
-          {/* Date Range Field */}
+          
           <Box
             sx={{
               flex: { xs: '1 1 100%', lg: '1 1 auto' },
@@ -353,7 +356,7 @@ const DynamicSearchTab: React.FC<SearchTabProps> = ({
             </Box>
           </Box>
 
-          {/* Type Field (if provided) */}
+          
           {typesOptions.length > 0 && (
             <Box
               sx={{
@@ -458,7 +461,7 @@ const DynamicSearchTab: React.FC<SearchTabProps> = ({
             </Box>
           )}
 
-          {/* Guests Field */}
+          
           <Box
             sx={{
               flex: { xs: '1 1 100%', lg: '0 1 auto' },
@@ -529,7 +532,7 @@ const DynamicSearchTab: React.FC<SearchTabProps> = ({
               </Box>
             </Button>
 
-            {/* Guests Popover */}
+            
             <Popover
               open={open}
               anchorEl={anchorEl}
@@ -617,7 +620,39 @@ const DynamicSearchTab: React.FC<SearchTabProps> = ({
             </Popover>
           </Box>
 
-          {/* Search Button */}
+          
+          <Box
+            sx={{
+              flex: { xs: '1 1 100%', lg: '0 0 auto' },
+              display: 'flex',
+              alignItems: 'center',
+              justifyContent: 'center',
+              px: { xs: 0, lg: 1 },
+              py: { xs: 0.5, lg: 0 },
+              borderRight: { xs: 'none', lg: `1px solid ${theme.colors.carrotOrange}30` },
+            }}
+          >
+            <IconButton
+              onClick={handleReset}
+              sx={{
+                color: theme.colors.carrotOrange,
+                border: `2px solid ${theme.colors.carrotOrange}`,
+                borderRadius: '10px',
+                width: { xs: '100%', lg: '48px' },
+                height: '48px',
+                '&:hover': {
+                  backgroundColor: `${theme.colors.carrotOrange}10`,
+                  transform: 'rotate(180deg)',
+                },
+                transition: 'all 0.4s ease',
+              }}
+              title="Reset Search"
+            >
+              <RestartAltIcon sx={{ fontSize: 24 }} />
+            </IconButton>
+          </Box>
+
+          
           <Box
             sx={{
               flex: { xs: '1 1 100%', lg: '0 0 auto' },
