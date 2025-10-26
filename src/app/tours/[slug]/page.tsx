@@ -1,3 +1,4 @@
+// app/tours/[slug]/page.tsx
 import { Metadata } from 'next';
 import { notFound } from 'next/navigation';
 import { getMetaData, getAllTourSlugs } from '@/lib/tourMetaData';
@@ -10,10 +11,16 @@ type Props = {
 async function getTourFAQSchema(slug: string) {
   try {
     const apiUrl = process.env.NEXT_PUBLIC_BASE_URL || 'http://localhost:5000';
+
     const res = await fetch(`${apiUrl}/api/faq/${slug}/schema`, {
-      cache: 'force-cache',
-      next: { revalidate: 86400 },
+      next: { revalidate: 86400 }, 
     });
+
+    if (!res.ok) {
+      console.error(`Failed to fetch FAQ schema for ${slug}: ${res.statusText}`);
+      return null;
+    }
+
     const data = await res.json();
     return data?.payload || null;
   } catch (error) {
@@ -31,6 +38,7 @@ export async function generateStaticParams() {
 
 export async function generateMetadata({ params }: Props): Promise<Metadata> {
   const metaInfo = getMetaData(params.slug);
+
   if (!metaInfo) {
     console.warn(`⚠️ No metadata found for tour: ${params.slug}`);
     return {
@@ -38,7 +46,9 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
       description: 'This tour could not be found.',
     };
   }
+
   const baseUrl = process.env.NEXT_PUBLIC_BASE_URL || 'https://waytoindia.com';
+
   return {
     title: metaInfo.title,
     description: metaInfo.description,
