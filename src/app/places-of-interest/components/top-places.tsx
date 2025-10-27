@@ -1,50 +1,50 @@
 import React, { useState } from 'react';
-import { useRouter } from 'next/navigation';
-import { Search, MapPin } from 'lucide-react';
-import { State } from '@/lib/api/places-of-interest.api';
+// import { useRouter } from 'next/navigation';
+// import { Search, MapPin } from 'lucide-react';
+// import { State } from '@/lib/api/places-of-interest.api';
 
-interface TopPlacesProps {
-  states: State[];
-}
+// interface TopPlacesProps {
+//   states: State[];
+// }
 
-export function TopPlaces({ states }: TopPlacesProps) {
-  const router = useRouter();
-  const [searchTerm, setSearchTerm] = useState('');
-  const [isSticky, setIsSticky] = useState(false);
+export function TopPlaces() {
+  // const router = useRouter();
+  // const [searchTerm, setSearchTerm] = useState('');
+  // const [isSticky, setIsSticky] = useState(false);
 
-  // Add safety check for states
-  const filteredStates = (states || []).filter(
-    state =>
-      state.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
-      state.places?.some(place => place.name.toLowerCase().includes(searchTerm.toLowerCase()))
-  );
+  // // Add safety check for states
+  // const filteredStates = (states || []).filter(
+  //   state =>
+  //     state.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
+  //     state.places?.some(place => place.name.toLowerCase().includes(searchTerm.toLowerCase()))
+  // );
 
-  const handlePlaceClick = (stateId: string, placeId: string, stateName: string) => {
-    const stateSlug = stateName.toLowerCase().replace(/\s+/g, '-');
-    router.push(`/places-of-interest/${stateSlug}/${placeId}`);
-  };
+  // const handlePlaceClick = (stateId: string, placeId: string, stateName: string) => {
+  //   const stateSlug = stateName.toLowerCase().replace(/\s+/g, '-');
+  //   router.push(`/places-of-interest/${stateSlug}/${placeId}`);
+  // };
 
-  React.useEffect(() => {
-    const handleScroll = () => {
-      setIsSticky(window.scrollY > 200);
-    };
+  // React.useEffect(() => {
+  //   const handleScroll = () => {
+  //     setIsSticky(window.scrollY > 200);
+  //   };
 
-    window.addEventListener('scroll', handleScroll);
-    return () => window.removeEventListener('scroll', handleScroll);
-  }, []);
+  //   window.addEventListener('scroll', handleScroll);
+  //   return () => window.removeEventListener('scroll', handleScroll);
+  // }, []);
 
-  // Show loading state if no states yet
-  if (!states || states.length === 0) {
-    return (
-      <div className="text-center py-16">
-        <p className="text-gray-500 text-lg">Loading places...</p>
-      </div>
-    );
-  }
+  // // Show loading state if no states yet
+  // if (!states || states.length === 0) {
+  //   return (
+  //     <div className="text-center py-16">
+  //       <p className="text-gray-500 text-lg">Loading places...</p>
+  //     </div>
+  //   );
+  // }
 
   return (
     <div className="space-y-8">
-      <div
+      {/* <div
         className={`${
           isSticky
             ? 'fixed top-0 left-0 right-0 z-50 bg-white shadow-md py-4 lg:px-[7%] px-[4%]'
@@ -117,7 +117,7 @@ export function TopPlaces({ states }: TopPlacesProps) {
           <Search className="w-16 h-16 text-gray-300 mx-auto mb-4" />
           <p className="text-gray-500 text-lg">No places found matching "{searchTerm}"</p>
         </div>
-      )}
+      )} */}
     </div>
   );
 }
