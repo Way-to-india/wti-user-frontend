@@ -2,109 +2,110 @@
 import apiClient from '@/api/axios';
 
 export interface State {
-  id: string;
+  slug: string;
   name: string;
-  placeCount: number;
-  places: Place[];
+  monumentCount: number;
+  cityCount: number;
+  cities?: City[];
 }
 
-export interface Place {
-  id: string;
+export interface City {
+  slug: string;
   name: string;
-  placeSlug: string;
-  stateName?: string;
+  state?: string;
+  stateSlug?: string;
+  monumentCount: number;
 }
 
 export interface Monument {
-  id: string;
+  slug: string;
   monumentName: string;
-  monumentUrl: string;
-  typeOfPlace: string;
-  indexImage: string;
-  bestTime: string;
-  status: string;
-  cityName?: string;
-  stateName?: string;
-}
-
-export interface MonumentDetails {
-  id: string;
-  monumentName: string;
-  cityName: string;
-  stateName: string;
+  city: string;
+  state: string;
+  typeofPlace: string;
   description?: string;
-  bestTime?: string;
-  temperature?: string;
-  humidity?: string;
-  connectivity: {
-    road?: string;
-    rail?: string;
-    air?: string;
-  };
-  timings: {
-    opening?: string;
-    closing?: string;
-    weeklyOff?: string;
-  };
+  besttime?: string;
+  rating?: number;
+  totalRatings?: number;
+}
+
+export interface MonumentDetails extends Monument {
+  openingtime?: string;
+  clossingtime?: string;
+  weeklyoff?: string;
   entryFees: {
-    indian: {
-      adult?: string;
-      child?: string;
-      camera?: string;
-      videoCamera?: string;
-    };
-    foreign: {
-      adult?: string;
-      child?: string;
-      camera?: string;
-      videoCamera?: string;
-    };
+    indianAdult: number;
+    foreignAdult: number;
+    indianChild: number;
+    foreignChild: number;
+    indianCamera: number;
+    foreignCamera: number;
+    indianVideoCamera: number;
+    foreignVideoCamera: number;
   };
-  googleMap?: string;
-  images?: {
-    index?: string;
+  weather?: {
+    temperature: string;
+    humiditySummer: number;
+    humidityWinter: number;
+    humidityMonsoon: number;
   };
-  monumentUrl?: string;
-  typeOfPlace?: string;
-  status?: string;
-  metaTitle?: string;
-  metaDescription?: string;
+  connectivity?: {
+    road: string;
+    rail: string;
+    air: string;
+  };
+  location?: {
+    googleMapUrl: string;
+    latitude: number;
+    longitude: number;
+  };
+  website?: string;
+  phone?: string;
 }
 
-export interface MonumentsByPlace {
-  place: {
-    id: string;
-    name: string;
-    stateName: string;
-  };
+export interface Category {
+  slug: string;
+  name: string;
   monumentCount: number;
-  monuments: Monument[];
 }
 
-// API Response type - matches your backend structure
+export interface Statistics {
+  totalStates: number;
+  totalCities: number;
+  totalMonuments: number;
+  totalCategories: number;
+  lastUpdated: any;
+}
+
+export interface HomepageData {
+  statistics: Statistics;
+  states: State[];
+  categories: Category[];
+}
+
+// Fixed API Response interface to match backend
 export interface ApiResponse<T> {
   status: boolean;
   message: string;
-  payload: T; // Changed from 'data' to 'payload'
+  payload: T;
+  statusCode: number;
+  timestamp: string;
 }
 
 class PlacesOfInterestAPI {
-  /**
-   * Generic method to handle API calls with axios
-   * Handles the response structure from your backend
-   */
+  private baseURL = '/api/places-of-interest';
+
   private async fetchAPI<T>(endpoint: string): Promise<T> {
     try {
-      const response = await apiClient.get<ApiResponse<T>>(endpoint);
+      const response = await apiClient.get<ApiResponse<T>>(`${this.baseURL}${endpoint}`);
       const result = response.data;
 
       if (!result.status) {
         throw new Error(result.message || 'API request failed');
       }
-
-      // Return the payload instead of the whole result
       return result.payload;
     } catch (error: any) {
+      console.error('API Error:', error);
       if (error.response) {
         const serverError = error.response.data;
         throw new Error(serverError.message || 'Server error occurred');
@@ -116,78 +117,99 @@ class PlacesOfInterestAPI {
     }
   }
 
-  /**
-   * GET /api/places-of-interest/states
-   * Get all states with their places
-   */
-  async getAllStatesWithPlaces(): Promise<State[]> {
-    return this.fetchAPI<State[]>('/api/places-of-interest/states');
+  async getHomepageData(): Promise<HomepageData> {
+    return this.fetchAPI<HomepageData>('/homepage');
   }
 
-  /**
-   * GET /api/places-of-interest/states/:stateId/places
-   * Get places by specific state
-   */
-  async getPlacesByState(stateId: string): Promise<{ state: any; places: Place[] }> {
-    return this.fetchAPI(`/api/places-of-interest/states/${stateId}/places`);
+  async getAllStates(): Promise<State[]> {
+    return this.fetchAPI<State[]>('/states');
   }
 
-  /**
-   * GET /api/places-of-interest/places/:placeId/monuments
-   * Get monuments by specific place
-   */
-  async getMonumentsByPlace(placeId: string): Promise<MonumentsByPlace> {
-    return this.fetchAPI<MonumentsByPlace>(`/api/places-of-interest/places/${placeId}/monuments`);
+  async getStateBySlug(stateSlug: string): Promise<{ state: State; cities: City[] }> {
+    return this.fetchAPI(`/states/${stateSlug}`);
   }
 
-  /**
-   * GET /api/places-of-interest/monuments/:monumentId
-   * Get monument details by ID
-   */
-  async getMonumentDetails(monumentId: string): Promise<MonumentDetails> {
-    return this.fetchAPI<MonumentDetails>(`/api/places-of-interest/monuments/${monumentId}`);
+  async getCitiesByState(stateSlug: string): Promise<City[]> {
+    return this.fetchAPI<City[]>(`/states/${stateSlug}/cities`);
   }
 
-  /**
-   * GET /api/places-of-interest/monuments/slug/:monumentUrl
-   * Get monument details by slug
-   */
-  async getMonumentBySlug(monumentUrl: string): Promise<MonumentDetails> {
-    return this.fetchAPI<MonumentDetails>(`/api/places-of-interest/monuments/slug/${monumentUrl}`);
+  async getCityBySlug(citySlug: string): Promise<City> {
+    return this.fetchAPI<City>(`/cities/${citySlug}`);
   }
 
-  /**
-   * GET /api/places-of-interest/monuments/search
-   * Search monuments by term and optional type
-   */
-  async searchMonuments(searchTerm: string, type?: string): Promise<Monument[]> {
-    const query = type
-      ? `?q=${encodeURIComponent(searchTerm)}&type=${type}`
-      : `?q=${encodeURIComponent(searchTerm)}`;
-    return this.fetchAPI<Monument[]>(`/api/places-of-interest/monuments/search${query}`);
+  async getCityDetails(
+    stateSlug: string,
+    citySlug: string
+  ): Promise<{ city: City; monuments: Monument[] }> {
+    return this.fetchAPI(`/states/${stateSlug}/cities/${citySlug}`);
   }
 
-  /**
-   * GET /api/places-of-interest/monuments/type/:typeOfPlace
-   * Get monuments by type with optional limit
-   */
-  async getMonumentsByType(typeOfPlace: string, limit: number = 50): Promise<Monument[]> {
-    return this.fetchAPI<Monument[]>(
-      `/api/places-of-interest/monuments/type/${typeOfPlace}?limit=${limit}`
+  async getMonumentsByCity(
+    stateSlug: string,
+    citySlug: string,
+    limit: number = 50,
+    offset: number = 0
+  ): Promise<{ monuments: Monument[]; count: number; hasMore: boolean }> {
+    return this.fetchAPI(
+      `/states/${stateSlug}/cities/${citySlug}/monuments?limit=${limit}&offset=${offset}`
     );
   }
 
-  /**
-   * GET /api/places-of-interest/monuments/:monumentId/nearby
-   * Get nearby monuments with optional limit
-   */
-  async getNearbyMonuments(monumentId: string, limit: number = 5): Promise<Monument[]> {
-    return this.fetchAPI<Monument[]>(
-      `/api/places-of-interest/monuments/${monumentId}/nearby?limit=${limit}`
-    );
+  async getMonumentBySlug(monumentSlug: string): Promise<MonumentDetails> {
+    return this.fetchAPI<MonumentDetails>(`/monuments/${monumentSlug}`);
+  }
+
+  async getNearbyMonuments(monumentSlug: string, limit: number = 5): Promise<Monument[]> {
+    return this.fetchAPI<Monument[]>(`/monuments/${monumentSlug}/nearby?limit=${limit}`);
+  }
+
+  async getAllCategories(): Promise<Category[]> {
+    return this.fetchAPI<Category[]>('/categories');
+  }
+
+  async getMonumentsByCategory(
+    categorySlug: string,
+    limit: number = 50,
+    offset: number = 0,
+    stateFilter?: string
+  ): Promise<{
+    category: Category;
+    monuments: any[];
+    count: number;
+    total: number;
+    hasMore: boolean;
+  }> {
+    const params = new URLSearchParams({
+      limit: limit.toString(),
+      offset: offset.toString(),
+    });
+    if (stateFilter) params.append('state', stateFilter);
+
+    return this.fetchAPI(`/categories/${categorySlug}?${params.toString()}`);
+  }
+
+  async searchMonuments(
+    searchTerm: string,
+    categoryFilter?: string,
+    stateFilter?: string,
+    limit: number = 20,
+    offset: number = 0
+  ): Promise<{ monuments: Monument[]; count: number; total: number; hasMore: boolean }> {
+    const params = new URLSearchParams({
+      q: searchTerm,
+      limit: limit.toString(),
+      offset: offset.toString(),
+    });
+    if (categoryFilter) params.append('category', categoryFilter);
+    if (stateFilter) params.append('state', stateFilter);
+
+    return this.fetchAPI(`/search?${params.toString()}`);
+  }
+
+  async getStatistics(): Promise<Statistics> {
+    return this.fetchAPI<Statistics>('/stats');
   }
 }
 
-// Export singleton instance
 export const placesOfInterestAPI = new PlacesOfInterestAPI();
-export default PlacesOfInterestAPI;
+export default placesOfInterestAPI;
