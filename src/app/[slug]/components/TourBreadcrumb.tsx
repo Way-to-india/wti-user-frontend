@@ -2,19 +2,22 @@
 
 import Link from 'next/link';
 import { useRouter } from 'next/navigation';
-import React from 'react';
+import React, { useTransition } from 'react';
 
 interface TourBreadcrumbProps {
   tourTitle: string;
 }
 
 const TourBreadcrumb: React.FC<TourBreadcrumbProps> = ({ tourTitle }) => {
-
   const router = useRouter();
+  const [isPending, startTransition] = useTransition();
 
   const handleBackClick = (e: React.MouseEvent) => {
     e.preventDefault();
-    router.back();
+
+    startTransition(() => {
+      router.back();
+    });
   };
 
   return (
@@ -25,9 +28,14 @@ const TourBreadcrumb: React.FC<TourBreadcrumbProps> = ({ tourTitle }) => {
             Home
           </Link>
           <span className="text-gray-400">→</span>
-          <p onClick={handleBackClick} className="text-gray-600 hover:text-orange-500 cursor-pointer">
+          <button
+            onClick={handleBackClick}
+            className="text-gray-600 hover:text-orange-500 cursor-pointer bg-transparent border-none p-0 font-inherit disabled:opacity-50"
+            disabled={isPending}
+            aria-label="Go back to tours"
+          >
             Tours
-          </p>
+          </button>
           <span className="text-gray-400">→</span>
           <span className="text-orange-500 truncate">{tourTitle}</span>
         </nav>
