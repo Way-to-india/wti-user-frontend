@@ -1,4 +1,7 @@
+'use client';
+
 import Link from 'next/link';
+import { useRouter } from 'next/navigation';
 import React from 'react';
 
 interface TourBreadcrumbProps {
@@ -6,6 +9,14 @@ interface TourBreadcrumbProps {
 }
 
 const TourBreadcrumb: React.FC<TourBreadcrumbProps> = ({ tourTitle }) => {
+
+  const router = useRouter();
+
+  const handleBackClick = (e: React.MouseEvent) => {
+    e.preventDefault();
+    router.back();
+  };
+
   return (
     <div className="bg-white py-2 border-b">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
@@ -14,9 +25,9 @@ const TourBreadcrumb: React.FC<TourBreadcrumbProps> = ({ tourTitle }) => {
             Home
           </Link>
           <span className="text-gray-400">→</span>
-          <Link href="/tours" className="text-gray-600 hover:text-orange-500">
+          <p onClick={handleBackClick} className="text-gray-600 hover:text-orange-500 cursor-pointer">
             Tours
-          </Link>
+          </p>
           <span className="text-gray-400">→</span>
           <span className="text-orange-500 truncate">{tourTitle}</span>
         </nav>

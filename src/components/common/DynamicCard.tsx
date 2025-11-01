@@ -1,389 +1,163 @@
 import React from 'react';
-import { Box, Typography, Button, Link, Tooltip } from '@mui/material';
 import Image from 'next/image';
-import StarIcon from '@mui/icons-material/Star';
-import { LocationOn } from '@mui/icons-material';
-import { useRouter } from 'next/navigation';
-import { useTheme } from '@/context/ThemeContext';
+import Link from 'next/link';
+import { Star, MapPin, Calendar, Tag } from 'lucide-react';
 
-// Define the location interface to match what's in hotel types
-interface Location {
-  latitude?: number;
-  longitude?: number;
-  address?: {
-    addressLine1?: string;
-    cityId?: {
-      _path?: {
-        segments?: string[];
-      };
-    };
-    pinCode?: string;
-  };
+interface Duration {
+  days?: number;
+  nights?: number;
 }
 
-// Define the common card properties
-export interface DynamicCardProps {
+interface City {
+  id: string;
+  name: string;
+  label: string;
+  slug: string;
+}
+
+interface Theme {
+  id: string;
+  name: string;
+  label: string;
+  slug: string;
+}
+
+interface TourCardProps {
   id?: string;
-  type: 'tour' | 'hotel' | 'transport';
   imageUrls: string[];
   title: string;
   description?: string;
+  overview?: string;
   price: number | string;
   rating?: number;
-  location?: Location;
-  amenities?: string[];
-  isAvailable?: boolean;
-  category?: string;
-  onActionClick?: () => void;
+  duration?: Duration;
+  cities?: City[];
+  themes?: Theme[];
+  best_time?: string;
 }
 
-const DynamicCard: React.FC<DynamicCardProps> = ({
+const TourCard: React.FC<TourCardProps> = ({
   id,
-  type,
   imageUrls,
   title,
   description,
+  overview,
   price,
-  rating = 5,
-  location,
-  amenities,
-  isAvailable = true,
-  category,
-  onActionClick,
+  rating = 0,
+  duration,
+  cities,
+  themes,
 }) => {
-  const theme = useTheme();
-  const router = useRouter();
-
-  // Get button text based on the card type
-  const getButtonText = () => {
-    switch (type) {
-      case 'tour':
-        return 'View Package';
-      case 'hotel':
-        return 'Check Availability';
-      case 'transport':
-        return 'View Details';
-      default:
-        return 'View Details';
-    }
-  };
-
-  // Handle card action click
-  const handleActionClick = () => {
-    if (onActionClick) {
-      onActionClick();
-    } else if (id) {
-      // Default navigation if no custom handler is provided      // Handle transport route differently since we removed the 's'
-      const path = type === 'transport' ? `/${type}/${id}` : `/${type}s/${id}`;
-      router.push(path);
-    }
-  };
-
-  // Calculate rating based on category for hotels
-  const calculateRating = () => {
-    if (rating) return rating;
-
-    if (type === 'hotel' && category) {
-      return category === 'Luxury' ? 5 : category === 'Premium' ? 4 : category === 'Budget' ? 3 : 4;
-    }
-
-    return 5; // Default rating
-  };
-
-  // Format location string for hotels
-  const getLocationString = () => {
-    if (!location || !location.address) return '';
-
-    const addressLine = location.address.addressLine1 || '';
-    const cityName = location.address.cityId?._path?.segments?.[1] || '';
-    const pinCode = location.address.pinCode ? ` - ${location.address.pinCode}` : '';
-
-    return `${addressLine}${cityName ? `, ${cityName}` : ''}${pinCode}`;
-  };
-
-  // Handle view map action for hotels
-  const handleViewMap = (e: React.MouseEvent) => {
-    e.preventDefault();
-    // Implement map view functionality
-  };
-
-  // Handle what's included action for hotels
-  const handleWhatsIncluded = (e: React.MouseEvent) => {
-    e.preventDefault();
-    // Implement what's included functionality
-  };
-
-  // Default image if no images are provided
   const imageUrl = imageUrls?.[0] || '/placeholder-image.jpg';
-  const actualRating = calculateRating();
+  const priceText = price === 0 ? 'On Request' : `₹${typeof price === 'number' ? price.toLocaleString() : price}`;
+  const displayText = description || overview || '';
+  const cardLink = id ? `/${id}` : '#';
 
-  // Remove fixed height and use flexbox for proper content distribution
   return (
-    <Box
-      sx={{
-        width: '100%',
-        maxWidth: '320px',
-        backgroundColor: 'white',
-        borderRadius: '12px',
-        overflow: 'hidden',
-        border: '1px solid #E5E7EB',
-        display: 'flex',
-        flexDirection: 'column',
-        transition: 'box-shadow 0.2s',
-        cursor: 'pointer',
-        '&:hover': {
-          boxShadow: '2px 4px 8px rgba(0, 0, 0, 0.3)',
-        },
-      }}
-      onClick={handleActionClick}
-    >
-      {/* Image Container */}
-      <Box sx={{ position: 'relative', width: '100%', height: '180px', flexShrink: 0 }}>
-        <Image src={imageUrl} alt={title} fill style={{ objectFit: 'cover' }} />
-      </Box>
+    <Link href={cardLink} className="block h-full">
+      <article className="group relative bg-white rounded-xl overflow-hidden cursor-pointer transition-all duration-300 hover:scale-[1.02] hover:shadow-2xl shadow-md h-full flex flex-col border border-gray-100">
+        {/* Image Section */}
+        <div className="relative h-48 w-full overflow-hidden flex-shrink-0">
+          <Image
+            src={imageUrl}
+            alt={title}
+            fill
+            sizes="(max-width: 640px) 100vw, (max-width: 1024px) 50vw, 33vw"
+            className="object-cover transition-transform duration-500 group-hover:scale-110"
+            priority={false}
+            quality={85}
+          />
 
-      {/* Content Container */}
-      <Box
-        sx={{
-          p: 1.5,
-          display: 'flex',
-          flexDirection: 'column',
-          flex: '1 1 auto',
-          justifyContent: 'space-between',
-          height: type === 'transport' ? '250px' : '220px',
-        }}
-      >
-        <Box>
-          {/* Rating */}
-          <Box sx={{ display: 'flex', alignItems: 'center', mb: 1 }}>
-            {[...Array(5)].map((_, index) => (
-              <StarIcon
-                key={index}
-                sx={{
-                  color: index < actualRating ? '#FDB827' : '#D1D5DB',
-                  fontSize: '14px',
-                }}
-              />
-            ))}
-            <Typography
-              sx={{
-                ml: 0.5,
-                color: '#4B5563',
-                fontSize: '12px',
-                fontWeight: 400,
-              }}
-            >
-              ({actualRating})
-            </Typography>
-          </Box>
+          {/* Gradient Overlay */}
+          <div className="absolute inset-0 bg-gradient-to-t from-black/70 via-black/20 to-transparent" />
 
-          {/* Title */}
-          <Typography
-            sx={{
-              fontSize: '16px',
-              fontWeight: 600,
-              color: '#1F2937',
-              mb: 0.5,
-              display: '-webkit-box',
-              WebkitLineClamp: 2,
-              WebkitBoxOrient: 'vertical',
-              overflow: 'hidden',
-              textOverflow: 'ellipsis',
-            }}
-          >
-            {title}
-          </Typography>
-
-          {/* Location for hotels */}
-          {type === 'hotel' && location && (
-            <Box
-              sx={{
-                display: 'flex',
-                alignItems: 'center',
-                mb: 1,
-                gap: 0.5,
-              }}
-            >
-              <Box sx={{ display: 'flex', alignItems: 'center', gap: 0.5 }}>
-                <LocationOn sx={{ fontSize: 14, color: '#4B5563' }} />
-                <Typography
-                  sx={{
-                    fontSize: '12px',
-                    color: '#4B5563',
-                    fontWeight: 400,
-                  }}
-                >
-                  {getLocationString()}
-                </Typography>
-              </Box>
-              <Link
-                href="#"
-                onClick={handleViewMap}
-                sx={{
-                  fontSize: '12px',
-                  color: theme.colors.carrotOrange,
-                  textDecoration: 'none',
-                  '&:hover': {
-                    textDecoration: 'underline',
-                  },
-                }}
-              >
-                View Map
-              </Link>
-            </Box>
+          {/* Rating Badge */}
+          {rating > 0 && (
+            <div className="absolute top-3 right-3 bg-yellow-400 text-gray-900 px-2.5 py-1 rounded-full flex items-center gap-1 font-bold text-xs shadow-md z-10">
+              <Star className="w-3.5 h-3.5 fill-gray-900" />
+              <span>{rating}</span>
+            </div>
           )}
 
-          {/* Description if available */}
-          {description && (
-            <Box sx={{ position: 'relative' }}>
-              <Tooltip title={description} placement="top">
-                <Typography
-                  ref={el => {
-                    if (el) {
-                      const isTruncated = el.scrollHeight > el.clientHeight;
-                      el.setAttribute('data-truncated', isTruncated.toString());
-                    }
-                  }}
-                  sx={{
-                    fontSize: '12px',
-                    color: '#4B5563',
-                    mb: 1,
-                    minHeight: 'auto',
-                    display: '-webkit-box',
-                    WebkitLineClamp: type === 'hotel' ? 1 : 2,
-                    WebkitBoxOrient: 'vertical',
-                    overflow: 'hidden',
-                    textOverflow: 'ellipsis',
-                    '&[data-truncated="true"]': {
-                      cursor: 'help',
-                      '&::after': {
-                        content: '"..."',
-                        color: theme.colors.carrotOrange,
-                        marginLeft: '2px',
-                      },
-                    },
-                  }}
-                >
-                  {description}
-                </Typography>
-              </Tooltip>
-            </Box>
+          {/* Title Overlay */}
+          <div className="absolute bottom-0 left-0 right-0 p-4 z-10">
+            <h3 className="text-white text-lg font-bold leading-tight line-clamp-2 drop-shadow-lg">
+              {title}
+            </h3>
+          </div>
+        </div>
+
+        {/* Content Section */}
+        <div className="p-4 space-y-3 flex-1 flex flex-col bg-white">
+          {/* Description */}
+          <p className="text-gray-600 text-xs leading-relaxed line-clamp-2">
+            {displayText}
+          </p>
+
+          {/* Duration Badge */}
+          {duration?.days && (
+            <div className="inline-flex items-center gap-1.5 bg-orange-50 border border-orange-200 text-orange-600 px-3 py-1.5 rounded-lg w-fit">
+              <Calendar className="w-3.5 h-3.5" />
+              <span className="font-semibold text-xs">
+                {duration.days}D / {duration.nights}N
+              </span>
+            </div>
           )}
 
-          {/* Amenities for transport */}
-          {type === 'transport' && amenities && amenities.length > 0 && (
-            <Typography sx={{ fontSize: '11px', color: '#6B7280', mb: 1 }}>
-              {amenities.join(' • ')}
-            </Typography>
+          {/* Theme */}
+          {themes && themes.length > 0 && (
+            <div className="space-y-1.5">
+              <div className="flex items-center gap-1.5 text-gray-500">
+                <Tag className="w-3.5 h-3.5" />
+                <span className="font-semibold text-[10px] uppercase tracking-wider">Theme</span>
+              </div>
+              <div className="inline-block bg-orange-50 border border-orange-200 text-orange-600 px-2.5 py-1 rounded-md">
+                <span className="text-xs font-medium">{themes[0].label}</span>
+              </div>
+            </div>
           )}
-        </Box>
 
-        {/* Bottom section with price and button - separated from the top content */}
-        <Box sx={{ mt: 'auto' }}>
+          {/* Destinations */}
+          {cities && cities.length > 0 && (
+            <div className="space-y-1.5 flex-1">
+              <div className="flex items-center gap-1.5 text-gray-500">
+                <MapPin className="w-3.5 h-3.5" />
+                <span className="font-semibold text-[10px] uppercase tracking-wider">Destinations</span>
+              </div>
+              <div className="flex flex-wrap gap-1.5">
+                {cities.slice(0, 4).map((city) => (
+                  <div
+                    key={city.id}
+                    className="bg-gray-50 border border-gray-200 text-gray-700 px-2.5 py-1 rounded-md text-xs"
+                  >
+                    {city.name}
+                  </div>
+                ))}
+                {cities.length > 4 && (
+                  <div className="bg-gray-50 border border-gray-200 text-gray-500 px-2.5 py-1 rounded-md text-xs">
+                    +{cities.length - 4} more
+                  </div>
+                )}
+              </div>
+            </div>
+          )}
+
           {/* Price Section */}
-          <Box
-            sx={{
-              display: 'flex',
-              alignItems: 'center',
-              justifyContent: 'space-between',
-              mb: 1,
-            }}
-          >
-            <Box>
-              <Box sx={{ display: 'flex', alignItems: 'baseline', gap: 0.5 }}>
-                <Typography
-                  sx={{
-                    fontSize: '12px',
-                    color: '#4B5563',
-                    fontWeight: 400,
-                  }}
-                >
-                  From
-                </Typography>
-                <Typography
-                  component="span"
-                  sx={{
-                    fontSize: '18px',
-                    fontWeight: 600,
-                    color: theme.colors.carrotOrange,
-                  }}
-                >
-                  ₹{price}
-                </Typography>
-              </Box>
-              <Typography
-                sx={{
-                  fontSize: '10px',
-                  color: '#6B7280',
-                  fontWeight: 400,
-                }}
-              >
-                {type === 'transport' ? '(Excludes Taxes)' : '(Includes Taxes And Charges)'}
-              </Typography>
-            </Box>
-
-            {/* What's included link for hotels */}
-            {type === 'hotel' && (
-              <Link
-                href="#"
-                onClick={handleWhatsIncluded}
-                sx={{
-                  fontSize: '12px',
-                  color: theme.colors.carrotOrange,
-                  textDecoration: 'none',
-                  display: 'flex',
-                  alignItems: 'center',
-                  '&:hover': {
-                    textDecoration: 'underline',
-                  },
-                }}
-              >
-                What&apos;s included?
-              </Link>
-            )}
-          </Box>
-
-          {/* Button */}
-          <Box
-            sx={{
-              display: 'flex',
-              justifyContent: 'center',
-              mb: 0.5,
-            }}
-          >
-            <Button
-              variant="contained"
-              disabled={type === 'hotel' && !isAvailable}
-              sx={{
-                backgroundColor: theme.colors.carrotOrange,
-                color: 'white',
-                textTransform: 'none',
-                fontSize: '13px',
-                fontWeight: 500,
-                padding: '4px 16px',
-                borderRadius: '50px',
-                width: 'auto',
-                minWidth: '180px',
-                height: '32px',
-                boxShadow: 'none',
-                whiteSpace: 'nowrap',
-                '&:hover': {
-                  backgroundColor: theme.colors.carrotOrange,
-                  boxShadow: 'none',
-                },
-                '&:disabled': {
-                  backgroundColor: '#E5E7EB',
-                  color: '#9CA3AF',
-                },
-              }}
-            >
-              {getButtonText()}
-            </Button>
-          </Box>
-        </Box>
-      </Box>
-    </Box>
+          <div className="pt-3 mt-auto border-t border-gray-100">
+            <div className="flex items-end justify-between gap-3">
+              <div>
+                <p className="text-gray-500 text-[10px] mb-0.5">Starting from</p>
+                <p className="text-orange-500 text-xl font-bold leading-none">{priceText}</p>
+              </div>
+              <span className="bg-orange-500 hover:bg-orange-600 text-white px-4 py-2 rounded-lg font-semibold transition-colors duration-200 text-xs whitespace-nowrap">
+                View Details
+              </span>
+            </div>
+          </div>
+        </div>
+      </article>
+    </Link>
   );
 };
 
-export default DynamicCard;
+export default TourCard;

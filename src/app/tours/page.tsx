@@ -1,8 +1,7 @@
 import { Metadata } from 'next';
-import ToursPageContent from './TourPageContent';
+import ToursPageClient from './TourPageClient';
 
 type Props = {
-  params: { slug: string };
   searchParams: { [key: string]: string | string[] | undefined };
 };
 
@@ -18,7 +17,7 @@ export const metadata: Metadata = {
   },
 
   openGraph: {
-    title: 'All India Tour Packages 2024 | Way to India',
+    title: 'All India Tour Packages 2025 | Way to India',
     description:
       'Explore our comprehensive collection of India tour packages with expert guides and best prices.',
     type: 'website',
@@ -37,7 +36,7 @@ export const metadata: Metadata = {
 
   twitter: {
     card: 'summary_large_image',
-    title: 'All India Tour Packages 2024 | Way to India',
+    title: 'All India Tour Packages 2025 | Way to India',
     description: 'Explore our comprehensive collection of India tour packages',
     images: ['https://waytoindia.com/images/tours-listing-twitter.jpg'],
     creator: '@waytoindia',
@@ -56,6 +55,6 @@ export const metadata: Metadata = {
   },
 };
 
-export default function TourPage({ params, searchParams }: Props) {
-  return <ToursPageContent slug={params.slug} searchParams={searchParams} />;
+export default function ToursPage({ searchParams }: Props) {
+  return <ToursPageClient searchParams={searchParams} />;
 }

@@ -1,10 +1,8 @@
 // next.config.js
-const { tourSlugs } = require('./data/slugs');
 
 /** @type {import('next').NextConfig} */
 const nextConfig = {
   reactStrictMode: false,
-
   images: {
     remotePatterns: [
       {
@@ -38,14 +36,6 @@ const nextConfig = {
         pathname: '/**',
       },
     ],
-  },
-
-  async redirects() {
-    return tourSlugs.map(slug => ({
-      source: `/${slug}`,
-      destination: `/tours/${slug}`,
-      permanent: true,
-    }));
   },
 };
 

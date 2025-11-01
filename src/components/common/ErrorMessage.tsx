@@ -1,37 +1,57 @@
-// app/components/common/ErrorMessage.tsx
+'use client';
 import React from 'react';
+import { Box, Alert, AlertTitle, Button } from '@mui/material';
+import { useTheme } from '@/context/ThemeContext';
 
-interface ErrorMessageProps {
-  message: string;
-  onRetry?: () => void;
-  title?: string;
-  icon?: React.ReactNode;
+interface ErrorDisplayProps {
+  error: string;
+  onReload: () => void;
 }
 
-const ErrorMessage: React.FC<ErrorMessageProps> = ({ 
-  message, 
-  onRetry, 
-  title = "Something went wrong", 
-  icon = <span className="text-5xl">🧭</span> 
-}) => {
+const ErrorDisplay: React.FC<ErrorDisplayProps> = ({ error, onReload }) => {
+  const theme = useTheme();
+
+  const isTimeoutError = error.includes('timeout') || error.includes('exceeded');
+
   return (
-    <div className="w-full max-w-md p-8 bg-white rounded-lg shadow-sm text-center">
-      <div className="flex justify-center mb-6">
-        {icon}
-      </div>
-      <h2 className="text-2xl font-semibold text-gray-800 mb-4">{title}</h2>
-      <p className="text-gray-600 mb-8">{message}</p>
-      {onRetry && (
-        <button
-          onClick={onRetry}
-          className="w-full px-6 py-3 bg-orange-500 text-white rounded-md hover:bg-orange-600 transition-all duration-200 focus:outline-none focus:ring-2 focus:ring-orange-500 focus:ring-opacity-50"
-          aria-label="Try again"
-        >
-          Try Again
-        </button>
-      )}
-    </div>
+    <Box sx={{ maxWidth: '600px', mx: 'auto', mt: 4 }}>
+      <Alert
+        severity="error"
+        sx={{
+          borderRadius: '12px',
+          '& .MuiAlert-icon': {
+            fontSize: '28px',
+          },
+        }}
+      >
+        <AlertTitle sx={{ fontWeight: 600, fontSize: '16px' }}>
+          Unable to Load Tours
+        </AlertTitle>
+        <Box sx={{ fontSize: '14px', mt: 1 }}>
+          {isTimeoutError
+            ? "The request is taking longer than expected. We've tried multiple times but couldn't connect. Please check your internet connection and try again."
+            : error}
+        </Box>
+        <Box sx={{ mt: 2 }}>
+          <Button
+            onClick={onReload}
+            variant="contained"
+            sx={{
+              backgroundColor: theme.colors.carrotOrange,
+              color: 'white',
+              textTransform: 'none',
+              '&:hover': {
+                backgroundColor: theme.colors.carrotOrange,
+                opacity: 0.9,
+              },
+            }}
+          >
+            Reload Page
+          </Button>
+        </Box>
+      </Alert>
+    </Box>
   );
 };
 
-export default ErrorMessage;
+export default ErrorDisplay;

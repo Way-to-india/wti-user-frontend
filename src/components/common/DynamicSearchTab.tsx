@@ -217,7 +217,7 @@ const DynamicSearchTab: React.FC<SearchTabProps> = ({
             p: { xs: 2, md: 2.5 },
           }}
         >
-          
+
           <Box
             sx={{
               flex: { xs: '1 1 100%', lg: '1 1 auto' },
@@ -316,7 +316,7 @@ const DynamicSearchTab: React.FC<SearchTabProps> = ({
             </Box>
           </Box>
 
-          
+
           <Box
             sx={{
               flex: { xs: '1 1 100%', lg: '1 1 auto' },
@@ -356,7 +356,7 @@ const DynamicSearchTab: React.FC<SearchTabProps> = ({
             </Box>
           </Box>
 
-          
+
           {typesOptions.length > 0 && (
             <Box
               sx={{
@@ -461,7 +461,7 @@ const DynamicSearchTab: React.FC<SearchTabProps> = ({
             </Box>
           )}
 
-          
+
           <Box
             sx={{
               flex: { xs: '1 1 100%', lg: '0 1 auto' },
@@ -532,7 +532,7 @@ const DynamicSearchTab: React.FC<SearchTabProps> = ({
               </Box>
             </Button>
 
-            
+
             <Popover
               open={open}
               anchorEl={anchorEl}
@@ -620,7 +620,7 @@ const DynamicSearchTab: React.FC<SearchTabProps> = ({
             </Popover>
           </Box>
 
-          
+
           <Box
             sx={{
               flex: { xs: '1 1 100%', lg: '0 0 auto' },
@@ -652,7 +652,7 @@ const DynamicSearchTab: React.FC<SearchTabProps> = ({
             </IconButton>
           </Box>
 
-          
+
           <Box
             sx={{
               flex: { xs: '1 1 100%', lg: '0 0 auto' },

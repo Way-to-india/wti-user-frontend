@@ -1,14 +1,16 @@
 'use client';
 import React, { ReactNode } from 'react';
-import { Container, Grid, Box, CircularProgress, Alert, AlertTitle } from '@mui/material';
+import { Container, Grid, Box } from '@mui/material';
 import { useTheme } from '@/context/ThemeContext';
+import NavBar from '../layout/navbar/NavBar';
 import DynamicFilterSidebar, { FilterOptions } from './DynamicFilterSidebar';
 import DynamicSearchSection from './DynamicSearchSection';
 import DynamicPagination from './DynamicPagination';
 import DynamicBreadcrumb, { BreadcrumbItem } from './DynamicBreadcrumb';
-import DynamicFilterSidebarSkeleton from './DynamicFilterSidebarSkeleton';
-import DynamicCardSkeleton from './DynamicCardSkeleton';
-import NavBar from '../layout/navbar/NavBar';
+import DynamicFilterSidebarSkeleton from './skeletons/DynamicFilterSidebarSkeleton';
+import DynamicCardSkeleton from './skeletons/DynamicCardSkeleton';
+import LoadingIndicators from './LoadingIndicators';
+import ErrorDisplay from './ErrorMessage';
 
 export interface DynamicListingPageProps {
   type: 'tour' | 'hotel' | 'transport';
@@ -57,6 +59,10 @@ const DynamicListingPage: React.FC<DynamicListingPageProps> = ({
     console.log(`Enquiry clicked for ${type}`);
   };
 
+  const handleReload = () => {
+    window.location.reload();
+  };
+
   const renderSkeletonCards = () => (
     <Grid container spacing={3}>
       {[...Array(9)].map((_, index) => (
@@ -67,84 +73,11 @@ const DynamicListingPage: React.FC<DynamicListingPageProps> = ({
     </Grid>
   );
 
-  const renderRetryIndicator = () => (
-    <Box
-      sx={{
-        position: 'fixed',
-        bottom: 24,
-        right: 24,
-        zIndex: 1000,
-        backgroundColor: theme.colors.carrotOrange,
-        color: 'white',
-        padding: '16px 24px',
-        borderRadius: '12px',
-        boxShadow: '0 4px 12px rgba(0, 0, 0, 0.15)',
-        display: 'flex',
-        alignItems: 'center',
-        gap: 2,
-      }}
-    >
-      <CircularProgress size={20} sx={{ color: 'white' }} />
-      <div>
-        <div style={{ fontWeight: 600, fontSize: '14px' }}>Retrying connection...</div>
-        <div style={{ fontSize: '12px', opacity: 0.9 }}>Attempt {retryCount} of 3</div>
-      </div>
-    </Box>
-  );
-
-  const renderLoadingIndicator = (message: string) => (
-    <Box
-      sx={{
-        position: 'fixed',
-        bottom: 24,
-        right: 24,
-        zIndex: 1000,
-        backgroundColor: theme.colors.carrotOrange,
-        color: 'white',
-        padding: '16px 24px',
-        borderRadius: '12px',
-        boxShadow: '0 4px 12px rgba(0, 0, 0, 0.15)',
-        display: 'flex',
-        alignItems: 'center',
-        gap: 2,
-        animation: 'slideIn 0.3s ease-out',
-      }}
-    >
-      <CircularProgress size={20} sx={{ color: 'white' }} />
-      <div style={{ fontWeight: 600, fontSize: '14px' }}>{message}</div>
-    </Box>
-  );
-
-  const renderFilteringIndicator = () => (
-    <Box
-      sx={{
-        position: 'fixed',
-        top: '50%',
-        left: '50%',
-        transform: 'translate(-50%, -50%)',
-        zIndex: 1000,
-        backgroundColor: 'rgba(0, 0, 0, 0.75)',
-        color: 'white',
-        padding: '24px 32px',
-        borderRadius: '16px',
-        boxShadow: '0 8px 32px rgba(0, 0, 0, 0.3)',
-        display: 'flex',
-        flexDirection: 'column',
-        alignItems: 'center',
-        gap: 2,
-        minWidth: '250px',
-      }}
-    >
-      <CircularProgress size={40} sx={{ color: theme.colors.carrotOrange }} />
-      <div style={{ fontWeight: 600, fontSize: '16px', marginTop: '12px' }}>Applying Filters</div>
-      <div style={{ fontSize: '13px', opacity: 0.9, textAlign: 'center' }}>
-        Finding the best tours for you...
-      </div>
-    </Box>
-  );
+  const showLoadingState = loading && !isFiltering && !isRetrying;
+  const showContent = !error || isRetrying;
 
   return (
-    <div style={{ backgroundColor: theme.colors.milkWhite, minHeight: '100vh' }}>
+    <Box sx={{ backgroundColor: theme.colors.milkWhite, minHeight: '100vh' }}>
       <NavBar />
 
       <DynamicSearchSection
@@ -156,68 +89,31 @@ const DynamicListingPage: React.FC<DynamicListingPageProps> = ({
         onEnquiryClick={handleEnquiryClick}
       />
 
+
       <Container maxWidth="xl" sx={{ py: 4 }}>
-        {/* Breadcrumb Navigation */}
+
         {breadcrumbs && breadcrumbs.length > 0 && (
           <Box sx={{ mb: 3 }}>
             <DynamicBreadcrumb items={breadcrumbs} />
           </Box>
         )}
 
-        {/* Retry Indicator */}
-        {isRetrying && renderRetryIndicator()}
 
-        {/* Loading Indicator for initial load or searching */}
-        {(loading || isSearching) &&
-          !isFiltering &&
-          !isRetrying &&
-          renderLoadingIndicator(loading ? 'Fetching tours...' : 'Searching tours...')}
+        <LoadingIndicators
+          isRetrying={isRetrying}
+          isSearching={isSearching}
+          isFiltering={isFiltering}
+          loading={loading}
+          retryCount={retryCount}
+        />
 
-        {/* Filtering Indicator - Center Modal */}
-        {isFiltering && renderFilteringIndicator()}
 
-        {/* Error handling with improved UI */}
         {error && !isRetrying ? (
-          <Box sx={{ maxWidth: '600px', mx: 'auto', mt: 4 }}>
-            <Alert
-              severity="error"
-              sx={{
-                borderRadius: '12px',
-                '& .MuiAlert-icon': {
-                  fontSize: '28px',
-                },
-              }}
-            >
-              <AlertTitle sx={{ fontWeight: 600, fontSize: '16px' }}>
-                Unable to Load Tours
-              </AlertTitle>
-              <div style={{ fontSize: '14px', marginTop: '8px' }}>
-                {error.includes('timeout') || error.includes('exceeded')
-                  ? "The request is taking longer than expected. We've tried multiple times but couldn't connect. Please check your internet connection and try again."
-                  : error}
-              </div>
-              <Box sx={{ mt: 2 }}>
-                <button
-                  onClick={() => window.location.reload()}
-                  style={{
-                    backgroundColor: theme.colors.carrotOrange,
-                    color: 'white',
-                    padding: '8px 16px',
-                    borderRadius: '8px',
-                    border: 'none',
-                    cursor: 'pointer',
-                    fontWeight: 600,
-                    fontSize: '14px',
-                  }}
-                >
-                  Reload Page
-                </button>
-              </Box>
-            </Alert>
-          </Box>
+          <ErrorDisplay error={error} onReload={handleReload} />
         ) : (
+          /* Main Content Grid */
           <Grid container spacing={3}>
-            {/* Filter Sidebar */}
+
             <Grid item xs={12} md={3}>
               {isFiltering || loading ? (
                 <DynamicFilterSidebarSkeleton />
@@ -231,10 +127,10 @@ const DynamicListingPage: React.FC<DynamicListingPageProps> = ({
               )}
             </Grid>
 
-            {/* Main Content */}
+
             <Grid item xs={12} md={9}>
-              {loading ? (
-                <>{renderSkeletonCards()}</>
+              {showLoadingState ? (
+                renderSkeletonCards()
               ) : (
                 <>
                   {children}
@@ -254,7 +150,7 @@ const DynamicListingPage: React.FC<DynamicListingPageProps> = ({
         )}
       </Container>
 
-      {/* Add CSS for animations */}
+
       <style jsx global>{`
         @keyframes slideIn {
           from {
@@ -267,7 +163,7 @@ const DynamicListingPage: React.FC<DynamicListingPageProps> = ({
           }
         }
       `}</style>
-    </div>
+    </Box>
   );
 };
 
