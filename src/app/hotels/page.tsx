@@ -197,7 +197,7 @@ const Hotels: React.FC = () => {
       // Check authentication first
       if (!token) {
         toast.error('Please login to submit a query');
-        router.push('/auth/login');
+        router.push('/auth');
         return;
       }
 
@@ -269,7 +269,7 @@ const Hotels: React.FC = () => {
 
       if (error.response?.status === 401) {
         toast.error('Session expired. Please login again');
-        router.push('/auth/login');
+        router.push('/auth');
         return;
       }
 
@@ -573,7 +573,7 @@ const Hotels: React.FC = () => {
                 <button
                   onClick={handleSearch}
                   disabled={isSubmitting}
-                  className="w-full sm:w-auto px-8 sm:px-12 lg:px-16 py-3 bg-blue-500 hover:bg-blue-600 disabled:bg-blue-400 disabled:cursor-not-allowed text-white font-bold text-base rounded-full shadow-lg transition-all flex items-center justify-center gap-2"
+                  className="w-full sm:w-auto px-8 sm:px-12 lg:px-16 py-3 bg-gradient-to-r from-orange-500 to-orange-600 text-white font-bold text-base rounded-full shadow-lg hover:from-orange-600 hover:to-orange-700 transition-all flex items-center justify-center gap-2 disabled:opacity-50 disabled:cursor-not-allowed"
                   type="button"
                 >
                   {isSubmitting ? (

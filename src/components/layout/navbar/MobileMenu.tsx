@@ -61,7 +61,7 @@ const MobileMenu: React.FC = () => {
 
   const handleLogout = () => {
     closeMenu();
-    router.push('/auth/signup');
+    router.push('/auth');
   };
 
   return (

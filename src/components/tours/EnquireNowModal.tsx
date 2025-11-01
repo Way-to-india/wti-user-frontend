@@ -1,6 +1,6 @@
 'use client';
 
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import Modal from '@/lib/modals/modals';
 import { IoArrowBack, IoCheckmarkCircle } from 'react-icons/io5';
 import { FaStar, FaUsers, FaCalendarAlt, FaMapMarkerAlt } from 'react-icons/fa';
@@ -33,9 +33,21 @@ interface User {
   role: string;
 }
 
+// Extend Window interface for grecaptcha
 declare global {
   interface Window {
-    grecaptcha: any;
+    grecaptcha: {
+      render: (container: string | HTMLElement, parameters: {
+        sitekey: string;
+        callback?: (token: string) => void;
+        'expired-callback'?: () => void;
+        'error-callback'?: () => void;
+        theme?: 'light' | 'dark';
+        size?: 'normal' | 'compact';
+      }) => number;
+      reset: (widgetId?: number) => void;
+      getResponse: (widgetId?: number) => string;
+    };
   }
 }
 
@@ -63,8 +75,36 @@ const EnquireNowModal = ({
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [submitSuccess, setSubmitSuccess] = useState(false);
   const [recaptchaLoaded, setRecaptchaLoaded] = useState(false);
+  const [recaptchaToken, setRecaptchaToken] = useState<string>('');
+  const recaptchaRef = useRef<HTMLDivElement>(null);
+  const recaptchaWidgetId = useRef<number | null>(null);
+  
   const YOUR_RECAPTCHA_SITE_KEY = process.env.NEXT_PUBLIC_RECAPTCHA_SITE_KEY;
 
+  // Initialize reCAPTCHA v2
+  useEffect(() => {
+    if (recaptchaLoaded && isOpen && recaptchaRef.current && !recaptchaWidgetId.current) {
+      try {
+        recaptchaWidgetId.current = window.grecaptcha.render(recaptchaRef.current, {
+          sitekey: YOUR_RECAPTCHA_SITE_KEY!,
+          callback: (token: string) => {
+            setRecaptchaToken(token);
+          },
+          'expired-callback': () => {
+            setRecaptchaToken('');
+          },
+          'error-callback': () => {
+            setRecaptchaToken('');
+            alert('reCAPTCHA error. Please try again.');
+          },
+          theme: 'light',
+          size: 'normal',
+        });
+      } catch (error) {
+        console.error('Error rendering reCAPTCHA:', error);
+      }
+    }
+  }, [recaptchaLoaded, isOpen, YOUR_RECAPTCHA_SITE_KEY]);
 
   useEffect(() => {
     const fetchUserData = async () => {
@@ -97,7 +137,6 @@ const EnquireNowModal = ({
     fetchUserData();
   }, [isOpen]);
 
-
   useEffect(() => {
     if (!isOpen) {
       setFormData({
@@ -110,6 +149,15 @@ const EnquireNowModal = ({
         specialRequests: '',
       });
       setSubmitSuccess(false);
+      setRecaptchaToken('');
+      // Reset reCAPTCHA
+      if (recaptchaWidgetId.current !== null) {
+        try {
+          window.grecaptcha.reset(recaptchaWidgetId.current);
+        } catch (error) {
+          console.error('Error resetting reCAPTCHA:', error);
+        }
+      }
     }
   }, [isOpen]);
 
@@ -125,17 +173,17 @@ const EnquireNowModal = ({
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    if (!window.grecaptcha) {
-      alert('Please wait for reCAPTCHA to load');
+    
+    if (!recaptchaToken) {
+      alert('Please complete the reCAPTCHA verification');
       return;
     }
+
     setIsSubmitting(true);
     try {
-      const token = await window.grecaptcha.execute(YOUR_RECAPTCHA_SITE_KEY, {
-        action: 'submit',
-      });
       const pathname = window.location.pathname;
       const tourId = pathname.split('/').pop() || '';
+      
       await submitTourEnquiry({
         tourId,
         tourName,
@@ -146,8 +194,9 @@ const EnquireNowModal = ({
         travelDate: formData.travelDate,
         departureCity: formData.departureCity.trim(),
         specialRequests: formData.specialRequests.trim(),
-        recaptchaToken: token,
+        recaptchaToken: recaptchaToken,
       });
+      
       setSubmitSuccess(true);
       setTimeout(() => {
         setSubmitSuccess(false);
@@ -156,11 +205,15 @@ const EnquireNowModal = ({
     } catch (error) {
       console.error('Error submitting enquiry:', error);
       alert('Failed to submit enquiry. Please try again.');
+      // Reset reCAPTCHA on error
+      if (recaptchaWidgetId.current !== null) {
+        window.grecaptcha.reset(recaptchaWidgetId.current);
+        setRecaptchaToken('');
+      }
     } finally {
       setIsSubmitting(false);
     }
   };
-
 
   if (submitSuccess) {
     return (
@@ -191,7 +244,7 @@ const EnquireNowModal = ({
   return (
     <>
       <Script
-        src={`https://www.google.com/recaptcha/api.js?render=${YOUR_RECAPTCHA_SITE_KEY}`}
+        src="https://www.google.com/recaptcha/api.js"
         onLoad={() => setRecaptchaLoaded(true)}
         strategy="lazyOnload"
       />
@@ -454,6 +507,48 @@ const EnquireNowModal = ({
               </div>
             </div>
 
+            {/* reCAPTCHA v2 Checkbox */}
+            <div className="space-y-4">
+              <div className="flex items-center gap-2 pb-2 border-b border-gray-200">
+                <span className="w-7 h-7 bg-gradient-to-br from-orange-500 to-orange-600 text-white rounded-full flex items-center justify-center text-sm font-semibold shadow-md">
+                  4
+                </span>
+                <h4 className="font-semibold text-gray-800">Verification</h4>
+              </div>
+
+              <div className="flex justify-center">
+                <div ref={recaptchaRef} className="flex justify-center items-center min-h-[78px]">
+                  {!recaptchaLoaded && (
+                    <div className="flex items-center gap-2 text-gray-500">
+                      <svg className="animate-spin h-5 w-5" viewBox="0 0 24 24">
+                        <circle
+                          className="opacity-25"
+                          cx="12"
+                          cy="12"
+                          r="10"
+                          stroke="currentColor"
+                          strokeWidth="4"
+                          fill="none"
+                        />
+                        <path
+                          className="opacity-75"
+                          fill="currentColor"
+                          d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"
+                        />
+                      </svg>
+                      <span className="text-sm">Loading reCAPTCHA...</span>
+                    </div>
+                  )}
+                </div>
+              </div>
+
+              {!recaptchaToken && recaptchaLoaded && (
+                <p className="text-xs text-orange-600 text-center">
+                  Please complete the reCAPTCHA verification above
+                </p>
+              )}
+            </div>
+
             {/* Quick Response Info */}
             <div className="bg-gradient-to-r from-blue-50 to-cyan-50 border border-blue-200 rounded-lg p-4 flex items-start gap-3 shadow-sm">
               <div className="text-2xl mt-0.5">⏱️</div>
@@ -470,7 +565,7 @@ const EnquireNowModal = ({
             <div className="bg-gray-50 border border-gray-200 rounded-lg p-3">
               <p className="text-xs text-gray-600 text-center leading-relaxed">
                 🔒 Your information is secure and protected. This form is protected by Google
-                reCAPTCHA v3 to prevent spam and abuse.
+                reCAPTCHA to prevent spam and abuse.
               </p>
             </div>
 
@@ -500,9 +595,10 @@ const EnquireNowModal = ({
             {/* Submit Button */}
             <button
               type="submit"
-              disabled={isSubmitting || !recaptchaLoaded || loadingUser}
-              className={`w-full bg-gradient-to-r from-orange-500 to-orange-600 text-white py-4 rounded-xl font-semibold text-base hover:from-orange-600 hover:to-orange-700 transition-all shadow-lg hover:shadow-xl transform hover:scale-[1.02] active:scale-[0.98] disabled:opacity-60 disabled:cursor-not-allowed disabled:transform-none ${isSubmitting ? 'cursor-wait' : ''
-                }`}
+              disabled={isSubmitting || !recaptchaLoaded || loadingUser || !recaptchaToken}
+              className={`w-full bg-gradient-to-r from-orange-500 to-orange-600 text-white py-4 rounded-xl font-semibold text-base hover:from-orange-600 hover:to-orange-700 transition-all shadow-lg hover:shadow-xl transform hover:scale-[1.02] active:scale-[0.98] disabled:opacity-60 disabled:cursor-not-allowed disabled:transform-none ${
+                isSubmitting ? 'cursor-wait' : ''
+              }`}
             >
               {!recaptchaLoaded ? (
                 <span className="flex items-center justify-center gap-2">

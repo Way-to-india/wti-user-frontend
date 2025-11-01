@@ -96,7 +96,7 @@ const Transport: React.FC = () => {
     try {
       if (!token) {
         toast.error('Please login to submit a query');
-        router.push('/auth/login');
+        router.push('/auth');
         return;
       }
 
@@ -172,7 +172,7 @@ const Transport: React.FC = () => {
 
       if (error.response?.status === 401) {
         toast.error('Session expired. Please login again');
-        router.push('/auth/login');
+        router.push('/auth');
         return;
       }
 
@@ -333,21 +333,23 @@ const Transport: React.FC = () => {
                     </span>
                   </button>
 
-                  <button
-                    type="button"
-                    onClick={handleSearch}
-                    disabled={isSubmitting}
-                    className="w-full sm:w-auto px-8 sm:px-12 lg:px-16 py-3 bg-blue-500 hover:bg-blue-600 disabled:bg-blue-400 disabled:cursor-not-allowed text-white font-bold text-base rounded-full shadow-lg transition-all flex items-center justify-center gap-2"
-                  >
-                    {isSubmitting ? (
-                      <>
-                        <Loader2 className="w-5 h-5 animate-spin" />
-                        Submitting...
-                      </>
-                    ) : (
-                      'SEND QUERY'
-                    )}
-                  </button>
+                  <div className="mt-6 pt-6 border-t border-gray-200 flex justify-center">
+                    <button
+                      type="button"
+                      onClick={handleSearch}
+                      disabled={isSubmitting}
+                      className="w-full sm:w-auto px-8 sm:px-12 lg:px-16 py-3 bg-gradient-to-r from-orange-500 to-orange-600 hover:from-orange-600 hover:to-orange-700 disabled:from-orange-400 disabled:to-orange-500 disabled:cursor-not-allowed text-white font-bold text-base rounded-full shadow-lg transition-all flex items-center justify-center gap-2"
+                    >
+                      {isSubmitting ? (
+                        <>
+                          <Loader2 className="w-5 h-5 animate-spin" />
+                          Submitting...
+                        </>
+                      ) : (
+                        'SEND QUERY'
+                      )}
+                    </button>
+                  </div>
                 </div>
               </div>
             </div>
