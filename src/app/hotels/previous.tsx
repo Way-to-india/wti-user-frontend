@@ -273,7 +273,7 @@ const HotelsPage: React.FC = () => {
       <Grid container spacing={3}>
         {hotels.map(hotel => (
           <Grid item xs={12} sm={6} lg={4} key={hotel.id}>
-            <DynamicCard
+            {/* <DynamicCard
               id={hotel.id}
               type="hotel"
               imageUrls={hotel.imageUrls || []}
@@ -282,7 +282,7 @@ const HotelsPage: React.FC = () => {
               price={hotel.price}
               rating={hotel.userRating} 
               location={hotel.location as any}
-            />
+            /> */}
           </Grid>
         ))}
       </Grid>

@@ -10,7 +10,7 @@ export const inspirationData = [
           'Rajasthan Tour Package as the name itself suggests, provides you all wonderful experiences that Rajasthan offers. Forts, Palaces, Cenotaphs, Havelis, Desert, Folk performances, Lakes and much more.',
         imageUrl:
           'https://dbagut2mvh0lo.cloudfront.net/tours/5-days-rajasthan-tour-package/5-Days-Rajasthan-Tour-Package.jpg',
-        url: '/tours/5-days-rajasthan-tour-package',
+        url: '/5-days-rajasthan-tour-package',
         duration: '5 Days',
         rating: 5,
       },
@@ -21,7 +21,7 @@ export const inspirationData = [
           'Golden Triangle Tour With Varanasi. A tour that takes the travelers through some of the most culturally vibrant cities of India.',
         imageUrl:
           'https://dbagut2mvh0lo.cloudfront.net/tours/agra-jaipur-tour/Agra-Jaipur-Tour.jpg',
-        url: '/tours/agra-jaipur-tour',
+        url: '/agra-jaipur-tour',
         duration: '7 Days',
         rating: 4.8,
       },
@@ -32,7 +32,7 @@ export const inspirationData = [
           'The Himachal holiday tour package takes you to visit the paradise of Himachal Pradesh. It gives you an experience of the very famous destinations of Manali and Shimla.',
         imageUrl:
           'https://dbagut2mvh0lo.cloudfront.net/tours/12-jyotirlinga-tour-package/12-Jyotirlinga-Tour-Package.jpg',
-        url: '/tours/12-jyotirlinga-tour-package',
+        url: '/12-jyotirlinga-tour-package',
         duration: '6 Days',
         rating: 4.9,
       },
@@ -49,7 +49,7 @@ export const inspirationData = [
           'Relax on the beautiful beaches of Goa with sun, sand, and sea. Experience the vibrant nightlife and Portuguese heritage.',
         imageUrl:
           'https://dbagut2mvh0lo.cloudfront.net/tours/agra-fatehpur-sikri-tour/Agra-Fatehpur-Sikri-Tour.jpg',
-        url: '/tours/agra-fatehpur-sikri-tour',
+        url: '/agra-fatehpur-sikri-tour',
         duration: '4 Days',
         rating: 4.7,
       },
@@ -60,7 +60,7 @@ export const inspirationData = [
           'Enjoy the calm and serene backwaters of Kerala with houseboat stays. Experience Gods Own Country.',
         imageUrl:
           'https://dbagut2mvh0lo.cloudfront.net/tours/agra-mathura-vrindavan-tour-from-delhi/Agra-Mathura-Vrindavan-Tour-from-Delhi.jpg',
-        url: '/tours/agra-mathura-vrindavan-tour-from-delhi',
+        url: '/agra-mathura-vrindavan-tour-from-delhi',
         duration: '5 Days',
         rating: 4.8,
       },
@@ -71,7 +71,7 @@ export const inspirationData = [
           'Discover the rugged beauty of Leh-Ladakh with this adventure-filled tour. Experience high-altitude monasteries and pristine landscapes.',
         imageUrl:
           'https://dbagut2mvh0lo.cloudfront.net/tours/agra-overnight-tour/Agra-Overnight-Tour.jpg',
-        url: '/tours/agra-overnight-tour',
+        url: '/agra-overnight-tour',
         duration: '8 Days',
         rating: 5,
       },
@@ -88,7 +88,7 @@ export const inspirationData = [
           'Experience royal living in converted palace hotels across Rajasthan. Enjoy heritage properties with modern amenities.',
         imageUrl:
           'https://dbagut2mvh0lo.cloudfront.net/tours/5-days-rajasthan-tour-package/5-Days-Rajasthan-Tour-Package2.jpg',
-        url: '/tours/5-days-rajasthan-tour-package',
+        url: '/5-days-rajasthan-tour-package',
         duration: '7 Days',
         rating: 5,
       },
@@ -99,7 +99,7 @@ export const inspirationData = [
           'Stay in luxurious houseboats on Dal Lake with personalized service. Experience the Swiss of India.',
         imageUrl:
           'https://dbagut2mvh0lo.cloudfront.net/tours/12-jyotirlinga-tour-package/12-Jyotirlinga-Tour-Package3.jpg',
-        url: '/tours/12-jyotirlinga-tour-package',
+        url: '/12-jyotirlinga-tour-package',
         duration: '5 Days',
         rating: 4.9,
       },
@@ -110,7 +110,7 @@ export const inspirationData = [
           'Enjoy 5-star beach resorts with private beaches in Goa. Perfect luxury getaway.',
         imageUrl:
           'https://dbagut2mvh0lo.cloudfront.net/tours/agra-jaipur-tour/Agra-Jaipur-Tour3.jpg',
-        url: '/tours/agra-jaipur-tour',
+        url: '/agra-jaipur-tour',
         duration: '4 Days',
         rating: 4.8,
       },
@@ -127,7 +127,7 @@ export const inspirationData = [
           'Explore the ancient streets and ghats of Varanasi with expert guides. Experience spiritual India.',
         imageUrl:
           'https://dbagut2mvh0lo.cloudfront.net/tours/agra-mathura-vrindavan-tour-from-delhi/Agra-Mathura-Vrindavan-Tour-from-Delhi2.jpg',
-        url: '/tours/agra-mathura-vrindavan-tour-from-delhi',
+        url: '/agra-mathura-vrindavan-tour-from-delhi',
         duration: '3 Days',
         rating: 4.9,
       },
@@ -138,7 +138,7 @@ export const inspirationData = [
           'Visit magnificent temples in Tamil Nadu and Kerala with cultural insights. Discover architectural marvels.',
         imageUrl:
           'https://dbagut2mvh0lo.cloudfront.net/tours/12-jyotirlinga-tour-package/12-Jyotirlinga-Tour-Package4.jpg',
-        url: '/tours/12-jyotirlinga-tour-package',
+        url: '/12-jyotirlinga-tour-package',
         duration: '10 Days',
         rating: 5,
       },
@@ -149,7 +149,7 @@ export const inspirationData = [
           'Follow the footsteps of Buddha through significant Buddhist sites in India. Spiritual journey awaits.',
         imageUrl:
           'https://dbagut2mvh0lo.cloudfront.net/tours/agra-fatehpur-sikri-tour/Agra-Fatehpur-Sikri-Tour3.jpg',
-        url: '/tours/agra-fatehpur-sikri-tour',
+        url: '/agra-fatehpur-sikri-tour',
         duration: '12 Days',
         rating: 4.8,
       },

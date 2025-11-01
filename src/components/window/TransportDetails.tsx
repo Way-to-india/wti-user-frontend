@@ -20,15 +20,16 @@ const TransportDetails: React.FC<TransportDetailsProps> = ({ transportData }) =>
   return (
     <div className="grid gap-4">
       {transportData.map((transport, index) => (
-        <DynamicCard
-          key={index}
-          type="transport"
-          imageUrls={[typeof transport.imageUrl === 'string' ? transport.imageUrl : transport.imageUrl.src]}
-          title={transport.name}
-          description={transport.description}
-          price={transport.price}
-          amenities={transport.amenities}
-        />
+        <div key={index}></div>
+        // <DynamicCard
+        //   key={index}
+        //   type="transport"
+        //   imageUrls={[typeof transport.imageUrl === 'string' ? transport.imageUrl : transport.imageUrl.src]}
+        //   title={transport.name}
+        //   description={transport.description}
+        //   price={transport.price}
+        //   amenities={transport.amenities}
+        // />
       ))}
     </div>
   );

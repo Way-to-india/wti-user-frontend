@@ -57,10 +57,10 @@ const HeroPage = () => {
                   key={tab.id}
                   onClick={() => setSelectedTab(tab.id)}
                   className={`flex items-center gap-2 px-4 sm:px-6 lg:px-8 py-3 rounded-xl font-medium transition-all duration-300 text-sm sm:text-base whitespace-nowrap ${selectedTab === tab.id
-                    ? 'bg-gradient-to-r from-orange-500 to-amber-500 text-white shadow-lg scale-105'
+                    ? 'bg-gradient-to-r from-orange-500 to-orange-600 text-white shadow-lg scale-105'
                     : 'text-gray-600 hover:text-gray-900 hover:bg-white/50'
                     }`}
-                >
+                > 
                   <span className="hidden sm:inline">{tab.label}</span>
                   <span className="sm:hidden">
                     {tab.id === 'hotels' && 'Hotels'}
