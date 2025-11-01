@@ -74,7 +74,7 @@ const SimilarTours: React.FC<SimilarToursProps> = ({ tourId, limit = 6 }) => {
   }, [tourId, limit]);
 
   const handleTourClick = (id: string) => {
-    router.push(`/tours/${id}`);
+    router.push(`/${id}`);
   };
 
   if (loading) {
