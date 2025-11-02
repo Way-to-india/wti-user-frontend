@@ -112,10 +112,10 @@ const ContactInfoCards = () => {
             <p className="text-sm text-gray-600 mb-3">Available Mon-Sat, 9 AM - 8 PM</p>
             <div className="space-y-2">
               <a href="tel:+911234567890" className="block text-orange-600 font-bold hover:text-orange-700 transition-colors text-lg">
-                +91 123 456 7890
+                +91 8527255995
               </a>
               <a href="tel:+911234567891" className="block text-orange-600 font-bold hover:text-orange-700 transition-colors text-lg">
-                +91 123 456 7891
+                +91 8527255995
               </a>
             </div>
           </div>
