@@ -99,7 +99,7 @@ export default function CategoryPage() {
             <h2 className="text-2xl font-bold text-red-600 mb-2">Category Not Found</h2>
             <p className="text-red-500 mb-4">{error}</p>
             <button
-              onClick={() => router.push('/places-of-interest')}
+              onClick={() => router.push('/destinations')}
               className="px-6 py-3 bg-red-600 text-white rounded-lg hover:bg-red-700 transition"
             >
               Back to Places

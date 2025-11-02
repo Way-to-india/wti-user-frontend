@@ -6,21 +6,10 @@ import NavBar from '@/components/layout/navbar/NavBar';
 import { MapPin, Clock, Loader2, Info, Star, ArrowLeft } from 'lucide-react';
 import placesOfInterestAPI, { Monument } from '@/lib/api/places-of-interest.api';
 
-interface CityData {
-  city: {
-    slug: string;
-    name: string;
-    state?: string | { name: string; slug?: string };
-    stateSlug?: string;
-    monumentCount: number;
-  };
-  monuments: Monument[];
-}
-
 export default function MonumentsListPage() {
   const params = useParams();
   const router = useRouter();
-  const [cityData, setCityData] = useState<CityData | null>(null);
+  const [cityData, setCityData] = useState<any | null>(null);
   const [monuments, setMonuments] = useState<Monument[]>([]);
   const [loading, setLoading] = useState(true);
   const [loadingMore, setLoadingMore] = useState(false);
@@ -30,12 +19,6 @@ export default function MonumentsListPage() {
 
   const stateSlug = params?.stateSlug as string;
   const citySlug = params?.citySlug as string;
-
-  // Helper function to get state name from different formats
-  const getStateName = (state?: string | { name: string; slug?: string }) => {
-    if (!state) return 'Unknown State';
-    return typeof state === 'string' ? state : state.name;
-  };
 
   useEffect(() => {
     const fetchCityAndMonuments = async () => {
@@ -79,8 +62,8 @@ export default function MonumentsListPage() {
     }
   };
 
-  const handleMonumentClick = (stateSlug: string, citySlug: string, monumentSlug: string) => {
-    router.push(`/destinations/${stateSlug}/${citySlug}/${monumentSlug}`);
+  const handleMonumentClick = (monument: Monument) => {
+    router.push(`/destinations/${monument.stateSlug}/${monument.citySlug}/${monument.slug}`);
   };
 
   if (loading) {
@@ -128,7 +111,7 @@ export default function MonumentsListPage() {
           Places of Interest
         </span>
         <span className="mx-2">→</span>
-        <span className="text-orange-600 font-semibold">{getStateName(cityData.city.state)}</span>
+        <span className="text-orange-600 font-semibold">{cityData.city.state}</span>
         <span className="mx-2">→</span>
         <span className="text-orange-600 font-semibold">{cityData.city.name}</span>
       </div>
@@ -150,7 +133,7 @@ export default function MonumentsListPage() {
               <h1 className="text-4xl lg:text-5xl font-bold">{cityData.city.name}</h1>
             </div>
             <p className="text-orange-100 text-lg mb-6">
-              {getStateName(cityData.city.state)} • {cityData.city.monumentCount} attractions to explore
+              {cityData.city.state} • {cityData.city.monumentCount} attractions to explore
             </p>
             <div className="flex flex-wrap gap-3">
               <div className="bg-white/20 backdrop-blur-sm px-4 py-2 rounded-full">
@@ -172,9 +155,7 @@ export default function MonumentsListPage() {
               {monuments.map((monument) => (
                 <div
                   key={monument.slug}
-                  onClick={() =>
-                    handleMonumentClick(cityData.city.stateSlug!, cityData.city.slug, monument.slug)
-                  }
+                  onClick={() => handleMonumentClick(monument)}
                   className="group bg-white rounded-2xl overflow-hidden shadow-lg hover:shadow-2xl transition-all cursor-pointer border border-gray-100 hover:-translate-y-2 duration-300"
                 >
                   <div className="relative h-56 bg-gradient-to-br from-orange-100 via-amber-100 to-yellow-100 overflow-hidden">
@@ -197,7 +178,7 @@ export default function MonumentsListPage() {
                     <div className="flex items-center gap-2 text-gray-600">
                       <MapPin className="w-4 h-4 text-orange-500" />
                       <span className="text-sm">
-                        {monument.city}, {getStateName(monument.state)}
+                        {monument.city}, {monument.state}
                       </span>
                     </div>
 
@@ -225,11 +206,7 @@ export default function MonumentsListPage() {
                     <button
                       onClick={(e) => {
                         e.stopPropagation();
-                        handleMonumentClick(
-                          cityData.city.stateSlug!,
-                          cityData.city.slug,
-                          monument.slug
-                        );
+                        handleMonumentClick(monument);
                       }}
                       className="w-full mt-4 bg-gradient-to-r from-orange-600 to-red-500 hover:from-orange-700 hover:to-red-600 text-white py-3 rounded-xl font-semibold transition-all shadow-lg group-hover:shadow-xl"
                     >

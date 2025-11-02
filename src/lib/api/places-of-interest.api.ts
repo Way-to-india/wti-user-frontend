@@ -1,39 +1,51 @@
-// lib/api/places-of-interest.api.ts
 import apiClient from '@/api/axios';
 
 export interface State {
+  id: string;
   slug: string;
   name: string;
   monumentCount: number;
   cityCount: number;
+  createdAt: string;
+  updatedAt: string;
   cities?: City[];
 }
 
 export interface City {
+  id: string;
   slug: string;
   name: string;
-  state?: string;
-  stateSlug?: string;
+  state: string;
+  stateId: string;
+  stateSlug: string;
   monumentCount: number;
+  createdAt: string;
+  updatedAt: string;
 }
 
 export interface Monument {
+  id: string;
   slug: string;
   monumentName: string;
+  cityId: string;
   city: string;
+  citySlug: string;
   state: string;
+  stateSlug: string;
   typeofPlace: string;
   description?: string;
   besttime?: string;
   rating?: number;
   totalRatings?: number;
+  createdAt: string;
+  updatedAt: string;
 }
 
 export interface MonumentDetails extends Monument {
   openingtime?: string;
   clossingtime?: string;
-  weeklyoff?: string;
-  entryFees: {
+  weeklyoff?: string | null;
+  entryFees?: {
     indianAdult: number;
     foreignAdult: number;
     indianChild: number;
@@ -59,8 +71,8 @@ export interface MonumentDetails extends Monument {
     latitude: number;
     longitude: number;
   };
-  website?: string;
-  phone?: string;
+  website?: string | null;
+  phone?: string | null;
 }
 
 export interface Category {
@@ -74,7 +86,6 @@ export interface Statistics {
   totalCities: number;
   totalMonuments: number;
   totalCategories: number;
-  lastUpdated: any;
 }
 
 export interface HomepageData {
@@ -83,7 +94,6 @@ export interface HomepageData {
   categories: Category[];
 }
 
-// Fixed API Response interface to match backend
 export interface ApiResponse<T> {
   status: boolean;
   message: string;
@@ -149,7 +159,16 @@ class PlacesOfInterestAPI {
     citySlug: string,
     limit: number = 50,
     offset: number = 0
-  ): Promise<{ monuments: Monument[]; count: number; hasMore: boolean }> {
+  ): Promise<{
+    cityName: string;
+    citySlug: string;
+    stateName: string;
+    stateSlug: string;
+    monuments: Monument[];
+    count: number;
+    total: number;
+    hasMore: boolean;
+  }> {
     return this.fetchAPI(
       `/states/${stateSlug}/cities/${citySlug}/monuments?limit=${limit}&offset=${offset}`
     );
@@ -174,7 +193,7 @@ class PlacesOfInterestAPI {
     stateFilter?: string
   ): Promise<{
     category: Category;
-    monuments: any[];
+    monuments: Monument[];
     count: number;
     total: number;
     hasMore: boolean;

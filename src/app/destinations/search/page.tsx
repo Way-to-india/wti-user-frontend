@@ -37,51 +37,8 @@ function SearchResultsContent() {
   const categoryFilter = searchParams?.get('category') || '';
   const stateFilter = searchParams?.get('state') || '';
 
-  // Helper function to get state name from different formats
-  const getStateName = (state: any) => {
-    if (!state) return 'Unknown State';
-    if (typeof state === 'string') return state;
-    if (typeof state === 'object') {
-      if (state.state && typeof state.state === 'object' && state.state.name) {
-        return state.state.name;
-      }
-      if (state.name) return state.name;
-    }
-    return 'Unknown State';
-  };
-
-  // Helper function to get city name
-  const getCityName = (city: any) => {
-    if (!city) return 'Unknown City';
-    if (typeof city === 'string') return city;
-    if (typeof city === 'object') {
-      if (city.city && typeof city.city === 'object' && city.city.name) {
-        return city.city.name;
-      }
-      if (city.name) return city.name;
-    }
-    return 'Unknown City';
-  };
-
-  // Helper function to get slug
-  const getSlug = (item: any) => {
-    if (!item) return '';
-    if (typeof item === 'string') return item;
-    if (typeof item === 'object' && item.slug) return item.slug;
-    return '';
-  };
-
-  // Function to handle monument click with proper routing
   const handleMonumentClick = (monument: Monument) => {
-    const stateSlug = getSlug(monument.state);
-    const citySlug = getSlug(monument.city);
-    const monumentSlug = monument.slug;
-
-    if (stateSlug && citySlug && monumentSlug) {
-      router.push(`/destinations/${stateSlug}/${citySlug}/${monumentSlug}`);
-    } else {
-      console.error('Missing slug information:', { stateSlug, citySlug, monumentSlug });
-    }
+    router.push(`/destinations/${monument.stateSlug}/${monument.citySlug}/${monument.slug}`);
   };
 
   useEffect(() => {
@@ -334,7 +291,7 @@ function SearchResultsContent() {
                         <div className="flex items-center gap-2 text-gray-600">
                           <MapPin className="w-4 h-4 text-orange-500" />
                           <span className="text-sm">
-                            {getCityName(monument.city)}, {getStateName(monument.state)}
+                            {monument.city}, {monument.state}
                           </span>
                         </div>
 

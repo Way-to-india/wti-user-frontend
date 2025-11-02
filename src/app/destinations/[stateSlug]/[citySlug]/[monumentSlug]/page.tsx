@@ -34,30 +34,6 @@ export default function MonumentDetailPage() {
 
   const monumentSlug = params?.monumentSlug as string;
 
-  const getStateName = (state: any) => {
-    if (!state) return 'Unknown State';
-    if (typeof state === 'string') return state;
-    if (typeof state === 'object') {
-      if (state.state && typeof state.state === 'object' && state.state.name) {
-        return state.state.name;
-      }
-      if (state.name) return state.name;
-    }
-    return 'Unknown State';
-  };
-
-  const getCityName = (city: any) => {
-    if (!city) return 'Unknown City';
-    if (typeof city === 'string') return city;
-    if (typeof city === 'object') {
-      if (city.city && typeof city.city === 'object' && city.city.name) {
-        return city.city.name;
-      }
-      if (city.name) return city.name;
-    }
-    return 'Unknown City';
-  };
-
   useEffect(() => {
     const fetchMonumentData = async () => {
       try {
@@ -84,7 +60,6 @@ export default function MonumentDetailPage() {
     if (monumentSlug) fetchMonumentData();
   }, [monumentSlug]);
 
-  // === Loading State ===
   if (loading) {
     return (
       <section className="bg-gradient-to-b from-orange-50/30 to-white min-h-screen">
@@ -99,7 +74,6 @@ export default function MonumentDetailPage() {
     );
   }
 
-  // === Error or Not Found ===
   if (error || !monument) {
     return (
       <section className="bg-gradient-to-b from-orange-50/30 to-white min-h-screen">
@@ -122,12 +96,10 @@ export default function MonumentDetailPage() {
     );
   }
 
-  // === Main Content ===
   return (
     <section className="bg-gradient-to-b from-orange-50/30 via-white to-gray-50 min-h-screen">
       <NavBar />
 
-      {/* Breadcrumb */}
       <div className="text-sm text-gray-600 lg:mb-6 mb-4 md:mt-6 mt-3 lg:mx-[7%] mx-[4%]">
         <button
           onClick={() => router.push('/')}
@@ -137,15 +109,15 @@ export default function MonumentDetailPage() {
         </button>
         <span className="mx-2">→</span>
         <button
-          onClick={() => router.push('/destinations')}
+          onClick={() => router.push('/places-of-interest')}
           className="hover:text-orange-600 transition-colors"
         >
           Places
         </button>
         <span className="mx-2">→</span>
-        <span className="text-gray-800">{getStateName(monument.state)}</span>
+        <span className="text-gray-800">{monument.state}</span>
         <span className="mx-2">→</span>
-        <span className="text-gray-800">{getCityName(monument.city)}</span>
+        <span className="text-gray-800">{monument.city}</span>
         <span className="mx-2">→</span>
         <span className="text-orange-600 font-semibold">
           {monument.monumentName}
@@ -153,7 +125,6 @@ export default function MonumentDetailPage() {
       </div>
 
       <div className="lg:mx-[7%] mx-[4%] font-sans space-y-8 pb-12">
-        {/* Back Button */}
         <button
           onClick={() => router.back()}
           className="flex items-center gap-2 text-gray-600 hover:text-orange-600 transition-colors group"
@@ -162,7 +133,6 @@ export default function MonumentDetailPage() {
           <span className="font-medium">Back</span>
         </button>
 
-        {/* Hero Section */}
         <div className="bg-gradient-to-br from-orange-500 via-orange-600 to-red-500 rounded-3xl p-8 lg:p-12 text-white shadow-2xl relative overflow-hidden">
           <div className="absolute top-0 right-0 w-96 h-96 bg-white/10 rounded-full -translate-y-1/2 translate-x-1/2 blur-3xl" />
           <div className="relative z-10">
@@ -191,7 +161,7 @@ export default function MonumentDetailPage() {
               <div className="flex items-center gap-2">
                 <MapPin className="w-5 h-5" />
                 <span className="text-lg">
-                  {getCityName(monument.city)}, {getStateName(monument.state)}
+                  {monument.city}, {monument.state}
                 </span>
               </div>
               {monument.phone && (
@@ -216,11 +186,8 @@ export default function MonumentDetailPage() {
           </div>
         </div>
 
-        {/* === Main Grid === */}
         <div className="grid lg:grid-cols-3 gap-8">
-          {/* Left Column */}
           <div className="lg:col-span-2 space-y-6">
-            {/* About */}
             {monument.description && (
               <div className="bg-white rounded-2xl p-6 shadow-lg border border-gray-100">
                 <h2 className="text-2xl font-bold text-gray-900 mb-4">About</h2>
@@ -230,7 +197,6 @@ export default function MonumentDetailPage() {
               </div>
             )}
 
-            {/* Timings */}
             <div className="bg-white rounded-2xl p-6 shadow-lg border border-gray-100">
               <h2 className="text-2xl font-bold text-gray-900 mb-4 flex items-center gap-2">
                 <Clock className="w-6 h-6 text-orange-600" />
@@ -290,12 +256,10 @@ export default function MonumentDetailPage() {
               </div>
             </div>
 
-            {/* Entry Fees */}
             {monument.entryFees && (
               <div className="bg-white rounded-2xl p-6 shadow-lg border border-gray-100">
                 <h2 className="text-2xl font-bold text-gray-900 mb-4 flex items-center gap-2">
-                  ₹
-                  Entry Fees
+                  ₹ Entry Fees
                 </h2>
                 <div className="grid sm:grid-cols-2 gap-4">
                   {monument.entryFees.indianAdult > 0 && (
@@ -334,7 +298,6 @@ export default function MonumentDetailPage() {
               </div>
             )}
 
-            {/* Connectivity */}
             {monument.connectivity && (
               <div className="bg-white rounded-2xl p-6 shadow-lg border border-gray-100">
                 <h2 className="text-2xl font-bold text-gray-900 mb-4">
@@ -385,9 +348,7 @@ export default function MonumentDetailPage() {
             )}
           </div>
 
-          {/* Right Column */}
           <div className="space-y-6">
-            {/* Location */}
             {monument.location && (
               <div className="bg-white rounded-2xl p-6 shadow-lg border border-gray-100">
                 <h3 className="text-xl font-bold text-gray-900 mb-4 flex items-center gap-2">
@@ -417,7 +378,6 @@ export default function MonumentDetailPage() {
               </div>
             )}
 
-            {/* Weather */}
             {monument.weather && (
               <div className="bg-white rounded-2xl p-6 shadow-lg border border-gray-100">
                 <h3 className="text-xl font-bold text-gray-900 mb-4 flex items-center gap-2">
@@ -459,7 +419,6 @@ export default function MonumentDetailPage() {
           </div>
         </div>
 
-        {/* Nearby Monuments */}
         {nearbyMonuments.length > 0 && (
           <div>
             <h2 className="text-3xl font-bold text-gray-900 mb-6">
@@ -470,7 +429,7 @@ export default function MonumentDetailPage() {
                 <div
                   key={nearby.slug}
                   onClick={() =>
-                    router.push(`/destinations/monument/${nearby.slug}`)
+                    router.push(`/destinations/${nearby.stateSlug}/${nearby.citySlug}/${nearby.slug}`)
                   }
                   className="group bg-white rounded-2xl overflow-hidden shadow-lg hover:shadow-2xl transition-all cursor-pointer border border-gray-100 hover:-translate-y-2 duration-300"
                 >
