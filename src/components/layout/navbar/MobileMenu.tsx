@@ -1,29 +1,39 @@
 'use client';
 
 import { useState, useRef, useEffect } from 'react';
-import { List, X, User, House, UsersFour, Bed, Island, Headset } from '@phosphor-icons/react';
+import { List, X, User, House, UsersFour, Bed, Island, Headset, MapTrifold, CaretDown } from '@phosphor-icons/react';
 import { useAuth } from '@/context/AuthContext';
 import { useRouter, usePathname } from 'next/navigation';
 import NavItem from './NavItem';
-import Image from 'next/image';
 
 const navItems = [
   { icon: House, text: 'Home', path: '/' },
   { icon: UsersFour, text: 'Tours', path: '/tours' },
   { icon: Bed, text: 'Hotels', path: '/hotels' },
   { icon: Island, text: 'Transportation', path: '/transport' },
-  { icon: Headset, text: 'Contact Us', path: '/contact-us' },
+];
+
+const travelGuideItems = [
+  { text: 'Destinations', path: '/destinations' },
+  { text: 'Travel Guide', path: '/travel-guide' },
+  { text: 'Travel Tips', path: '/travel-tips' },
+  { text: 'Travel Toolkit', path: '/travel-toolkit' },
 ];
 
 const MobileMenu: React.FC = () => {
   const [isOpen, setIsOpen] = useState(false);
   const [isVisible, setIsVisible] = useState(false);
+  const [touristExpanded, setTouristExpanded] = useState(false);
   const { user, token } = useAuth();
   const router = useRouter();
   const pathname = usePathname();
   const menuRef = useRef<HTMLDivElement>(null);
 
   const normalizedPath = pathname?.endsWith('/') ? pathname.slice(0, -1) : pathname;
+  const isTravelGuideActive = normalizedPath?.startsWith('/travel-guide') ||
+    normalizedPath?.startsWith('/destinations') ||
+    normalizedPath?.startsWith('/travel-tips') ||
+    normalizedPath?.startsWith('/travel-toolkit');
 
   useEffect(() => {
     const handleClickOutside = (event: MouseEvent) => {
@@ -49,12 +59,12 @@ const MobileMenu: React.FC = () => {
 
   const closeMenu = () => {
     setIsOpen(false);
+    setTouristExpanded(false);
     setTimeout(() => setIsVisible(false), 300);
   };
 
   const handleNavigation = (path: string) => {
     if (!path) return;
-    console.log('Navigating to:', path);
     router.push(path);
     closeMenu();
   };
@@ -74,19 +84,16 @@ const MobileMenu: React.FC = () => {
         <div className="w-6 h-6 flex items-center justify-center">
           <div className="relative w-5 h-4">
             <span
-              className={`absolute left-0 w-full h-0.5 bg-gray-700 transition-all duration-300 ${
-                isOpen ? 'top-2 rotate-45' : 'top-0'
-              }`}
+              className={`absolute left-0 w-full h-0.5 bg-gray-700 transition-all duration-300 ${isOpen ? 'top-2 rotate-45' : 'top-0'
+                }`}
             />
             <span
-              className={`absolute left-0 top-2 w-full h-0.5 bg-gray-700 transition-all duration-300 ${
-                isOpen ? 'opacity-0' : 'opacity-100'
-              }`}
+              className={`absolute left-0 top-2 w-full h-0.5 bg-gray-700 transition-all duration-300 ${isOpen ? 'opacity-0' : 'opacity-100'
+                }`}
             />
             <span
-              className={`absolute left-0 w-full h-0.5 bg-gray-700 transition-all duration-300 ${
-                isOpen ? 'top-2 -rotate-45' : 'top-4'
-              }`}
+              className={`absolute left-0 w-full h-0.5 bg-gray-700 transition-all duration-300 ${isOpen ? 'top-2 -rotate-45' : 'top-4'
+                }`}
             />
           </div>
         </div>
@@ -95,9 +102,8 @@ const MobileMenu: React.FC = () => {
       {isVisible && (
         <>
           <div
-            className={`fixed inset-0 bg-black/50 backdrop-blur-sm transition-opacity duration-300 z-40 ${
-              isOpen ? 'opacity-100' : 'opacity-0'
-            }`}
+            className={`fixed inset-0 bg-black/50 backdrop-blur-sm transition-opacity duration-300 z-40 ${isOpen ? 'opacity-100' : 'opacity-0'
+              }`}
             onClick={closeMenu}
           />
 
@@ -130,27 +136,14 @@ const MobileMenu: React.FC = () => {
                   <div className="p-6 border-b border-gray-100">
                     <div className="flex items-center gap-4">
                       <div className="w-14 h-14 rounded-full overflow-hidden border-2 border-orange-200 bg-orange-50">
-                        {/* {user.profileImagePath ? (
-                          <Image
-                            src={user.profileImagePath}
-                            alt="Profile"
-                            width={56}
-                            height={56}
-                            className="w-full h-full object-cover"
-                          />
-                        ) : ( */}
                         <div className="w-full h-full flex items-center justify-center">
                           <User size={24} className="text-orange-500" />
                         </div>
-                        {/* )} */}
                       </div>
                       <div className="flex-1 min-w-0">
                         <h3 className="font-bold text-gray-900 text-lg truncate">
                           {user.firstName || 'User'}
                         </h3>
-                        {/* {user. && (
-                          <p className="text-sm text-gray-500 truncate">{user.email}</p>
-                        )} */}
                       </div>
                     </div>
                   </div>
@@ -186,6 +179,79 @@ const MobileMenu: React.FC = () => {
                         </div>
                       );
                     })}
+
+                    {/* Tourist Dropdown */}
+                    <div
+                      style={{
+                        transition: 'all 0.3s ease',
+                        transitionDelay: `${navItems.length * 60}ms`,
+                        transform: isOpen ? 'translateX(0)' : 'translateX(20px)',
+                        opacity: isOpen ? 1 : 0,
+                      }}
+                    >
+                      <button
+                        onClick={() => setTouristExpanded(!touristExpanded)}
+                        className={`w-full flex items-center gap-3 px-4 py-3 rounded-xl transition-all duration-200 ${isTravelGuideActive
+                          ? 'bg-orange-50 text-orange-600'
+                          : 'hover:bg-gray-50 text-gray-700'
+                          }`}
+                      >
+                        <MapTrifold
+                          size={20}
+                          weight={isTravelGuideActive ? 'fill' : 'regular'}
+                          className={isTravelGuideActive ? 'text-orange-500' : 'text-gray-600'}
+                        />
+                        <span className="flex-1 text-left font-medium">Tourist</span>
+                        <CaretDown
+                          size={16}
+                          className={`transition-transform duration-200 ${touristExpanded ? 'rotate-180' : ''
+                            }`}
+                        />
+                      </button>
+
+                      {/* Submenu */}
+                      <div
+                        className={`overflow-hidden transition-all duration-300 ${touristExpanded ? 'max-h-64 opacity-100' : 'max-h-0 opacity-0'
+                          }`}
+                      >
+                        <div className="pl-8 pr-4 py-2 space-y-1">
+                          {travelGuideItems.map((item, subIndex) => {
+                            const isActive = normalizedPath === item.path;
+                            return (
+                              <button
+                                key={subIndex}
+                                onClick={() => handleNavigation(item.path)}
+                                className={`w-full text-left px-4 py-2.5 rounded-lg transition-all duration-200 ${isActive
+                                  ? 'bg-orange-100 text-orange-600 font-medium'
+                                  : 'text-gray-600 hover:bg-gray-50'
+                                  }`}
+                              >
+                                {item.text}
+                              </button>
+                            );
+                          })}
+                        </div>
+                      </div>
+                    </div>
+
+                    {/* Contact Us */}
+                    <div
+                      style={{
+                        transition: 'all 0.3s ease',
+                        transitionDelay: `${(navItems.length + 1) * 60}ms`,
+                        transform: isOpen ? 'translateX(0)' : 'translateX(20px)',
+                        opacity: isOpen ? 1 : 0,
+                      }}
+                    >
+                      <NavItem
+                        icon={Headset}
+                        text="Contact Us"
+                        path="/contact-us"
+                        onClick={() => handleNavigation('/contact-us')}
+                        active={normalizedPath === '/contact-us'}
+                        isMobile={true}
+                      />
+                    </div>
                   </div>
                 </div>
 

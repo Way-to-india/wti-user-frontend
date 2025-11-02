@@ -21,8 +21,8 @@ const navItems = [
 ];
 
 const travelGuideItems = [
-  { text: 'Destination Guide', path: '/travel-guide' },
-  { text: 'Places of Tourist Interest', path: '/places-of-interest' },
+  { text: 'Destinations', path: '/destinations' },
+  { text: 'Travel Guide', path: '/travel-guide' },
   { text: 'Travel Tips', path: '/travel-tips' },
   { text: 'Travel Toolkit', path: '/travel-toolkit' },
 ];
@@ -72,7 +72,7 @@ const NavLinks: React.FC = () => {
           style={{ fontFamily: theme.typography.fontFamily.regular }}
         >
           <MapTrifold size={20} weight={isTravelGuideActive ? 'fill' : 'regular'} />
-          <span className="font-medium">Travel Guide</span>
+          <span className="font-medium">Tourist</span>
           <CaretDown
             size={14}
             className={`transition-transform duration-200 ${dropdownOpen ? 'rotate-180' : ''}`}
