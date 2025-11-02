@@ -39,7 +39,7 @@ export default function PlacesOfInterestPage() {
       <section className="bg-gradient-to-b from-blue-50/30 to-white min-h-screen">
         <NavBar />
         <div className="flex flex-col items-center justify-center h-[70vh] gap-4">
-          <Loader2 className="w-16 h-16 text-blue-600 animate-spin" />
+          <Loader2 className="w-16 h-16 from-orange-500 to-orange-600  animate-spin" />
           <p className="text-gray-600 text-lg font-medium">Loading Places of Interest...</p>
           <p className="text-sm text-gray-500">Please wait while we fetch the data</p>
         </div>
@@ -75,51 +75,46 @@ export default function PlacesOfInterestPage() {
     <section className="bg-gradient-to-b from-blue-50/30 via-white to-gray-50 min-h-screen">
       <NavBar />
 
-      {/* Breadcrumb */}
+
       <div className="text-sm text-gray-600 lg:mb-8 mb-4 md:mt-6 mt-3 lg:mx-[7%] mx-[4%]">
-        <span className="hover:text-blue-600 transition-colors cursor-pointer">Home</span>
+        <span className="hover:text-orange-600 transition-colors cursor-pointer">Home</span>
         <span className="mx-2">→</span>
-        <span className="text-blue-600 font-semibold">Places of Interest</span>
+        <span className="text-orange-600 font-semibold">Places of Interest</span>
       </div>
 
       <div className="lg:mx-[7%] mx-[4%] font-sans space-y-12 pb-16">
-        {/* Hero Section */}
+
         <PlacesHero />
 
-        {/* Statistics Overview */}
         {homepageData.statistics && <StatsOverview statistics={homepageData.statistics} />}
 
-        {/* Search Bar */}
         <SearchBar />
 
-        {/* Categories Grid */}
         {homepageData.categories && homepageData.categories.length > 0 && (
           <CategoryGrid categories={homepageData.categories} />
         )}
 
-        {/* States with Cities Accordion */}
         {homepageData.states && homepageData.states.length > 0 && (
           <StatesAccordion states={homepageData.states} />
         )}
 
-        {/* Quick Stats Footer */}
-        <div className="bg-gradient-to-br from-indigo-600 to-purple-600 rounded-3xl p-8 text-white shadow-xl">
+        <div className="bg-gradient-to-br from-orange-200 to-orange-300 rounded-3xl p-8 text-gray-900 shadow-xl border border-orange-100">
           <div className="grid grid-cols-2 md:grid-cols-4 gap-6 text-center">
             <div>
               <p className="text-3xl font-bold mb-1">{homepageData.statistics.totalStates}</p>
-              <p className="text-indigo-200 text-sm">States Covered</p>
+              <p className="text-orange-700 text-sm font-medium">States Covered</p>
             </div>
             <div>
               <p className="text-3xl font-bold mb-1">{homepageData.statistics.totalCities}</p>
-              <p className="text-indigo-200 text-sm">Cities Listed</p>
+              <p className="text-orange-700 text-sm font-medium">Cities Listed</p>
             </div>
             <div>
               <p className="text-3xl font-bold mb-1">{homepageData.statistics.totalMonuments}</p>
-              <p className="text-indigo-200 text-sm">Monuments</p>
+              <p className="text-orange-700 text-sm font-medium">Monuments</p>
             </div>
             <div>
               <p className="text-3xl font-bold mb-1">{homepageData.statistics.totalCategories}</p>
-              <p className="text-indigo-200 text-sm">Categories</p>
+              <p className="text-orange-700 text-sm font-medium">Categories</p>
             </div>
           </div>
         </div>

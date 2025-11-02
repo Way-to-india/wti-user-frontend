@@ -169,11 +169,11 @@ const TourCard: React.FC<TourCardProps> = ({ tour, onTourClick }) => {
           <span className="text-sm font-semibold text-gray-900">{tour.rating.toFixed(1)}</span>
         </div>
 
-        {tour.themes && tour.themes.length > 0 && (
+        {/* {tour.themes && tour.themes.length > 0 && (
           <div className="absolute top-3 left-3 bg-orange-500/95 backdrop-blur-sm rounded-lg px-3 py-1.5 shadow-md">
             <span className="text-xs font-semibold text-white">{tour.themes[0].name}</span>
           </div>
-        )}
+        )} */}
 
         <div className="absolute inset-0 bg-gradient-to-t from-black/40 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
       </div>
