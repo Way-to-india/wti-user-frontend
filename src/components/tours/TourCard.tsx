@@ -41,7 +41,7 @@ const TourCard: React.FC<TourCardProps> = ({ tour, priority = false }) => {
   }, [isHovered, tour.imageUrls.length]);
 
   const handleClick = () => {
-    router.push(`/tours/${tour.id}`);
+    router.push(`/${tour.id}`);
   };
 
   const handleKeyDown = (e: React.KeyboardEvent) => {

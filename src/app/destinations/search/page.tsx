@@ -140,7 +140,7 @@ function SearchResultsContent() {
               Please enter a search term to find monuments
             </p>
             <button
-              onClick={() => router.push('/places-of-interest')}
+              onClick={() => router.push('/destinations')}
               className="px-6 py-3 bg-orange-600 text-white rounded-lg hover:bg-orange-700 transition"
             >
               Browse All Places
@@ -178,7 +178,7 @@ function SearchResultsContent() {
         </button>
         <span className="mx-2">→</span>
         <button
-          onClick={() => router.push('/places-of-interest')}
+          onClick={() => router.push('/destinations')}
           className="hover:text-orange-600 transition-colors"
         >
           Places of Interest

@@ -85,7 +85,7 @@ export default function MonumentDetailPage() {
             </h2>
             <p className="text-red-500 mb-4">{error}</p>
             <button
-              onClick={() => router.push('/places-of-interest')}
+              onClick={() => router.push('/destinations')}
               className="px-6 py-3 bg-orange-600 text-white rounded-lg hover:bg-orange-700 transition"
             >
               Back to Places
@@ -109,7 +109,7 @@ export default function MonumentDetailPage() {
         </button>
         <span className="mx-2">→</span>
         <button
-          onClick={() => router.push('/places-of-interest')}
+          onClick={() => router.push('/destinations')}
           className="hover:text-orange-600 transition-colors"
         >
           Places

@@ -12,10 +12,10 @@ async function getTourFAQSchema(slug: string) {
     const apiUrl = process.env.NEXT_PUBLIC_BASE_URL || 'http://localhost:5000';
 
     const res = await fetch(`${apiUrl}/api/faq/${slug}/schema`, {
-      next: { revalidate: 86400 }, 
+      next: { revalidate: 86400 },
     });
 
-    console.log(res); 
+    console.log(res);
 
     if (!res.ok) {
       console.error(`Failed to fetch FAQ schema for ${slug}: ${res.statusText}`);

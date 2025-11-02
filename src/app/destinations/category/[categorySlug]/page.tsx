@@ -120,7 +120,7 @@ export default function CategoryPage() {
         </button>
         <span className="mx-2">→</span>
         <button
-          onClick={() => router.push('/places-of-interest')}
+          onClick={() => router.push('/destinations')}
           className="hover:text-orange-600 transition-colors"
         >
           Places of Interest

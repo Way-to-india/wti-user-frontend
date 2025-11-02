@@ -106,7 +106,7 @@ export default function MonumentsListPage() {
         <span className="mx-2">→</span>
         <span
           className="hover:text-orange-600 transition-colors cursor-pointer"
-          onClick={() => router.push('/places-of-interest')}
+          onClick={() => router.push('/destinations')}
         >
           Places of Interest
         </span>
