@@ -1,8 +1,7 @@
 'use client';
 import { useState } from 'react';
 import axios from 'axios';
-import PhoneInput from 'react-phone-input-2';
-import 'react-phone-input-2/lib/style.css';
+import { Eye, EyeOff } from 'lucide-react';
 
 interface SignupFormProps {
   onSuccess: (token: string, userData: any) => void;
@@ -10,16 +9,14 @@ interface SignupFormProps {
 }
 
 export default function SignupForm({ onSuccess, onSwitchToLogin }: SignupFormProps) {
-  const [step, setStep] = useState<'details' | 'otp'>('details');
   const [isLoading, setIsLoading] = useState(false);
+  const [showPassword, setShowPassword] = useState(false);
   const [formData, setFormData] = useState({
     name: '',
-    phone: '',
+    email: '',
+    password: '',
   });
-  const [otp, setOtp] = useState(['', '', '', '', '', '']);
-  const [otpId, setOtpId] = useState('');
   const [errorMessage, setErrorMessage] = useState<string | null>(null);
-  const [successMessage, setSuccessMessage] = useState<string | null>(null);
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const { name, value } = e.target;
@@ -27,80 +24,46 @@ export default function SignupForm({ onSuccess, onSwitchToLogin }: SignupFormPro
     if (errorMessage) setErrorMessage(null);
   };
 
-  const handlePhoneChange = (value: string) => {
-    setFormData(prev => ({ ...prev, phone: value }));
-    if (errorMessage) setErrorMessage(null);
-  };
-
-  const handleSendOTP = async (e: React.FormEvent) => {
-    e.preventDefault();
-    setErrorMessage(null);
-    setSuccessMessage(null);
-
+  const validateForm = (): boolean => {
     if (!formData.name.trim()) {
       setErrorMessage('Please enter your name');
-      return;
+      return false;
     }
 
-    if (!formData.phone || formData.phone.length < 10) {
-      setErrorMessage('Please enter a valid phone number');
-      return;
+    if (formData.name.trim().length < 2) {
+      setErrorMessage('Name must be at least 2 characters long');
+      return false;
     }
 
-    setIsLoading(true);
-
-    try {
-      const response = await axios.post(
-        `${process.env.NEXT_PUBLIC_BASE_URL}/api/user/auth/signup/send-otp`,
-        {
-          phone: `+${formData.phone}`,
-          name: formData.name,
-        }
-      );
-
-      if (response.data.status) {
-        setOtpId(response.data.payload.otpId);
-        setStep('otp');
-        setSuccessMessage('OTP sent to your WhatsApp!');
-      }
-    } catch (error: any) {
-      const errorMsg = error.response?.data?.message || 'Failed to send OTP. Please try again.';
-      setErrorMessage(errorMsg);
-      console.error('Error sending OTP:', error);
-    } finally {
-      setIsLoading(false);
+    if (!formData.email.trim()) {
+      setErrorMessage('Please enter your email');
+      return false;
     }
+
+    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+    if (!emailRegex.test(formData.email.trim())) {
+      setErrorMessage('Please enter a valid email address');
+      return false;
+    }
+
+    if (!formData.password) {
+      setErrorMessage('Please enter a password');
+      return false;
+    }
+
+    if (formData.password.length < 8) {
+      setErrorMessage('Password must be at least 8 characters long');
+      return false;
+    }
+
+    return true;
   };
 
-  const handleOtpChange = (index: number, value: string) => {
-    if (!/^\d*$/.test(value)) return;
-
-    const newOtp = [...otp];
-    newOtp[index] = value.slice(-1);
-    setOtp(newOtp);
-
-    if (value && index < 5) {
-      const nextInput = document.getElementById(`otp-${index + 1}`);
-      nextInput?.focus();
-    }
-
-    if (errorMessage) setErrorMessage(null);
-  };
-
-  const handleOtpKeyDown = (index: number, e: React.KeyboardEvent<HTMLInputElement>) => {
-    if (e.key === 'Backspace' && !otp[index] && index > 0) {
-      const prevInput = document.getElementById(`otp-${index - 1}`);
-      prevInput?.focus();
-    }
-  };
-
-  const handleVerifyOTP = async (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setErrorMessage(null);
 
-    const otpCode = otp.join('');
-    if (otpCode.length !== 6) {
-      setErrorMessage('Please enter complete OTP');
+    if (!validateForm()) {
       return;
     }
 
@@ -108,11 +71,11 @@ export default function SignupForm({ onSuccess, onSwitchToLogin }: SignupFormPro
 
     try {
       const response = await axios.post(
-        `${process.env.NEXT_PUBLIC_BASE_URL}/api/user/auth/signup/verify-otp`,
+        `${process.env.NEXT_PUBLIC_BASE_URL}/api/user/auth/signup`,
         {
-          otpId,
-          otp: otpCode,
-          name: formData.name,
+          name: formData.name.trim(),
+          email: formData.email.trim().toLowerCase(),
+          password: formData.password,
         }
       );
 
@@ -121,37 +84,9 @@ export default function SignupForm({ onSuccess, onSwitchToLogin }: SignupFormPro
         onSuccess(token, user);
       }
     } catch (error: any) {
-      console.log("error",error);
-      const errorMsg = error.response?.data?.message || 'Invalid OTP. Please try again.';
+      const errorMsg = error.response?.data?.message || 'Failed to create account. Please try again.';
       setErrorMessage(errorMsg);
-      setOtp(['', '', '', '', '', '']);
-      document.getElementById('otp-0')?.focus();
-      console.error('Error verifying OTP:', error);
-    } finally {
-      setIsLoading(false);
-    }
-  };
-
-  const handleResendOTP = async () => {
-    setErrorMessage(null);
-    setSuccessMessage(null);
-    setIsLoading(true);
-
-    try {
-      const response = await axios.post(
-        `${process.env.NEXT_PUBLIC_BASE_URL}/api/user/auth/resend-otp`,
-        { otpId }
-      );
-
-      if (response.data.status) {
-        setSuccessMessage('New OTP sent to your WhatsApp!');
-        setOtp(['', '', '', '', '', '']);
-        document.getElementById('otp-0')?.focus();
-      }
-    } catch (error: any) {
-      console.log(error.response);
-      const errorMsg = error.response?.data?.message || 'Failed to resend OTP.';
-      setErrorMessage(errorMsg);
+      console.error('Error during signup:', error);
     } finally {
       setIsLoading(false);
     }
@@ -182,171 +117,95 @@ export default function SignupForm({ onSuccess, onSwitchToLogin }: SignupFormPro
 
   return (
     <div className="w-full max-w-md">
-      {step === 'details' ? (
-        <>
-          <h2 className="text-3xl font-bold mb-2">Get Started Now</h2>
-          <p className="text-gray-600 mb-6">Create your account to continue</p>
+      <h2 className="text-3xl font-bold mb-2">Get Started Now</h2>
+      <p className="text-gray-600 mb-6">Create your account to continue</p>
 
-          <form onSubmit={handleSendOTP} className="space-y-4">
-            <div>
-              <label className="block text-sm font-medium text-gray-700 mb-1">Full Name</label>
-              <input
-                type="text"
-                name="name"
-                value={formData.name}
-                onChange={handleChange}
-                placeholder="Enter your full name"
-                className="w-full p-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-orange-500 focus:border-transparent"
-                required
-                disabled={isLoading}
-              />
-            </div>
+      <form onSubmit={handleSubmit} className="space-y-4">
+        <div>
+          <label className="block text-sm font-medium text-gray-700 mb-1">Full Name</label>
+          <input
+            type="text"
+            name="name"
+            value={formData.name}
+            onChange={handleChange}
+            placeholder="Enter your full name"
+            className="w-full p-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-orange-500 focus:border-transparent"
+            required
+            disabled={isLoading}
+          />
+        </div>
 
-            <div>
-              <label className="block text-sm font-medium text-gray-700 mb-1">Phone Number</label>
-              <PhoneInput
-                country={'in'}
-                value={formData.phone}
-                onChange={handlePhoneChange}
-                placeholder="Enter phone number"
-                disabled={isLoading}
-                inputClass="w-full"
-                containerClass="phone-input-container"
-                buttonClass="phone-input-button"
-                inputStyle={{
-                  width: '100%',
-                  height: '48px',
-                  fontSize: '16px',
-                  borderRadius: '8px',
-                  border: '1px solid #D1D5DB',
-                }}
-                buttonStyle={{
-                  borderRadius: '8px 0 0 8px',
-                  border: '1px solid #D1D5DB',
-                }}
-              />
-            </div>
+        <div>
+          <label className="block text-sm font-medium text-gray-700 mb-1">Email Address</label>
+          <input
+            type="email"
+            name="email"
+            value={formData.email}
+            onChange={handleChange}
+            placeholder="Enter your email"
+            className="w-full p-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-orange-500 focus:border-transparent"
+            required
+            disabled={isLoading}
+          />
+        </div>
 
-            {errorMessage && (
-              <div className="bg-red-50 border border-red-200 rounded-lg p-3">
-                <p className="text-red-600 text-sm">{errorMessage}</p>
-              </div>
-            )}
-
-            <button
-              type="submit"
+        <div>
+          <label className="block text-sm font-medium text-gray-700 mb-1">Password</label>
+          <div className="relative">
+            <input
+              type={showPassword ? 'text' : 'password'}
+              name="password"
+              value={formData.password}
+              onChange={handleChange}
+              placeholder="Enter your password (min. 8 characters)"
+              className="w-full p-3 pr-10 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-orange-500 focus:border-transparent"
+              required
               disabled={isLoading}
-              className="w-full bg-orange-500 text-white font-semibold p-3 rounded-lg hover:bg-orange-600 transition duration-300 disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center min-h-[48px]"
-            >
-              {isLoading ? (
-                <>
-                  <LoadingSpinner />
-                  <span className="ml-2">Sending OTP...</span>
-                </>
-              ) : (
-                'Send OTP'
-              )}
-            </button>
-          </form>
-
-          <div className="flex items-center justify-center my-6">
-            <hr className="w-full border-gray-300" />
-            <span className="mx-4 text-gray-500 text-sm">Or</span>
-            <hr className="w-full border-gray-300" />
-          </div>
-
-          <p className="text-center text-gray-600">
-            Already have an account?{' '}
-            <button
-              onClick={onSwitchToLogin}
-              disabled={isLoading}
-              className="text-orange-500 font-semibold hover:text-orange-600 disabled:opacity-50"
-            >
-              Sign In
-            </button>
-          </p>
-        </>
-      ) : (
-        <>
-          <h2 className="text-3xl font-bold mb-2">Verify OTP</h2>
-          <p className="text-gray-600 mb-6">
-            We've sent a 6-digit code to
-            <br />
-            <span className="font-semibold">+{formData.phone}</span>
-          </p>
-
-          <form onSubmit={handleVerifyOTP} className="space-y-6">
-            <div className="flex justify-center gap-2">
-              {otp.map((digit, index) => (
-                <input
-                  key={index}
-                  id={`otp-${index}`}
-                  type="text"
-                  inputMode="numeric"
-                  maxLength={1}
-                  value={digit}
-                  onChange={e => handleOtpChange(index, e.target.value)}
-                  onKeyDown={e => handleOtpKeyDown(index, e)}
-                  className="w-12 h-14 text-center text-2xl font-semibold border-2 border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-orange-500 focus:border-transparent"
-                  disabled={isLoading}
-                />
-              ))}
-            </div>
-
-            {successMessage && (
-              <div className="bg-green-50 border border-green-200 rounded-lg p-3">
-                <p className="text-green-600 text-sm text-center">{successMessage}</p>
-              </div>
-            )}
-
-            {errorMessage && (
-              <div className="bg-red-50 border border-red-200 rounded-lg p-3">
-                <p className="text-red-600 text-sm text-center">{errorMessage}</p>
-              </div>
-            )}
-
-            <button
-              type="submit"
-              disabled={isLoading}
-              className="w-full bg-orange-500 text-white font-semibold p-3 rounded-lg hover:bg-orange-600 transition duration-300 disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center min-h-[48px]"
-            >
-              {isLoading ? (
-                <>
-                  <LoadingSpinner />
-                  <span className="ml-2">Verifying...</span>
-                </>
-              ) : (
-                'Verify OTP'
-              )}
-            </button>
-
-            <div className="text-center">
-              <button
-                type="button"
-                onClick={handleResendOTP}
-                disabled={isLoading}
-                className="text-orange-500 font-semibold hover:text-orange-600 disabled:opacity-50"
-              >
-                Resend OTP
-              </button>
-            </div>
-
+            />
             <button
               type="button"
-              onClick={() => {
-                setStep('details');
-                setOtp(['', '', '', '', '', '']);
-                setErrorMessage(null);
-                setSuccessMessage(null);
-              }}
+              onClick={() => setShowPassword(!showPassword)}
+              className="absolute right-3 top-1/2 transform -translate-y-1/2 text-gray-500 hover:text-gray-700"
               disabled={isLoading}
-              className="w-full text-gray-600 hover:text-gray-800 font-medium disabled:opacity-50"
             >
-              ← Change Phone Number
+              {showPassword ? <EyeOff size={20} /> : <Eye size={20} />}
             </button>
-          </form>
-        </>
-      )}
+          </div>
+          <p className="text-xs text-gray-500 mt-1">Must be at least 8 characters long</p>
+        </div>
+
+        {errorMessage && (
+          <div className="bg-red-50 border border-red-200 rounded-lg p-3">
+            <p className="text-red-600 text-sm">{errorMessage}</p>
+          </div>
+        )}
+
+        <button
+          type="submit"
+          disabled={isLoading}
+          className="w-full bg-orange-500 text-white font-semibold p-3 rounded-lg hover:bg-orange-600 transition duration-300 disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center min-h-[48px]"
+        >
+          {isLoading ? (
+            <>
+              <LoadingSpinner />
+              <span className="ml-2">Creating account...</span>
+            </>
+          ) : (
+            'Sign Up'
+          )}
+        </button>
+      </form>
+
+      <p className="text-center text-gray-600 mt-6">
+        Already have an account?{' '}
+        <button
+          onClick={onSwitchToLogin}
+          disabled={isLoading}
+          className="text-orange-500 font-semibold hover:text-orange-600 disabled:opacity-50"
+        >
+          Sign In
+        </button>
+      </p>
     </div>
   );
 }
