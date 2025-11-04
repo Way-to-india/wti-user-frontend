@@ -9,30 +9,37 @@ type Props = {
 
 async function getTourFAQSchema(slug: string) {
   try {
-    const apiUrl = process.env.NEXT_PUBLIC_BASE_URL || 'http://localhost:5000';
+    const apiUrl = process.env.NEXT_PUBLIC_API_URL || 'https://waytoindia.shop';
 
     const res = await fetch(`${apiUrl}/api/faq/${slug}/schema`, {
       next: { revalidate: 86400 },
+      cache: 'force-cache',
     });
 
-    console.log(res);
-
     if (!res.ok) {
-      console.error(`Failed to fetch FAQ schema for ${slug}: ${res.statusText}`);
+      console.warn(`⚠️ FAQ schema not available for ${slug}: ${res.statusText}`);
       return null;
     }
 
     const data = await res.json();
     return data?.payload || null;
   } catch (error) {
-    console.error(`Error fetching FAQ schema for ${slug}:`, error);
+    console.warn(`⚠️ Error fetching FAQ schema for ${slug}:`, error);
     return null;
   }
 }
 
 export async function generateStaticParams() {
   const slugs = getAllTourSlugs();
-  return slugs.map(slug => ({
+
+  const validSlugs = slugs.filter(slug => {
+    const metaInfo = getMetaData(slug);
+    return metaInfo !== null;
+  });
+
+  console.log(`✅ Generating ${validSlugs.length} static tour pages`);
+
+  return validSlugs.map(slug => ({
     slug: slug,
   }));
 }
@@ -48,25 +55,27 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
     };
   }
 
-  const baseUrl = process.env.NEXT_PUBLIC_BASE_URL || 'https://waytoindia.com';
+  const frontendUrl = process.env.NEXT_PUBLIC_SITE_URL || 'https://www.waytoindia.com';
+
+  const canonicalUrl = `${frontendUrl}/${params.slug}`;
 
   return {
     title: metaInfo.title,
     description: metaInfo.description,
     keywords: metaInfo.keywords,
     alternates: {
-      canonical: `${baseUrl}${metaInfo.canonicalPath}`,
+      canonical: canonicalUrl,
     },
     openGraph: {
       title: metaInfo.title,
       description: metaInfo.description,
       type: 'website',
       locale: 'en_US',
-      url: `${baseUrl}${metaInfo.canonicalPath}`,
+      url: canonicalUrl,
       siteName: 'Way to India',
       images: [
         {
-          url: `${baseUrl}/images/tours/${params.slug}-og.jpg`,
+          url: `${frontendUrl}/images/tours/${params.slug}-og.jpg`,
           width: 1200,
           height: 630,
           alt: metaInfo.title,
@@ -77,7 +86,7 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
       card: 'summary_large_image',
       title: metaInfo.title,
       description: metaInfo.description,
-      images: [`${baseUrl}/images/tours/${params.slug}-twitter.jpg`],
+      images: [`${frontendUrl}/images/tours/${params.slug}-twitter.jpg`],
       creator: '@waytoindia',
     },
     robots: {
@@ -114,6 +123,7 @@ export default async function TourDetailPage({ params }: Props) {
           }}
         />
       )}
+
       <TourDetails params={{ id: params.slug }} />
     </>
   );
