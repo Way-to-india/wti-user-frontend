@@ -114,7 +114,6 @@ export default async function TourDetailPage({ params }: Props) {
           }}
         />
       )}
-
       <TourDetails params={{ id: params.slug }} />
     </>
   );
