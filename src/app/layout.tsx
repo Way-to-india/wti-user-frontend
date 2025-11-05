@@ -1,15 +1,22 @@
-import React from 'react'
-import "@/app/globals.css";
+// app/layout.tsx
+import { Lexend } from "next/font/google";
+import localFont from "next/font/local";
 import { Providers } from "./providers";
-import type { Metadata } from "next";
-import { Inter } from "next/font/google";
+import "./globals.css";
 
-const inter = Inter({ subsets: ["latin"] });
+const lexend = Lexend({
+  weight: ["400", "500"],
+  subsets: ["latin"],
+  display: "swap",
+  variable: "--font-lexend",
+});
 
-export const metadata: Metadata = {
-  title: "Way to India",
-  description: "Explore the incredible land of India",
-};
+const limelight = localFont({
+  src: "./fonts/Limelight.ttf",
+  display: "swap",
+  variable: "--font-limelight",
+  weight: "400",
+});
 
 export default function RootLayout({
   children,
@@ -17,8 +24,8 @@ export default function RootLayout({
   children: React.ReactNode;
 }) {
   return (
-    <html lang="en">
-      <body className={inter.className}>
+    <html lang="en" className={`${lexend.variable} ${limelight.variable}`}>
+      <body className={lexend.className}>
         <Providers>
           {children}
         </Providers>

@@ -56,7 +56,7 @@ const TourCard: React.FC<TourCardProps> = ({
   return (
     <Link href={cardLink} className="block h-full">
       <article className="group relative bg-white rounded-xl overflow-hidden cursor-pointer transition-all duration-300 hover:scale-[1.02] hover:shadow-2xl shadow-md h-full flex flex-col border border-gray-100">
-        {/* Image Section */}
+
         <div className="relative h-48 w-full overflow-hidden flex-shrink-0">
           <Image
             src={imageUrl}
@@ -68,10 +68,10 @@ const TourCard: React.FC<TourCardProps> = ({
             quality={85}
           />
 
-          {/* Gradient Overlay */}
+
           <div className="absolute inset-0 bg-gradient-to-t from-black/70 via-black/20 to-transparent" />
 
-          {/* Rating Badge */}
+
           {rating > 0 && (
             <div className="absolute top-3 right-3 bg-yellow-400 text-gray-900 px-2.5 py-1 rounded-full flex items-center gap-1 font-bold text-xs shadow-md z-10">
               <Star className="w-3.5 h-3.5 fill-gray-900" />
@@ -79,7 +79,7 @@ const TourCard: React.FC<TourCardProps> = ({
             </div>
           )}
 
-          {/* Title Overlay */}
+
           <div className="absolute bottom-0 left-0 right-0 p-4 z-10">
             <h3 className="text-white text-lg font-bold leading-tight line-clamp-2 drop-shadow-lg">
               {title}
@@ -87,14 +87,14 @@ const TourCard: React.FC<TourCardProps> = ({
           </div>
         </div>
 
-        {/* Content Section */}
+
         <div className="p-4 space-y-3 flex-1 flex flex-col bg-white">
-          {/* Description */}
+
           <p className="text-gray-600 text-xs leading-relaxed line-clamp-2">
             {displayText}
           </p>
 
-          {/* Duration Badge */}
+
           {duration?.days && (
             <div className="inline-flex items-center gap-1.5 bg-orange-50 border border-orange-200 text-orange-600 px-3 py-1.5 rounded-lg w-fit">
               <Calendar className="w-3.5 h-3.5" />
@@ -104,7 +104,7 @@ const TourCard: React.FC<TourCardProps> = ({
             </div>
           )}
 
-          {/* Theme */}
+
           {themes && themes.length > 0 && (
             <div className="space-y-1.5">
               <div className="flex items-center gap-1.5 text-gray-500">
@@ -117,7 +117,7 @@ const TourCard: React.FC<TourCardProps> = ({
             </div>
           )}
 
-          {/* Destinations */}
+
           {cities && cities.length > 0 && (
             <div className="space-y-1.5 flex-1">
               <div className="flex items-center gap-1.5 text-gray-500">
@@ -142,13 +142,9 @@ const TourCard: React.FC<TourCardProps> = ({
             </div>
           )}
 
-          {/* Price Section */}
+
           <div className="pt-3 mt-auto border-t border-gray-100">
             <div className="flex items-end justify-between gap-3">
-              <div>
-                <p className="text-gray-500 text-[10px] mb-0.5">Starting from</p>
-                <p className="text-orange-500 text-xl font-bold leading-none">{priceText}</p>
-              </div>
               <span className="bg-orange-500 hover:bg-orange-600 text-white px-4 py-2 rounded-lg font-semibold transition-colors duration-200 text-xs whitespace-nowrap">
                 View Details
               </span>
