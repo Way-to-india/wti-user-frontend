@@ -129,13 +129,12 @@ const UserDropdown: React.FC = () => {
           <div>
             <h3
               className="text-lg font-semibold text-gray-900"
-              style={{ fontFamily: theme.typography.fontFamily.bold }}
             >
-              Confirm Logout
+              Confirm Logo
+              ut
             </h3>
             <p
               className="text-sm text-gray-600"
-              style={{ fontFamily: theme.typography.fontFamily.regular }}
             >
               Are you sure you want to logout?
             </p>
@@ -147,7 +146,6 @@ const UserDropdown: React.FC = () => {
             onClick={handleCancelLogout}
             disabled={isLoggingOut}
             className="flex-1 px-4 py-2 border border-gray-300 text-gray-700 font-medium rounded-lg hover:bg-gray-50 transition-colors disabled:opacity-50"
-            style={{ fontFamily: theme.typography.fontFamily.regular }}
           >
             Cancel
           </button>
@@ -155,7 +153,6 @@ const UserDropdown: React.FC = () => {
             onClick={handleConfirmLogout}
             disabled={isLoggingOut}
             className="flex-1 px-4 py-2 bg-red-500 text-white font-medium rounded-lg hover:bg-red-600 transition-colors disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center gap-2"
-            style={{ fontFamily: theme.typography.fontFamily.regular }}
           >
             {isLoggingOut ? (
               <>
@@ -204,7 +201,6 @@ const UserDropdown: React.FC = () => {
           </div>
           <span
             className="hidden sm:block font-medium text-gray-700 max-w-24 truncate"
-            style={{ fontFamily: theme.typography.fontFamily.regular }}
           >
             {user?.firstName || 'User'}
           </span>
@@ -230,7 +226,6 @@ const UserDropdown: React.FC = () => {
                     setDropdownOpen(false);
                   }
                 }}
-                style={{ fontFamily: theme.typography.fontFamily.regular }}
               >
                 {item.label}
               </button>

@@ -17,9 +17,6 @@ export interface DynamicBreadcrumbProps {
   className?: string;
 }
 
-/**
- * A reusable breadcrumb navigation component with consistent styling
- */
 const DynamicBreadcrumb: React.FC<DynamicBreadcrumbProps> = ({
   items,
   separator = <ChevronRightIcon fontSize="small" />,
@@ -28,7 +25,6 @@ const DynamicBreadcrumb: React.FC<DynamicBreadcrumbProps> = ({
   const theme = useTheme();
   const router = useRouter();
 
-  // Apply isLast flag to the last item if not explicitly set
   const breadcrumbItems = items.map((item, index) => ({
     ...item,
     isLast: item.isLast !== undefined ? item.isLast : index === items.length - 1
@@ -48,14 +44,13 @@ const DynamicBreadcrumb: React.FC<DynamicBreadcrumbProps> = ({
       >
         {breadcrumbItems.map((item, index) => {
           const { href, text, isLast } = item;
-          
+
           return isLast ? (
             <Typography
               key={index}
               sx={{
                 color: theme.colors.carrotOrange,
                 fontSize: theme.typography.fontSize.body,
-                fontFamily: theme.typography.fontFamily.bold,
               }}
             >
               {text}
@@ -67,7 +62,6 @@ const DynamicBreadcrumb: React.FC<DynamicBreadcrumbProps> = ({
               sx={{
                 color: theme.colors.heavyMetal,
                 fontSize: theme.typography.fontSize.body,
-                fontFamily: theme.typography.fontFamily.regular,
                 cursor: 'pointer',
                 '&:hover': {
                   color: theme.colors.carrotOrange,

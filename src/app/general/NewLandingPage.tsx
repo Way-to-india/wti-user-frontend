@@ -16,7 +16,6 @@ const NewLandingPage = () => {
       style={{
         backgroundColor: theme.colors.milkWhite,
         color: theme.colors.heavyMetal,
-        fontFamily: theme.typography.fontFamily.regular,
         fontSize: theme.typography.fontSize.body,
       }}
     >

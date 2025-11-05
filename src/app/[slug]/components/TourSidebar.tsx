@@ -41,7 +41,6 @@ const TourSidebar: React.FC<TourSidebarProps> = ({ tourDetails, onEnquireClick }
           style={{
             borderColor: theme.colors.carrotOrange,
             color: theme.colors.carrotOrange,
-            fontFamily: theme.typography.fontFamily.bold,
           }}
           onClick={onEnquireClick}
         >

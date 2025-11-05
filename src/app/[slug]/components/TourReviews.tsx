@@ -497,7 +497,7 @@ const TourReviews: React.FC<TourReviewsProps> = ({ tourId }) => {
         <button
           onClick={() => {
             if (!user) {
-              router.push('/auth/login');
+              router.push('/auth');
               return;
             }
             setShowForm(!showForm);

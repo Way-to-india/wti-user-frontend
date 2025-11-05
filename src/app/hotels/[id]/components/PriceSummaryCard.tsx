@@ -39,7 +39,6 @@ const PriceSummaryCard: React.FC<PriceSummaryCardProps> = ({
               className="text-2xl font-bold mb-1"
               style={{
                 color: theme.colors.carrotOrange,
-                fontFamily: theme.typography.fontFamily.bold,
               }}
             >
               ₹{calculateTotalPrice()}

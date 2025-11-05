@@ -69,10 +69,9 @@ const NavLinks: React.FC = () => {
         <button
           onClick={() => setDropdownOpen(!dropdownOpen)}
           className={`flex items-center gap-2 px-4 py-2 rounded-lg transition-all duration-200`}
-          style={{ fontFamily: theme.typography.fontFamily.regular }}
         >
           <MapTrifold size={20} weight={isTravelGuideActive ? 'fill' : 'regular'} />
-          <span className="font-medium">Tourist</span>
+          <span>Tourist</span>
           <CaretDown
             size={14}
             className={`transition-transform duration-200 ${dropdownOpen ? 'rotate-180' : ''}`}
@@ -109,7 +108,6 @@ const NavLinks: React.FC = () => {
                     ? 'bg-orange-50 text-orange-600 font-medium'
                     : 'text-gray-700 hover:bg-gray-50'
                     }`}
-                  style={{ fontFamily: theme.typography.fontFamily.regular }}
                 >
                   {item.text}
                 </button>

@@ -68,9 +68,6 @@ const DynamicFilterSidebar: React.FC<FilterSidebarProps> = ({
 }) => {
   const theme = useTheme();
 
-  // ============================================
-  // STATE MANAGEMENT
-  // ============================================
   const [selectedCategories, setSelectedCategories] = useState<string[]>(
     initialState.selectedCategories || []
   );
@@ -92,9 +89,6 @@ const DynamicFilterSidebar: React.FC<FilterSidebarProps> = ({
   );
   const [showMoreState, setShowMoreState] = useState<{ [key: string]: boolean }>({});
 
-  // ============================================
-  // HANDLERS
-  // ============================================
   const handleCheckboxChange = (
     itemId: string,
     stateArray: string[],
@@ -193,7 +187,6 @@ const DynamicFilterSidebar: React.FC<FilterSidebarProps> = ({
           <Typography
             sx={{
               fontSize: theme.typography.fontSize.body,
-              fontFamily: theme.typography.fontFamily.bold,
               color: theme.colors.heavyMetal,
             }}
           >
@@ -246,7 +239,6 @@ const DynamicFilterSidebar: React.FC<FilterSidebarProps> = ({
                     <Typography
                       sx={{
                         fontSize: theme.typography.fontSize.body,
-                        fontFamily: theme.typography.fontFamily.regular,
                         color: theme.colors.heavyMetal,
                       }}
                     >
@@ -263,7 +255,6 @@ const DynamicFilterSidebar: React.FC<FilterSidebarProps> = ({
                 onClick={() => toggleShowMore(stateKey)}
                 sx={{
                   color: theme.colors.carrotOrange,
-                  fontFamily: theme.typography.fontFamily.bold,
                   fontSize: theme.typography.fontSize.body,
                   cursor: 'pointer',
                   display: 'inline-flex',
@@ -292,7 +283,6 @@ const DynamicFilterSidebar: React.FC<FilterSidebarProps> = ({
         <Typography
           sx={{
             fontSize: theme.typography.fontSize.body,
-            fontFamily: theme.typography.fontFamily.bold,
             color: theme.colors.heavyMetal,
             mb: 2,
           }}
@@ -312,7 +302,6 @@ const DynamicFilterSidebar: React.FC<FilterSidebarProps> = ({
             <Typography
               sx={{
                 fontSize: theme.typography.fontSize.body,
-                fontFamily: theme.typography.fontFamily.regular,
                 color: theme.colors.heavyMetal,
               }}
             >
@@ -364,7 +353,6 @@ const DynamicFilterSidebar: React.FC<FilterSidebarProps> = ({
         <Typography
           sx={{
             fontSize: theme.typography.fontSize.body,
-            fontFamily: theme.typography.fontFamily.bold,
             color: theme.colors.heavyMetal,
             mb: 2,
           }}
@@ -387,7 +375,6 @@ const DynamicFilterSidebar: React.FC<FilterSidebarProps> = ({
           <Typography
             sx={{
               fontSize: theme.typography.fontSize.body,
-              fontFamily: theme.typography.fontFamily.regular,
               color: theme.colors.heavyMetal,
             }}
           >
@@ -396,7 +383,6 @@ const DynamicFilterSidebar: React.FC<FilterSidebarProps> = ({
           <Typography
             sx={{
               fontSize: theme.typography.fontSize.body,
-              fontFamily: theme.typography.fontFamily.regular,
               color: theme.colors.heavyMetal,
             }}
           >
@@ -420,7 +406,6 @@ const DynamicFilterSidebar: React.FC<FilterSidebarProps> = ({
       <Typography
         sx={{
           fontSize: theme.typography.fontSize.h6,
-          fontFamily: theme.typography.fontFamily.bold,
           color: theme.colors.heavyMetal,
           p: 2,
           borderBottom: '1px solid #E5E7EB',

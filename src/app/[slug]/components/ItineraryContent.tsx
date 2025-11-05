@@ -116,7 +116,6 @@ const PlanOfActionCard: React.FC<CardProps> = ({
       className="text-sm font-medium p-4 border-b"
       style={{
         color: theme.colors.heavyMetal,
-        fontFamily: theme.typography.fontFamily.bold,
       }}
     >
       PLAN OF ACTION
@@ -141,7 +140,6 @@ const PlanOfActionCard: React.FC<CardProps> = ({
             className="text-base sm:text-lg font-medium mb-3"
             style={{
               color: theme.colors.heavyMetal,
-              fontFamily: theme.typography.fontFamily.bold,
             }}
           >
             {currentItinerary?.plan_of_action?.title || `Day ${selectedDay} Activities`}
@@ -150,7 +148,6 @@ const PlanOfActionCard: React.FC<CardProps> = ({
             className="text-sm sm:text-base leading-relaxed flex-1"
             style={{
               color: theme.colors.heavyMetal + '90',
-              fontFamily: theme.typography.fontFamily.regular,
             }}
           >
             {currentItinerary?.plan_of_action?.description ||

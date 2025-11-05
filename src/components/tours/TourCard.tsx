@@ -22,7 +22,7 @@ interface Tour {
 
 interface TourCardProps {
   tour: Tour;
-  priority?: boolean; // Add priority for above-the-fold images
+  priority?: boolean; 
 }
 
 const TourCard: React.FC<TourCardProps> = ({ tour, priority = false }) => {
@@ -65,7 +65,7 @@ const TourCard: React.FC<TourCardProps> = ({ tour, priority = false }) => {
       tabIndex={0}
       aria-label={`View details for ${tour.title}`}
     >
-      {/* Optimized Image Container */}
+
       <div className="relative h-56 w-full overflow-hidden bg-gray-800">
         <Image
           src={tour.imageUrls[currentImageIndex]}
@@ -78,10 +78,10 @@ const TourCard: React.FC<TourCardProps> = ({ tour, priority = false }) => {
           loading={priority ? 'eager' : 'lazy'}
         />
 
-        {/* Improved gradient overlay for better contrast */}
+
         <div className="absolute inset-0 bg-gradient-to-t from-black/90 via-black/30 to-transparent" />
 
-        {/* Rating Badge - Improved contrast */}
+
         <div className="absolute top-3 right-3 bg-black/80 backdrop-blur-sm px-2.5 py-1.5 rounded-lg flex items-center gap-1 shadow-lg border border-yellow-500/40">
           <FiStar className="text-yellow-400 text-sm" aria-hidden="true" />
           <span className="text-sm font-semibold text-white">
@@ -90,14 +90,14 @@ const TourCard: React.FC<TourCardProps> = ({ tour, priority = false }) => {
           </span>
         </div>
 
-        {/* Title with better contrast */}
+
         <div className="absolute bottom-3 left-3 right-3">
           <h3 className="font-bold text-lg text-white mb-1 line-clamp-2 drop-shadow-[0_2px_4px_rgba(0,0,0,0.8)]">
             {tour.title}
           </h3>
         </div>
 
-        {/* Image carousel indicators */}
+
         {tour.imageUrls.length > 1 && (
           <div
             className="absolute bottom-1 left-1/2 transform -translate-x-1/2 flex gap-1"
@@ -116,14 +116,14 @@ const TourCard: React.FC<TourCardProps> = ({ tour, priority = false }) => {
         )}
       </div>
 
-      {/* Content Area */}
+
       <div className="p-4">
-        {/* Description with improved contrast */}
+
         <p className="text-gray-200 text-sm mb-3 line-clamp-2 leading-relaxed">
           {tour.description}
         </p>
 
-        {/* Duration and Best Time badges with improved contrast */}
+
         <div className="flex items-center gap-2 mb-3 flex-wrap">
           <div className="flex items-center gap-1 bg-orange-500/30 px-2.5 py-1 rounded-lg border border-orange-400/40">
             <FiClock className="text-orange-300 text-sm" aria-hidden="true" />
@@ -137,7 +137,7 @@ const TourCard: React.FC<TourCardProps> = ({ tour, priority = false }) => {
           </div>
         </div>
 
-        {/* Themes section with improved contrast */}
+
         {tour.themes.length > 0 && (
           <div className="mb-3">
             <div className="flex items-center gap-2 mb-1.5">
@@ -158,7 +158,7 @@ const TourCard: React.FC<TourCardProps> = ({ tour, priority = false }) => {
           </div>
         )}
 
-        {/* Destinations section with improved contrast */}
+
         <div className="mb-3">
           <div className="flex items-center gap-2 mb-1.5">
             <FiMapPin className="text-orange-300 text-sm" aria-hidden="true" />

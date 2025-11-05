@@ -61,7 +61,6 @@ const DynamicSearchSection: React.FC<DynamicSearchSectionProps> = ({
             sx={{
               color: theme.colors.milkWhite,
               fontSize: theme.typography.fontSize.h4,
-              fontFamily: theme.typography.fontFamily.bold,
               mb: 2,
             }}
           >
@@ -79,7 +78,6 @@ const DynamicSearchSection: React.FC<DynamicSearchSectionProps> = ({
           mt: 2,
           mb: 0.5,
           fontSize: theme.typography.fontSize.body,
-          fontFamily: theme.typography.fontFamily.regular,
           fontWeight: theme.typography.fontWeight.regular,
           color: theme.colors.milkWhite
         }}>
@@ -91,7 +89,6 @@ const DynamicSearchSection: React.FC<DynamicSearchSectionProps> = ({
               <Box
                 component="span"
                 sx={{ 
-                  fontFamily: theme.typography.fontFamily.bold,
                   fontWeight: theme.typography.fontWeight.bold,
                   textDecoration: 'underline',
                   cursor: 'pointer'

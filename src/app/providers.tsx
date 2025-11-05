@@ -7,7 +7,6 @@ import { store } from '../app/redux/store';
 import { ThemeProvider } from '@/context/ThemeContext';
 import { SearchProvider } from '@/context/SearchContext';
 import { Toaster } from 'sonner';
-import '@/styles/globals.css';
 
 export function Providers({ children }: { children: React.ReactNode }) {
   return (
