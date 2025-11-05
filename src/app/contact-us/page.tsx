@@ -98,7 +98,7 @@ const HeroSection = () => {
 const ContactInfoCards = () => {
   return (
     <div className="lg:col-span-1 space-y-6">
-      {/* Phone Card */}
+
       <div className="group bg-white/80 backdrop-blur-xl rounded-3xl p-6 shadow-xl hover:shadow-2xl transition-all duration-500 border border-gray-100 hover:-translate-y-2 hover:border-orange-200">
         <div className="flex items-start gap-4">
           <div className="relative">
@@ -122,7 +122,7 @@ const ContactInfoCards = () => {
         </div>
       </div>
 
-      {/* Email Card */}
+
       <div className="group bg-white/80 backdrop-blur-xl rounded-3xl p-6 shadow-xl hover:shadow-2xl transition-all duration-500 border border-gray-100 hover:-translate-y-2 hover:border-orange-200">
         <div className="flex items-start gap-4">
           <div className="relative">
@@ -143,7 +143,7 @@ const ContactInfoCards = () => {
         </div>
       </div>
 
-      {/* Location Card */}
+
       <div className="group bg-white/80 backdrop-blur-xl rounded-3xl p-6 shadow-xl hover:shadow-2xl transition-all duration-500 border border-gray-100 hover:-translate-y-2 hover:border-orange-200">
         <div className="flex items-start gap-4">
           <div className="relative">
@@ -152,18 +152,10 @@ const ContactInfoCards = () => {
               <MapPin className="w-6 h-6 text-white" />
             </div>
           </div>
-          <div className="flex-1">
-            <h3 className="text-xl font-black text-gray-900 mb-2">Visit Us</h3>
-            <p className="text-sm text-gray-700 leading-relaxed">
-              123 Travel Street<br />
-              Mumbai, Maharashtra 400001<br />
-              India
-            </p>
-          </div>
         </div>
       </div>
 
-      {/* Business Hours */}
+
       <div className="group bg-gradient-to-br from-orange-500 to-orange-600 rounded-3xl p-6 shadow-xl hover:shadow-2xl transition-all duration-500 hover:-translate-y-2 text-white">
         <div className="flex items-start gap-4">
           <Clock className="w-8 h-8 flex-shrink-0" />
@@ -187,7 +179,7 @@ const ContactInfoCards = () => {
         </div>
       </div>
 
-      {/* Social Media */}
+
       <div className="bg-gradient-to-br from-gray-900 to-gray-800 rounded-3xl p-6 shadow-xl text-white">
         <h3 className="text-xl font-black mb-4 flex items-center gap-2">
           <Sparkles className="w-5 h-5" />
@@ -340,7 +332,7 @@ const ContactForm = ({ formData, handleChange, isSubmitting, submitted, handleSu
         )}
       </div>
 
-      {/* FAQ Section */}
+
       <div className="mt-8 bg-gradient-to-br from-blue-50 to-purple-50 rounded-3xl p-8 border border-blue-100">
         <h3 className="text-2xl font-black text-gray-900 mb-6 flex items-center gap-2">
           <Star className="w-6 h-6 text-orange-600" />
@@ -446,7 +438,7 @@ const ContactUs = () => {
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-slate-50 via-orange-50/30 to-slate-50 relative overflow-hidden">
-      {/* Animated Background Elements */}
+
       <div className="absolute inset-0 overflow-hidden pointer-events-none">
         <div
           className="absolute w-96 h-96 bg-gradient-to-br from-orange-400/20 to-pink-400/20 rounded-full blur-3xl"
@@ -463,7 +455,7 @@ const ContactUs = () => {
       <Navigation />
       <HeroSection />
 
-      {/* Main Content */}
+
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 pb-20 relative z-10">
         <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
           <ContactInfoCards />
@@ -476,7 +468,7 @@ const ContactUs = () => {
           />
         </div>
 
-        {/* Map Section */}
+
         <div className="mt-16 rounded-3xl overflow-hidden shadow-2xl border-8 border-white">
           <div className="relative bg-gradient-to-br from-gray-100 to-gray-200 h-96 flex items-center justify-center overflow-hidden">
             <div className="absolute inset-0 bg-gradient-to-br from-orange-500/10 to-pink-500/10 animate-pulse" />

@@ -198,7 +198,7 @@ const Transport: React.FC = () => {
             alt="Highway road with buses and cars for travel transportation"
             fill
             priority
-            quality={85}
+            quality={75}
             className="object-cover"
             style={{ objectPosition: 'center' }}
           />
@@ -375,7 +375,7 @@ const Transport: React.FC = () => {
                       height={224}
                       className="w-full h-56 object-cover"
                       loading={idx < 4 ? 'eager' : 'lazy'}
-                      quality={85}
+                      quality={75}
                     />
                   </div>
                 </article>

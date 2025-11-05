@@ -4,7 +4,6 @@ import { useRouter, useSearchParams } from 'next/navigation';
 import Image from 'next/image';
 import SignupForm from '@/components/auth/SignForm';
 import LoginForm from '@/components/auth/LoginForm';
-import GoogleSignInButton from '@/components/auth/GoogleLogin';
 import { useAuth } from '@/context/AuthContext';
 
 function AuthContent() {
@@ -17,7 +16,7 @@ function AuthContent() {
   const LoginImage = 'https://dbagut2mvh0lo.cloudfront.net/auth/login.jpg';
   const signUpPage = 'https://dbagut2mvh0lo.cloudfront.net/auth/signup_1.jpg';
 
-  // Redirect if user is already authenticated
+
   useEffect(() => {
     if (!isLoading && isAuthenticated) {
       router.push('/');
@@ -53,7 +52,7 @@ function AuthContent() {
     setGoogleError(error);
   };
 
-  // Show loading while checking authentication
+
   if (isLoading) {
     return (
       <div className="flex min-h-screen items-center justify-center bg-gradient-to-br from-orange-50 to-white">
@@ -67,7 +66,7 @@ function AuthContent() {
     );
   }
 
-  // Show redirecting message
+
   if (isRedirecting || isAuthenticated) {
     return (
       <div className="flex min-h-screen items-center justify-center bg-gradient-to-br from-orange-50 to-white">
@@ -98,7 +97,7 @@ function AuthContent() {
               />
             )}
 
-            {/* Google Sign-In Section - Now properly placed inside the form container */}
+
             <div className="mt-6">
               <div className="flex items-center justify-center my-6">
                 <hr className="w-full border-gray-300" />
@@ -112,7 +111,7 @@ function AuthContent() {
                 </div>
               )}
 
-              {/* <GoogleSignInButton onSuccess={handleAuthSuccess} onError={handleGoogleError} /> */}
+
             </div>
           </div>
         </div>
