@@ -163,7 +163,7 @@ export default function LoginForm({ onSuccess, onSwitchToSignup }: LoginFormProp
         />
         <button
           type="submit"
-          disabled={isLoading}
+          disabled={isLoading || !captchaToken}
           className="w-full bg-orange-500 text-white font-semibold p-3 rounded-lg hover:bg-orange-600 transition duration-300 disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center min-h-[48px]"
         >
           {isLoading ? (
@@ -182,7 +182,7 @@ export default function LoginForm({ onSuccess, onSwitchToSignup }: LoginFormProp
         Don't have an account?{' '}
         <button
           onClick={onSwitchToSignup}
-          disabled={isLoading || !captchaToken}
+          disabled={isLoading}
           className="text-orange-500 font-semibold hover:text-orange-600 disabled:opacity-50"
         >
           Sign Up

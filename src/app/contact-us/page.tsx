@@ -5,7 +5,7 @@ import Image from 'next/image';
 import Link from 'next/link';
 import { Mail, Phone, MapPin, Clock, Send, Loader2, CheckCircle2, Facebook, Twitter, Instagram, Linkedin, MessageCircle, Sparkles, ArrowRight, Star } from 'lucide-react';
 
-const API_BASE_URL = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:3001';
+const API_BASE_URL = process.env.NEXT_PUBLIC_BASE_URL;
 
 interface FormData {
   name: string;
@@ -491,21 +491,6 @@ const ContactUs = () => {
             submitted={submitted}
             handleSubmit={handleSubmit}
           />
-        </div>
-
-
-        <div className="mt-16 rounded-3xl overflow-hidden shadow-2xl border-8 border-white">
-          <div className="relative bg-gradient-to-br from-gray-100 to-gray-200 h-96 flex items-center justify-center overflow-hidden">
-            <div className="absolute inset-0 bg-gradient-to-br from-orange-500/10 to-pink-500/10 animate-pulse" />
-            <div className="relative z-10 text-center">
-              <div className="inline-flex items-center justify-center w-24 h-24 bg-white rounded-full shadow-2xl mb-6 animate-bounce">
-                <MapPin className="w-12 h-12 text-orange-600" />
-              </div>
-              <h3 className="text-2xl font-black text-gray-800 mb-3">📍 Find Us Here</h3>
-              <p className="text-gray-600 font-semibold">123 Travel Street, Mumbai, Maharashtra</p>
-              <p className="text-gray-500 text-sm mt-1">Click to open in maps</p>
-            </div>
-          </div>
         </div>
       </div>
 
