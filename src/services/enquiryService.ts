@@ -12,7 +12,6 @@ export interface TourEnquiry {
   travelDate?: string;
   departureCity?: string;
   specialRequests?: string;
-  recaptchaToken: string;
 }
 
 export const submitTourEnquiry = async (enquiryData: TourEnquiry) => {

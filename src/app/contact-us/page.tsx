@@ -158,19 +158,6 @@ const ContactInfoCards = () => {
         </div>
       </div>
 
-
-      <div className="group bg-white/80 backdrop-blur-xl rounded-3xl p-6 shadow-xl hover:shadow-2xl transition-all duration-500 border border-gray-100 hover:-translate-y-2 hover:border-orange-200">
-        <div className="flex items-start gap-4">
-          <div className="relative">
-            <div className="absolute inset-0 bg-gradient-to-br from-green-500 to-emerald-500 rounded-2xl blur-lg opacity-50 group-hover:opacity-75 transition-opacity" />
-            <div className="relative bg-gradient-to-br from-green-500 to-green-600 rounded-2xl p-4 shadow-lg">
-              <MapPin className="w-6 h-6 text-white" />
-            </div>
-          </div>
-        </div>
-      </div>
-
-
       <div className="group bg-gradient-to-br from-orange-500 to-orange-600 rounded-3xl p-6 shadow-xl hover:shadow-2xl transition-all duration-500 hover:-translate-y-2 text-white">
         <div className="flex items-start gap-4">
           <Clock className="w-8 h-8 flex-shrink-0" />

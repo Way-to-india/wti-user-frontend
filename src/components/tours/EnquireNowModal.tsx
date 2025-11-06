@@ -1,14 +1,13 @@
 'use client';
 
-import React, { useState, useEffect, useRef, useCallback } from 'react';
+import React, { useState, useEffect, useCallback } from 'react';
 import Modal from '@/lib/modals/modals';
 import { IoArrowBack, IoCheckmarkCircle } from 'react-icons/io5';
 import { FaStar, FaUsers, FaCalendarAlt, FaMapMarkerAlt } from 'react-icons/fa';
-import { useTheme } from '@/context/ThemeContext';
 import Image from 'next/image';
-import Script from 'next/script';
 import apiClient, { endpoints } from '@/api/axios';
 import { submitTourEnquiry } from '@/services/enquiryService';
+import ReCAPTCHA from "react-google-recaptcha";
 
 
 interface EnquireNowModalProps {
@@ -44,29 +43,6 @@ interface FormData {
   specialRequests: string;
 }
 
-declare global {
-  interface Window {
-    grecaptcha?: {
-      ready: (callback: () => void) => void;
-      render: (
-        container: string | HTMLElement,
-        parameters: {
-          sitekey: string;
-          callback?: (token: string) => void;
-          'expired-callback'?: () => void;
-          'error-callback'?: () => void;
-          theme?: 'light' | 'dark';
-          size?: 'normal' | 'compact';
-        }
-      ) => number;
-      reset: (widgetId?: number) => void;
-      getResponse: (widgetId?: number) => string;
-      execute: (widgetId?: number) => void;
-    };
-  }
-}
-
-
 const INITIAL_FORM_DATA: FormData = {
   name: '',
   email: '',
@@ -77,8 +53,6 @@ const INITIAL_FORM_DATA: FormData = {
   specialRequests: '',
 };
 
-const SUCCESS_CLOSE_DELAY = 2500;
-const RECAPTCHA_RENDER_DELAY = 150;
 const MAX_SPECIAL_REQUESTS_LENGTH = 500;
 
 
@@ -90,110 +64,37 @@ const EnquireNowModal: React.FC<EnquireNowModalProps> = ({
   tourImage = '/assets/images/tours/valley-of-flowers.jpg',
   tourRating = 4.5,
 }) => {
-  const { colors } = useTheme();
 
   const [userData, setUserData] = useState<User | null>(null);
   const [loadingUser, setLoadingUser] = useState(true);
   const [formData, setFormData] = useState<FormData>(INITIAL_FORM_DATA);
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [submitSuccess, setSubmitSuccess] = useState(false);
-  const [recaptchaLoaded, setRecaptchaLoaded] = useState(false);
-  const [recaptchaToken, setRecaptchaToken] = useState<string>('');
-
-  const recaptchaRef = useRef<HTMLDivElement>(null);
-  const recaptchaWidgetId = useRef<number | null>(null);
-  const renderAttempted = useRef(false);
-  const successTimeoutRef = useRef<NodeJS.Timeout | null>(null);
+  const [captchaToken, setCaptchaToken] = useState<string | null>(null);
 
 
-  const RECAPTCHA_SITE_KEY = process.env.NEXT_PUBLIC_RECAPTCHA_SITE_KEY;
+  const RECAPTCHA_SITE_KEY = process.env.NEXT_PUBLIC_RECAPTCHA_SITE_KEY!;
 
 
-  const handleRecaptchaSuccess = useCallback((token: string) => {
-    console.log('✅ reCAPTCHA verification successful');
-    setRecaptchaToken(token);
-  }, []);
-
-  const handleRecaptchaExpired = useCallback(() => {
-    console.warn('⚠️ reCAPTCHA token expired');
-    setRecaptchaToken('');
-  }, []);
-
-  const handleRecaptchaError = useCallback(() => {
-    console.error('❌ reCAPTCHA error occurred');
-    setRecaptchaToken('');
-    alert('reCAPTCHA verification failed. Please try again.');
-  }, []);
-
-  const renderRecaptcha = useCallback(() => {
-    if (!recaptchaRef.current || recaptchaWidgetId.current !== null || renderAttempted.current) {
-      return;
-    }
-
-    if (!window.grecaptcha?.render) {
-      console.error('❌ grecaptcha.render is not available');
-      return;
-    }
-
-    if (!RECAPTCHA_SITE_KEY) {
-      console.error('❌ RECAPTCHA_SITE_KEY is not configured');
-      return;
-    }
-
-    try {
-      renderAttempted.current = true;
-      console.log('🔄 Rendering reCAPTCHA...');
-
-      recaptchaWidgetId.current = window.grecaptcha.render(recaptchaRef.current, {
-        sitekey: RECAPTCHA_SITE_KEY,
-        callback: handleRecaptchaSuccess,
-        'expired-callback': handleRecaptchaExpired,
-        'error-callback': handleRecaptchaError,
-        theme: 'light',
-        size: 'normal',
-      });
-
-      console.log('✅ reCAPTCHA rendered successfully. Widget ID:', recaptchaWidgetId.current);
-    } catch (error) {
-      console.error('❌ Error rendering reCAPTCHA:', error);
-      renderAttempted.current = false;
-    }
-  }, [RECAPTCHA_SITE_KEY, handleRecaptchaSuccess, handleRecaptchaExpired, handleRecaptchaError]);
-
-
-  useEffect(() => {
-    if (!isOpen || !recaptchaLoaded) return;
-
-    const timer = setTimeout(() => {
-      if (window.grecaptcha?.ready) {
-        window.grecaptcha.ready(renderRecaptcha);
-      } else {
-        renderRecaptcha();
-      }
-    }, RECAPTCHA_RENDER_DELAY);
-
-    return () => clearTimeout(timer);
-  }, [isOpen, recaptchaLoaded, renderRecaptcha]);
+  const handleCaptchaChange = (token: string | null) => {
+    setCaptchaToken(token);
+  };
 
 
   useEffect(() => {
     const fetchUserData = async () => {
       if (!isOpen) return;
-
       const token = localStorage.getItem('authToken');
       if (!token) {
         setLoadingUser(false);
         return;
       }
-
       try {
         setLoadingUser(true);
         const response = await apiClient.get(endpoints.user.profile);
-
         if (response.data.status || response.data.success) {
           const user = response.data.payload || response.data.data;
           setUserData(user);
-
           setFormData((prev) => ({
             ...prev,
             name: `${user.firstName} ${user.lastName}`.trim(),
@@ -217,43 +118,9 @@ const EnquireNowModal: React.FC<EnquireNowModalProps> = ({
       // Reset form data
       setFormData(INITIAL_FORM_DATA);
       setSubmitSuccess(false);
-      setRecaptchaToken('');
-      renderAttempted.current = false;
-
-      // Clear success timeout
-      if (successTimeoutRef.current) {
-        clearTimeout(successTimeoutRef.current);
-        successTimeoutRef.current = null;
-      }
-
-      // Reset reCAPTCHA
-      if (recaptchaWidgetId.current !== null && window.grecaptcha?.reset) {
-        try {
-          window.grecaptcha.reset(recaptchaWidgetId.current);
-          recaptchaWidgetId.current = null;
-          console.log('🔄 reCAPTCHA reset');
-        } catch (error) {
-          console.error('Error resetting reCAPTCHA:', error);
-        }
-      }
     }
   }, [isOpen]);
 
-
-  useEffect(() => {
-    return () => {
-      if (successTimeoutRef.current) {
-        clearTimeout(successTimeoutRef.current);
-      }
-      if (recaptchaWidgetId.current !== null && window.grecaptcha?.reset) {
-        try {
-          window.grecaptcha.reset(recaptchaWidgetId.current);
-        } catch (error) {
-          console.error('Error cleaning up reCAPTCHA:', error);
-        }
-      }
-    };
-  }, []);
 
 
   const handleChange = useCallback(
@@ -269,11 +136,6 @@ const EnquireNowModal: React.FC<EnquireNowModalProps> = ({
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-
-    if (!recaptchaToken) {
-      alert('Please complete the reCAPTCHA verification');
-      return;
-    }
 
     if (!RECAPTCHA_SITE_KEY) {
       console.error('RECAPTCHA_SITE_KEY is not configured');
@@ -299,17 +161,10 @@ const EnquireNowModal: React.FC<EnquireNowModalProps> = ({
         travelDate: formData.travelDate,
         departureCity: formData.departureCity.trim(),
         specialRequests: formData.specialRequests.trim(),
-        recaptchaToken,
       });
 
-      // Show success state
       setSubmitSuccess(true);
 
-      // Auto-close after delay
-      successTimeoutRef.current = setTimeout(() => {
-        setSubmitSuccess(false);
-        onClose();
-      }, SUCCESS_CLOSE_DELAY);
     } catch (error) {
       console.error('Error submitting enquiry:', error);
 
@@ -318,11 +173,6 @@ const EnquireNowModal: React.FC<EnquireNowModalProps> = ({
         error instanceof Error ? error.message : 'Failed to submit enquiry. Please try again.';
       alert(errorMessage);
 
-      // Reset reCAPTCHA on error
-      if (recaptchaWidgetId.current !== null && window.grecaptcha?.reset) {
-        window.grecaptcha.reset(recaptchaWidgetId.current);
-        setRecaptchaToken('');
-      }
     } finally {
       setIsSubmitting(false);
     }
@@ -357,19 +207,6 @@ const EnquireNowModal: React.FC<EnquireNowModalProps> = ({
 
   return (
     <>
-      {/* reCAPTCHA Script */}
-      <Script
-        src="https://www.google.com/recaptcha/api.js?render=explicit"
-        onLoad={() => {
-          console.log('✅ reCAPTCHA script loaded');
-          setRecaptchaLoaded(true);
-        }}
-        onError={(e) => {
-          console.error('❌ Failed to load reCAPTCHA script:', e);
-        }}
-        strategy="lazyOnload"
-      />
-
       <Modal modalOpen={isOpen} handleClose={onClose} className="p-0" drawer>
         {/* Modal Header */}
         <div className="sticky top-0 bg-white border-b px-6 py-4 z-10 shadow-sm">
@@ -644,38 +481,6 @@ const EnquireNowModal: React.FC<EnquireNowModalProps> = ({
                 </span>
                 <h4 className="font-semibold text-gray-800">Verification</h4>
               </div>
-
-              <div className="flex justify-center">
-                <div ref={recaptchaRef} className="flex justify-center items-center min-h-[78px]">
-                  {!recaptchaLoaded && (
-                    <div className="flex items-center gap-2 text-gray-500">
-                      <svg className="animate-spin h-5 w-5" viewBox="0 0 24 24">
-                        <circle
-                          className="opacity-25"
-                          cx="12"
-                          cy="12"
-                          r="10"
-                          stroke="currentColor"
-                          strokeWidth="4"
-                          fill="none"
-                        />
-                        <path
-                          className="opacity-75"
-                          fill="currentColor"
-                          d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"
-                        />
-                      </svg>
-                      <span className="text-sm">Loading reCAPTCHA...</span>
-                    </div>
-                  )}
-                </div>
-              </div>
-
-              {!recaptchaToken && recaptchaLoaded && (
-                <p className="text-xs text-orange-600 text-center">
-                  Please complete the reCAPTCHA verification above
-                </p>
-              )}
             </div>
 
             {/* Quick Response Info */}
@@ -723,66 +528,19 @@ const EnquireNowModal: React.FC<EnquireNowModalProps> = ({
               apply.
             </p>
 
+            <ReCAPTCHA
+              sitekey={RECAPTCHA_SITE_KEY}
+              onChange={handleCaptchaChange}
+            />
+
             {/* Submit Button */}
             <button
               type="submit"
-              disabled={isSubmitting || !recaptchaLoaded || loadingUser || !recaptchaToken}
+              disabled={isSubmitting || loadingUser || !captchaToken}
               className={`w-full bg-gradient-to-r from-orange-500 to-orange-600 text-white py-4 rounded-xl font-semibold text-base hover:from-orange-600 hover:to-orange-700 transition-all shadow-lg hover:shadow-xl transform hover:scale-[1.02] active:scale-[0.98] disabled:opacity-60 disabled:cursor-not-allowed disabled:transform-none ${isSubmitting ? 'cursor-wait' : ''
                 }`}
             >
-              {!recaptchaLoaded ? (
-                <span className="flex items-center justify-center gap-2">
-                  <svg className="animate-spin h-5 w-5" viewBox="0 0 24 24">
-                    <circle
-                      className="opacity-25"
-                      cx="12"
-                      cy="12"
-                      r="10"
-                      stroke="currentColor"
-                      strokeWidth="4"
-                      fill="none"
-                    />
-                    <path
-                      className="opacity-75"
-                      fill="currentColor"
-                      d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"
-                    />
-                  </svg>
-                  Loading Security...
-                </span>
-              ) : isSubmitting ? (
-                <span className="flex items-center justify-center gap-2">
-                  <svg className="animate-spin h-5 w-5" viewBox="0 0 24 24">
-                    <circle
-                      className="opacity-25"
-                      cx="12"
-                      cy="12"
-                      r="10"
-                      stroke="currentColor"
-                      strokeWidth="4"
-                      fill="none"
-                    />
-                    <path
-                      className="opacity-75"
-                      fill="currentColor"
-                      d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"
-                    />
-                  </svg>
-                  Submitting Enquiry...
-                </span>
-              ) : (
-                <span className="flex items-center justify-center gap-2">
-                  <span>Submit Enquiry</span>
-                  <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path
-                      strokeLinecap="round"
-                      strokeLinejoin="round"
-                      strokeWidth={2}
-                      d="M14 5l7 7m0 0l-7 7m7-7H3"
-                    />
-                  </svg>
-                </span>
-              )}
+              Submit Query
             </button>
           </form>
         </div>
