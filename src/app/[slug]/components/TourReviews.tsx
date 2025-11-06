@@ -17,9 +17,6 @@ import { useAuth } from '@/context/AuthContext';
 import { useRouter } from 'next/navigation';
 import axiosInstance from '@/api/axios';
 
-// ============================================
-// Types
-// ============================================
 interface ReviewImage {
   key: string;
   url: string;
@@ -51,9 +48,6 @@ interface ModalState {
   onConfirm?: () => void;
 }
 
-// ============================================
-// Modal Component - Optimized with Portal
-// ============================================
 const Modal: React.FC<ModalState & { onClose: () => void }> = React.memo(({
   isOpen,
   onClose,

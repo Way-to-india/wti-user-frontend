@@ -1,6 +1,6 @@
 'use client';
 
-import React, { useState, useEffect, useRef } from 'react';
+import React, { useState, useEffect, useRef, useCallback } from 'react';
 import Modal from '@/lib/modals/modals';
 import { IoArrowBack, IoCheckmarkCircle } from 'react-icons/io5';
 import { FaStar, FaUsers, FaCalendarAlt, FaMapMarkerAlt } from 'react-icons/fa';
@@ -9,6 +9,7 @@ import Image from 'next/image';
 import Script from 'next/script';
 import apiClient, { endpoints } from '@/api/axios';
 import { submitTourEnquiry } from '@/services/enquiryService';
+
 
 interface EnquireNowModalProps {
   isOpen: boolean;
@@ -33,97 +34,169 @@ interface User {
   role: string;
 }
 
-// Extend Window interface for grecaptcha
+interface FormData {
+  name: string;
+  email: string;
+  phoneNumber: string;
+  numberOfPeople: string;
+  travelDate: string;
+  departureCity: string;
+  specialRequests: string;
+}
+
 declare global {
   interface Window {
-    grecaptcha: {
-      render: (container: string | HTMLElement, parameters: {
-        sitekey: string;
-        callback?: (token: string) => void;
-        'expired-callback'?: () => void;
-        'error-callback'?: () => void;
-        theme?: 'light' | 'dark';
-        size?: 'normal' | 'compact';
-      }) => number;
+    grecaptcha?: {
+      ready: (callback: () => void) => void;
+      render: (
+        container: string | HTMLElement,
+        parameters: {
+          sitekey: string;
+          callback?: (token: string) => void;
+          'expired-callback'?: () => void;
+          'error-callback'?: () => void;
+          theme?: 'light' | 'dark';
+          size?: 'normal' | 'compact';
+        }
+      ) => number;
       reset: (widgetId?: number) => void;
       getResponse: (widgetId?: number) => string;
+      execute: (widgetId?: number) => void;
     };
   }
 }
 
-const EnquireNowModal = ({
+
+const INITIAL_FORM_DATA: FormData = {
+  name: '',
+  email: '',
+  phoneNumber: '',
+  numberOfPeople: '2',
+  travelDate: '',
+  departureCity: '',
+  specialRequests: '',
+};
+
+const SUCCESS_CLOSE_DELAY = 2500;
+const RECAPTCHA_RENDER_DELAY = 150;
+const MAX_SPECIAL_REQUESTS_LENGTH = 500;
+
+
+const EnquireNowModal: React.FC<EnquireNowModalProps> = ({
   isOpen,
   onClose,
   tourName,
   tourCategory = 'Trekking Tours In India',
   tourImage = '/assets/images/tours/valley-of-flowers.jpg',
   tourRating = 4.5,
-}: EnquireNowModalProps) => {
+}) => {
   const { colors } = useTheme();
 
   const [userData, setUserData] = useState<User | null>(null);
   const [loadingUser, setLoadingUser] = useState(true);
-  const [formData, setFormData] = useState({
-    name: '',
-    email: '',
-    phoneNumber: '',
-    numberOfPeople: '2',
-    travelDate: '',
-    departureCity: '',
-    specialRequests: '',
-  });
+  const [formData, setFormData] = useState<FormData>(INITIAL_FORM_DATA);
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [submitSuccess, setSubmitSuccess] = useState(false);
   const [recaptchaLoaded, setRecaptchaLoaded] = useState(false);
   const [recaptchaToken, setRecaptchaToken] = useState<string>('');
+
   const recaptchaRef = useRef<HTMLDivElement>(null);
   const recaptchaWidgetId = useRef<number | null>(null);
-  
-  const YOUR_RECAPTCHA_SITE_KEY = process.env.NEXT_PUBLIC_RECAPTCHA_SITE_KEY;
+  const renderAttempted = useRef(false);
+  const successTimeoutRef = useRef<NodeJS.Timeout | null>(null);
 
-  // Initialize reCAPTCHA v2
-  useEffect(() => {
-    if (recaptchaLoaded && isOpen && recaptchaRef.current && !recaptchaWidgetId.current) {
-      try {
-        recaptchaWidgetId.current = window.grecaptcha.render(recaptchaRef.current, {
-          sitekey: YOUR_RECAPTCHA_SITE_KEY!,
-          callback: (token: string) => {
-            setRecaptchaToken(token);
-          },
-          'expired-callback': () => {
-            setRecaptchaToken('');
-          },
-          'error-callback': () => {
-            setRecaptchaToken('');
-            alert('reCAPTCHA error. Please try again.');
-          },
-          theme: 'light',
-          size: 'normal',
-        });
-      } catch (error) {
-        console.error('Error rendering reCAPTCHA:', error);
-      }
+
+  const RECAPTCHA_SITE_KEY = process.env.NEXT_PUBLIC_RECAPTCHA_SITE_KEY;
+
+
+  const handleRecaptchaSuccess = useCallback((token: string) => {
+    console.log('✅ reCAPTCHA verification successful');
+    setRecaptchaToken(token);
+  }, []);
+
+  const handleRecaptchaExpired = useCallback(() => {
+    console.warn('⚠️ reCAPTCHA token expired');
+    setRecaptchaToken('');
+  }, []);
+
+  const handleRecaptchaError = useCallback(() => {
+    console.error('❌ reCAPTCHA error occurred');
+    setRecaptchaToken('');
+    alert('reCAPTCHA verification failed. Please try again.');
+  }, []);
+
+  const renderRecaptcha = useCallback(() => {
+    if (!recaptchaRef.current || recaptchaWidgetId.current !== null || renderAttempted.current) {
+      return;
     }
-  }, [recaptchaLoaded, isOpen, YOUR_RECAPTCHA_SITE_KEY]);
+
+    if (!window.grecaptcha?.render) {
+      console.error('❌ grecaptcha.render is not available');
+      return;
+    }
+
+    if (!RECAPTCHA_SITE_KEY) {
+      console.error('❌ RECAPTCHA_SITE_KEY is not configured');
+      return;
+    }
+
+    try {
+      renderAttempted.current = true;
+      console.log('🔄 Rendering reCAPTCHA...');
+
+      recaptchaWidgetId.current = window.grecaptcha.render(recaptchaRef.current, {
+        sitekey: RECAPTCHA_SITE_KEY,
+        callback: handleRecaptchaSuccess,
+        'expired-callback': handleRecaptchaExpired,
+        'error-callback': handleRecaptchaError,
+        theme: 'light',
+        size: 'normal',
+      });
+
+      console.log('✅ reCAPTCHA rendered successfully. Widget ID:', recaptchaWidgetId.current);
+    } catch (error) {
+      console.error('❌ Error rendering reCAPTCHA:', error);
+      renderAttempted.current = false;
+    }
+  }, [RECAPTCHA_SITE_KEY, handleRecaptchaSuccess, handleRecaptchaExpired, handleRecaptchaError]);
+
+
+  useEffect(() => {
+    if (!isOpen || !recaptchaLoaded) return;
+
+    const timer = setTimeout(() => {
+      if (window.grecaptcha?.ready) {
+        window.grecaptcha.ready(renderRecaptcha);
+      } else {
+        renderRecaptcha();
+      }
+    }, RECAPTCHA_RENDER_DELAY);
+
+    return () => clearTimeout(timer);
+  }, [isOpen, recaptchaLoaded, renderRecaptcha]);
+
 
   useEffect(() => {
     const fetchUserData = async () => {
       if (!isOpen) return;
+
       const token = localStorage.getItem('authToken');
       if (!token) {
         setLoadingUser(false);
         return;
       }
+
       try {
         setLoadingUser(true);
         const response = await apiClient.get(endpoints.user.profile);
+
         if (response.data.status || response.data.success) {
           const user = response.data.payload || response.data.data;
           setUserData(user);
-          setFormData(prev => ({
+
+          setFormData((prev) => ({
             ...prev,
             name: `${user.firstName} ${user.lastName}`.trim(),
-            email: '',
             phoneNumber: user.phone || '',
             departureCity: user.address || '',
           }));
@@ -134,26 +207,31 @@ const EnquireNowModal = ({
         setLoadingUser(false);
       }
     };
+
     fetchUserData();
   }, [isOpen]);
 
+
   useEffect(() => {
     if (!isOpen) {
-      setFormData({
-        name: '',
-        email: '',
-        phoneNumber: '',
-        numberOfPeople: '2',
-        travelDate: '',
-        departureCity: '',
-        specialRequests: '',
-      });
+      // Reset form data
+      setFormData(INITIAL_FORM_DATA);
       setSubmitSuccess(false);
       setRecaptchaToken('');
+      renderAttempted.current = false;
+
+      // Clear success timeout
+      if (successTimeoutRef.current) {
+        clearTimeout(successTimeoutRef.current);
+        successTimeoutRef.current = null;
+      }
+
       // Reset reCAPTCHA
-      if (recaptchaWidgetId.current !== null) {
+      if (recaptchaWidgetId.current !== null && window.grecaptcha?.reset) {
         try {
           window.grecaptcha.reset(recaptchaWidgetId.current);
+          recaptchaWidgetId.current = null;
+          console.log('🔄 reCAPTCHA reset');
         } catch (error) {
           console.error('Error resetting reCAPTCHA:', error);
         }
@@ -161,29 +239,56 @@ const EnquireNowModal = ({
     }
   }, [isOpen]);
 
-  const handleChange = (
-    e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement>
-  ) => {
-    const { name, value } = e.target;
-    setFormData(prev => ({
-      ...prev,
-      [name]: value,
-    }));
-  };
+
+  useEffect(() => {
+    return () => {
+      if (successTimeoutRef.current) {
+        clearTimeout(successTimeoutRef.current);
+      }
+      if (recaptchaWidgetId.current !== null && window.grecaptcha?.reset) {
+        try {
+          window.grecaptcha.reset(recaptchaWidgetId.current);
+        } catch (error) {
+          console.error('Error cleaning up reCAPTCHA:', error);
+        }
+      }
+    };
+  }, []);
+
+
+  const handleChange = useCallback(
+    (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement>) => {
+      const { name, value } = e.target;
+      setFormData((prev) => ({
+        ...prev,
+        [name]: value,
+      }));
+    },
+    []
+  );
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    
+
     if (!recaptchaToken) {
       alert('Please complete the reCAPTCHA verification');
       return;
     }
 
+    if (!RECAPTCHA_SITE_KEY) {
+      console.error('RECAPTCHA_SITE_KEY is not configured');
+      alert('Configuration error. Please contact support.');
+      return;
+    }
+
     setIsSubmitting(true);
+
     try {
+      // Extract tour ID from URL
       const pathname = window.location.pathname;
       const tourId = pathname.split('/').pop() || '';
-      
+
+      // Submit enquiry
       await submitTourEnquiry({
         tourId,
         tourName,
@@ -194,19 +299,27 @@ const EnquireNowModal = ({
         travelDate: formData.travelDate,
         departureCity: formData.departureCity.trim(),
         specialRequests: formData.specialRequests.trim(),
-        recaptchaToken: recaptchaToken,
+        recaptchaToken,
       });
-      
+
+      // Show success state
       setSubmitSuccess(true);
-      setTimeout(() => {
+
+      // Auto-close after delay
+      successTimeoutRef.current = setTimeout(() => {
         setSubmitSuccess(false);
         onClose();
-      }, 2500);
+      }, SUCCESS_CLOSE_DELAY);
     } catch (error) {
       console.error('Error submitting enquiry:', error);
-      alert('Failed to submit enquiry. Please try again.');
+
+      // Show error to user
+      const errorMessage =
+        error instanceof Error ? error.message : 'Failed to submit enquiry. Please try again.';
+      alert(errorMessage);
+
       // Reset reCAPTCHA on error
-      if (recaptchaWidgetId.current !== null) {
+      if (recaptchaWidgetId.current !== null && window.grecaptcha?.reset) {
         window.grecaptcha.reset(recaptchaWidgetId.current);
         setRecaptchaToken('');
       }
@@ -214,6 +327,7 @@ const EnquireNowModal = ({
       setIsSubmitting(false);
     }
   };
+
 
   if (submitSuccess) {
     return (
@@ -243,13 +357,21 @@ const EnquireNowModal = ({
 
   return (
     <>
+      {/* reCAPTCHA Script */}
       <Script
-        src="https://www.google.com/recaptcha/api.js"
-        onLoad={() => setRecaptchaLoaded(true)}
+        src="https://www.google.com/recaptcha/api.js?render=explicit"
+        onLoad={() => {
+          console.log('✅ reCAPTCHA script loaded');
+          setRecaptchaLoaded(true);
+        }}
+        onError={(e) => {
+          console.error('❌ Failed to load reCAPTCHA script:', e);
+        }}
         strategy="lazyOnload"
       />
 
       <Modal modalOpen={isOpen} handleClose={onClose} className="p-0" drawer>
+        {/* Modal Header */}
         <div className="sticky top-0 bg-white border-b px-6 py-4 z-10 shadow-sm">
           <button
             onClick={onClose}
@@ -261,6 +383,7 @@ const EnquireNowModal = ({
           <h3 className="text-center font-semibold text-lg text-gray-800">Tour Enquiry Form</h3>
         </div>
 
+        {/* Modal Content */}
         <div className="px-6 pb-6 overflow-y-auto max-h-[calc(100vh-80px)]">
           {/* Tour Info Card */}
           <div className="mt-4 bg-gradient-to-br from-orange-50 via-amber-50 to-orange-50 rounded-xl p-4 border border-orange-100 shadow-sm">
@@ -283,7 +406,7 @@ const EnquireNowModal = ({
             </div>
           </div>
 
-          {/* Loading indicator for user data */}
+          {/* Loading Indicator */}
           {loadingUser && (
             <div className="mt-4 bg-blue-50 border border-blue-200 rounded-lg p-3 flex items-center gap-3">
               <svg className="animate-spin h-5 w-5 text-blue-500" viewBox="0 0 24 24">
@@ -306,12 +429,13 @@ const EnquireNowModal = ({
             </div>
           )}
 
-          {/* User Info Display (if logged in) */}
+          {/* User Welcome Card */}
           {userData && !loadingUser && (
             <div className="mt-4 bg-gradient-to-r from-green-50 to-emerald-50 border border-green-200 rounded-lg p-4">
               <div className="flex items-start gap-3">
                 <div className="w-12 h-12 rounded-full bg-gradient-to-br from-orange-400 to-purple-500 flex items-center justify-center text-white font-bold text-lg flex-shrink-0">
-                  {userData.firstName.charAt(0)}{userData.lastName.charAt(0)}
+                  {userData.firstName.charAt(0)}
+                  {userData.lastName.charAt(0)}
                 </div>
                 <div className="flex-1 min-w-0">
                   <p className="text-sm font-semibold text-green-900 mb-1">
@@ -325,8 +449,9 @@ const EnquireNowModal = ({
             </div>
           )}
 
+          {/* Enquiry Form */}
           <form onSubmit={handleSubmit} className="mt-6 space-y-6">
-            {/* Personal Information */}
+            {/* Section 1: Personal Information */}
             <div className="space-y-4">
               <div className="flex items-center gap-2 pb-2 border-b border-gray-200">
                 <span className="w-7 h-7 bg-gradient-to-br from-orange-500 to-orange-600 text-white rounded-full flex items-center justify-center text-sm font-semibold shadow-md">
@@ -335,6 +460,7 @@ const EnquireNowModal = ({
                 <h4 className="font-semibold text-gray-800">Personal Information</h4>
               </div>
 
+              {/* Full Name */}
               <div>
                 <label htmlFor="name" className="block mb-2 font-medium text-sm text-gray-700">
                   Full Name <span className="text-red-500">*</span>
@@ -353,6 +479,7 @@ const EnquireNowModal = ({
                 />
               </div>
 
+              {/* Email & Phone */}
               <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                 <div>
                   <label htmlFor="email" className="block mb-2 font-medium text-sm text-gray-700">
@@ -394,7 +521,7 @@ const EnquireNowModal = ({
               </div>
             </div>
 
-            {/* Travel Details */}
+            {/* Section 2: Travel Details */}
             <div className="space-y-4">
               <div className="flex items-center gap-2 pb-2 border-b border-gray-200">
                 <span className="w-7 h-7 bg-gradient-to-br from-orange-500 to-orange-600 text-white rounded-full flex items-center justify-center text-sm font-semibold shadow-md">
@@ -403,6 +530,7 @@ const EnquireNowModal = ({
                 <h4 className="font-semibold text-gray-800">Travel Details</h4>
               </div>
 
+              {/* Number of Travelers & Travel Date */}
               <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                 <div>
                   <label
@@ -451,6 +579,7 @@ const EnquireNowModal = ({
                 </div>
               </div>
 
+              {/* Departure City */}
               <div>
                 <label
                   htmlFor="departureCity"
@@ -474,7 +603,7 @@ const EnquireNowModal = ({
               </div>
             </div>
 
-            {/* Additional Information */}
+            {/* Section 3: Additional Information */}
             <div className="space-y-4">
               <div className="flex items-center gap-2 pb-2 border-b border-gray-200">
                 <span className="w-7 h-7 bg-gradient-to-br from-orange-500 to-orange-600 text-white rounded-full flex items-center justify-center text-sm font-semibold shadow-md">
@@ -497,17 +626,17 @@ const EnquireNowModal = ({
                   value={formData.specialRequests}
                   onChange={handleChange}
                   rows={4}
-                  maxLength={500}
+                  maxLength={MAX_SPECIAL_REQUESTS_LENGTH}
                   className="w-full p-3.5 bg-gray-50 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-orange-500 focus:border-transparent transition-all resize-none text-sm"
                   placeholder="Tell us about any dietary requirements, accessibility needs, preferences, or questions you have about the tour..."
-                ></textarea>
+                />
                 <p className="text-xs text-gray-500 mt-1 text-right">
-                  {formData.specialRequests.length}/500 characters
+                  {formData.specialRequests.length}/{MAX_SPECIAL_REQUESTS_LENGTH} characters
                 </p>
               </div>
             </div>
 
-            {/* reCAPTCHA v2 Checkbox */}
+            {/* Section 4: reCAPTCHA Verification */}
             <div className="space-y-4">
               <div className="flex items-center gap-2 pb-2 border-b border-gray-200">
                 <span className="w-7 h-7 bg-gradient-to-br from-orange-500 to-orange-600 text-white rounded-full flex items-center justify-center text-sm font-semibold shadow-md">
@@ -553,7 +682,9 @@ const EnquireNowModal = ({
             <div className="bg-gradient-to-r from-blue-50 to-cyan-50 border border-blue-200 rounded-lg p-4 flex items-start gap-3 shadow-sm">
               <div className="text-2xl mt-0.5">⏱️</div>
               <div>
-                <p className="text-sm font-semibold text-blue-900 mb-1">Quick Response Guarantee</p>
+                <p className="text-sm font-semibold text-blue-900 mb-1">
+                  Quick Response Guarantee
+                </p>
                 <p className="text-xs text-blue-700">
                   Our expert team responds within <strong>30-45 minutes</strong> during business
                   hours (9 AM - 7 PM IST, Mon-Sat)
@@ -596,9 +727,8 @@ const EnquireNowModal = ({
             <button
               type="submit"
               disabled={isSubmitting || !recaptchaLoaded || loadingUser || !recaptchaToken}
-              className={`w-full bg-gradient-to-r from-orange-500 to-orange-600 text-white py-4 rounded-xl font-semibold text-base hover:from-orange-600 hover:to-orange-700 transition-all shadow-lg hover:shadow-xl transform hover:scale-[1.02] active:scale-[0.98] disabled:opacity-60 disabled:cursor-not-allowed disabled:transform-none ${
-                isSubmitting ? 'cursor-wait' : ''
-              }`}
+              className={`w-full bg-gradient-to-r from-orange-500 to-orange-600 text-white py-4 rounded-xl font-semibold text-base hover:from-orange-600 hover:to-orange-700 transition-all shadow-lg hover:shadow-xl transform hover:scale-[1.02] active:scale-[0.98] disabled:opacity-60 disabled:cursor-not-allowed disabled:transform-none ${isSubmitting ? 'cursor-wait' : ''
+                }`}
             >
               {!recaptchaLoaded ? (
                 <span className="flex items-center justify-center gap-2">
@@ -662,3 +792,4 @@ const EnquireNowModal = ({
 };
 
 export default EnquireNowModal;
+
