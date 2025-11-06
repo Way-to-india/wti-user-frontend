@@ -2,6 +2,7 @@
 import { useState } from 'react';
 import axios from 'axios';
 import { Eye, EyeOff } from 'lucide-react';
+import ReCAPTCHA from "react-google-recaptcha";
 
 interface LoginFormProps {
   onSuccess: (token: string, userData: any) => void;
@@ -16,6 +17,7 @@ export default function LoginForm({ onSuccess, onSwitchToSignup }: LoginFormProp
     password: '',
   });
   const [errorMessage, setErrorMessage] = useState<string | null>(null);
+  const [captchaToken, setCaptchaToken] = useState<string | null>(null);
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const { name, value } = e.target;
@@ -73,6 +75,13 @@ export default function LoginForm({ onSuccess, onSwitchToSignup }: LoginFormProp
     } finally {
       setIsLoading(false);
     }
+  };
+
+  const RECAPTCHA_SITE_KEY = process.env.NEXT_PUBLIC_RECAPTCHA_SITE_KEY!;
+
+
+  const handleCaptchaChange = (token: string | null) => {
+    setCaptchaToken(token);
   };
 
   const LoadingSpinner = () => (
@@ -148,6 +157,10 @@ export default function LoginForm({ onSuccess, onSwitchToSignup }: LoginFormProp
           </div>
         )}
 
+        <ReCAPTCHA
+          sitekey={RECAPTCHA_SITE_KEY}
+          onChange={handleCaptchaChange}
+        />
         <button
           type="submit"
           disabled={isLoading}
@@ -164,11 +177,12 @@ export default function LoginForm({ onSuccess, onSwitchToSignup }: LoginFormProp
         </button>
       </form>
 
+
       <p className="text-center text-gray-600 mt-6">
         Don't have an account?{' '}
         <button
           onClick={onSwitchToSignup}
-          disabled={isLoading}
+          disabled={isLoading || !captchaToken}
           className="text-orange-500 font-semibold hover:text-orange-600 disabled:opacity-50"
         >
           Sign Up
