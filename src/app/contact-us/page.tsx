@@ -5,6 +5,21 @@ import Image from 'next/image';
 import Link from 'next/link';
 import { Mail, Phone, MapPin, Clock, Send, Loader2, CheckCircle2, Facebook, Twitter, Instagram, Linkedin, MessageCircle, Sparkles, ArrowRight, Star } from 'lucide-react';
 
+const API_BASE_URL = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:3001';
+
+interface FormData {
+  name: string;
+  email: string;
+  phone: string;
+  subject: string;
+  message: string;
+}
+
+interface ApiError {
+  message: string;
+  statusCode: number;
+}
+
 
 const Navigation = () => {
   return (
@@ -420,8 +435,31 @@ const ContactUs = () => {
     }
 
     setIsSubmitting(true);
-    await new Promise(resolve => setTimeout(resolve, 2000));
-    setIsSubmitting(false);
+    const token = localStorage.getItem('authToken');
+
+    const response = await fetch(`${API_BASE_URL}/api/user/contact-us-query`, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        ...(token && { 'Authorization': `Bearer ${token}` })
+      },
+      body: JSON.stringify({
+        name: formData.name.trim(),
+        email: formData.email.trim().toLowerCase(),
+        phone: formData.phone.trim() || null,
+        subject: formData.subject.toLowerCase(),
+        message: formData.message.trim()
+      })
+    });
+
+    const data = await response.json();
+
+    if (!response.ok) {
+      throw new Error(data.message || 'Failed to send message');
+    }
+
+    // Success
+    // setSuccessMessage(data.message || "Your message has been sent successfully!");
     setSubmitted(true);
 
     setTimeout(() => {
